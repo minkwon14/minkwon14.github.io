@@ -1,11 +1,19 @@
 {
   "applinks": {
-    "apps": [],
     "details": [
-    {
-      "appID": "39FK66NX2P.com.minseokwon.Whos",
-      "paths": ["/code"]
-    }
+      {
+        "appIDs": ["39FK66NX2P.com.minseokwon.Whos"],
+        "components": [
+          {
+            "/": "/code/*",
+            "comment": "Universal links"
+          },
+          {
+            "/": "/help/*",
+            "exclude": true
+          }
+        ]
+      }
     ]
   }
 }
