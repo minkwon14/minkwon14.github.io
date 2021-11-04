@@ -5,7 +5,7 @@
         "appIDs": ["39FK66NX2P.com.minseokwon.Whos"],
         "components": [
           {
-            "/": "/code/*",
+            "?": "?code=*",
             "comment": "Universal links"
           },
           {
