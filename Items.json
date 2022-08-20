@@ -3,13 +3,13 @@
     "id": 1,
     "name": "Apple",
     "type": "consumable",
-    "price": 120,
+    "price": 100,
     "note": "Basic stuff"
   },
   {
     "id": 2,
     "name": "Berry",
-    "type": "testable",
+    "type": "consumable",
     "price": 80
   }
 ]
