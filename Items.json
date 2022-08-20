@@ -1,0 +1,15 @@
+[
+  {
+    "id": 1,
+    "name": "Apple",
+    "type": "consumable",
+    "price": 120,
+    "note": "Basic stuff"
+  },
+  {
+    "id": 2,
+    "name": "Berry",
+    "type": "testable",
+    "price": 99
+  }
+]
