@@ -139,7 +139,8 @@
       font-weight: 500;
     }
 
-    .field input {
+    .field input,
+    .field select {
       padding: 8px 10px;
       border-radius: 10px;
       border: 1px solid var(--border);
@@ -148,7 +149,8 @@
       font-size: 0.9rem;
     }
 
-    .field input:focus {
+    .field input:focus,
+    .field select:focus {
       outline: 2px solid var(--accent-soft);
       border-color: var(--accent);
     }
@@ -208,7 +210,7 @@
       font-size: 0.8rem;
     }
 
-    /* Bigger QR box */
+    /* Bigger QR box, centered */
     .qr-box {
       margin-top: 4px;
       display: flex;
@@ -225,6 +227,8 @@
       max-width: 300px;
       width: 80%;
       height: auto;
+      margin: 0 auto;
+      display: block;
     }
 
     .chip-list {
@@ -356,6 +360,7 @@
       flex-direction: column;
       gap: 2px;
       font-size: 0.85rem;
+      cursor: pointer;
     }
 
     .scan-row:last-child {
@@ -387,6 +392,31 @@
     .subtle {
       font-size: 0.75rem;
       opacity: 0.8;
+    }
+
+    /* Detail (Screen 5) */
+    .detail-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.9rem;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .detail-label {
+      font-weight: 500;
+      opacity: 0.8;
+    }
+
+    .detail-value {
+      text-align: right;
+      word-break: break-word;
+      max-width: 65%;
     }
   </style>
 </head>
@@ -421,6 +451,23 @@
         </div>
 
         <div class="field">
+          <label for="group" id="label-group">순 (Group)</label>
+          <select id="group">
+            <option value="" disabled selected>선택하세요</option>
+            <!-- 가나다 순 -->
+            <option value="김수진">김수진</option>
+            <option value="랠리스">랠리스</option>
+            <option value="류다현">류다현</option>
+            <option value="무소속">무소속</option>
+            <option value="새가족">새가족</option>
+            <option value="아이린">아이린</option>
+            <option value="장준용">장준용</option>
+            <option value="조연수">조연수</option>
+            <option value="최우석">최우석</option>
+          </select>
+        </div>
+
+        <div class="field">
           <label for="mbti" id="label-mbti">MBTI</label>
           <input id="mbti" placeholder="예: INFP" />
         </div>
@@ -428,6 +475,11 @@
         <div class="field">
           <label for="location" id="label-location">사는 곳</label>
           <input id="location" placeholder="예: 서울, 대한민국" />
+        </div>
+
+        <div class="field">
+          <label for="hobby" id="label-hobby">취미</label>
+          <input id="hobby" placeholder="예: 등산, 커피, 게임" />
         </div>
 
         <button id="save-profile" class="btn btn-primary" type="button">
@@ -459,7 +511,7 @@
 
         <div class="meta-row">
           <span class="subtle" id="qr-description">
-            QR에는 이름, MBTI, 사는 도시 정보가 들어갑니다.
+            QR에는 이름, 순, MBTI, 사는 곳, 취미 정보가 들어갑니다.
           </span>
           <button id="edit-profile" class="btn btn-outline" type="button">내 정보 수정</button>
         </div>
@@ -502,6 +554,43 @@
         <div class="footer-row">
           <button id="clear-met" class="btn btn-outline" type="button">전체 삭제</button>
           <button id="back-to-qr" class="btn btn-primary" type="button">내 QR 보기</button>
+        </div>
+      </section>
+
+      <!-- Screen 5: Detail view -->
+      <section id="screen-5" class="screen">
+        <div class="meta-row">
+          <span class="subtle" id="detail-title">상세 정보</span>
+          <button id="back-from-detail" class="btn btn-outline" type="button">
+            뒤로
+          </button>
+        </div>
+
+        <div class="detail-list">
+          <div class="detail-row">
+            <span class="detail-label" id="detail-label-name">이름</span>
+            <span class="detail-value" id="detail-name"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label" id="detail-label-group">순 (Group)</span>
+            <span class="detail-value" id="detail-group"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label" id="detail-label-mbti">MBTI</span>
+            <span class="detail-value" id="detail-mbti"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label" id="detail-label-location">사는 곳</span>
+            <span class="detail-value" id="detail-location"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label" id="detail-label-hobby">취미</span>
+            <span class="detail-value" id="detail-hobby"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label" id="detail-label-mettime">만난 시간</span>
+            <span class="detail-value" id="detail-mettime"></span>
+          </div>
         </div>
       </section>
     </div>
@@ -569,6 +658,10 @@
         intro: "만나서 서로 스캔할 수 있는 나만의 QR 카드를 만들어 보세요.",
         fullNameLabel: "이름",
         fullNamePlaceholder: "예: 김민수",
+        groupLabel: "순 (Group)",
+        groupPlaceholder: "선택하세요",
+        hobbyLabel: "취미",
+        hobbyPlaceholder: "예: 등산, 커피, 게임",
         mbtiLabel: "MBTI",
         mbtiPlaceholder: "예: INFP",
         locationLabel: "사는 곳",
@@ -578,7 +671,7 @@
 
         metTitle: "만난 사람",
         metSubtitle: "지금까지 만난 사람 목록 보기",
-        qrDescription: "QR에는 이름, MBTI, 사는 도시 정보가 들어갑니다.",
+        qrDescription: "QR에는 이름, 순, MBTI, 사는 곳, 취미 정보가 들어갑니다.",
         scanButton: "QR 스캔하기",
 
         scanStatusIntro: "QR를 가운데 네모 안에 맞추고 잠시만 기다려 주세요…",
@@ -599,7 +692,15 @@
         emptyState: "아직 아무도 없어요. 누군가를 만나서 QR를 스캔해 보세요!",
         footer: "데이터는 이 브라우저 안에만 저장됩니다 (쿠키 사용).",
 
-        alertEnterName: "이름을 입력해 주세요.",
+        detailTitle: "상세 정보",
+        detailLabelName: "이름",
+        detailLabelGroup: "순 (Group)",
+        detailLabelMbti: "MBTI",
+        detailLabelLocation: "사는 곳",
+        detailLabelHobby: "취미",
+        detailLabelMetTime: "만난 시간",
+
+        alertEnterRequired: "모든 항목을 입력해 주세요.",
         alertClearConfirm: "정말로 만난 사람 목록을 모두 삭제할까요?",
         alertScanned: name => `스캔 완료: ${name} 님 정보를 저장했습니다.`,
         alertCameraUnsupported: "이 브라우저에서는 카메라를 사용할 수 없습니다.",
@@ -620,6 +721,10 @@
         intro: "Create your own QR card so you can scan each other when you meet.",
         fullNameLabel: "Full name",
         fullNamePlaceholder: "e.g. Alex Kim",
+        groupLabel: "Group",
+        groupPlaceholder: "Select",
+        hobbyLabel: "Hobby",
+        hobbyPlaceholder: "e.g. hiking, coffee, games",
         mbtiLabel: "MBTI",
         mbtiPlaceholder: "e.g. INFP",
         locationLabel: "Where do you live?",
@@ -629,7 +734,7 @@
 
         metTitle: "People you’ve met",
         metSubtitle: "See the people you’ve met so far",
-        qrDescription: "Your QR includes your name, MBTI and city.",
+        qrDescription: "Your QR includes your name, group, MBTI, city and hobbies.",
         scanButton: "Scan QR",
 
         scanStatusIntro: "Align the QR inside the square and hold still…",
@@ -650,7 +755,15 @@
         emptyState: "No one yet. Go meet someone and scan their QR!",
         footer: "Data stays in this browser only (stored in cookies).",
 
-        alertEnterName: "Please enter your full name.",
+        detailTitle: "Person details",
+        detailLabelName: "Name",
+        detailLabelGroup: "Group",
+        detailLabelMbti: "MBTI",
+        detailLabelLocation: "Location",
+        detailLabelHobby: "Hobby",
+        detailLabelMetTime: "Met at",
+
+        alertEnterRequired: "Please fill in all fields.",
         alertClearConfirm: "Clear all entries in 'People you’ve met'?",
         alertScanned: name => `Scanned and saved: ${name}`,
         alertCameraUnsupported: "Camera access is not supported in this browser.",
@@ -672,6 +785,7 @@
       s2: document.getElementById("screen-2"),
       s3: document.getElementById("screen-3"),
       s4: document.getElementById("screen-4"),
+      s5: document.getElementById("screen-5"),
     };
 
     const appTitleEl = document.getElementById("app-title");
@@ -681,11 +795,16 @@
     const introText = document.getElementById("intro-text");
 
     const fullNameLabel = document.getElementById("label-fullname");
+    const groupLabel = document.getElementById("label-group");
     const mbtiLabel = document.getElementById("label-mbti");
     const locationLabel = document.getElementById("label-location");
+    const hobbyLabel = document.getElementById("label-hobby");
+
     const fullNameInput = document.getElementById("fullName");
+    const groupSelect = document.getElementById("group");
     const mbtiInput = document.getElementById("mbti");
     const locationInput = document.getElementById("location");
+    const hobbyInput = document.getElementById("hobby");
     const saveProfileBtn = document.getElementById("save-profile");
     const editProfileBtn = document.getElementById("edit-profile");
 
@@ -706,6 +825,21 @@
     const backToQrBtn = document.getElementById("back-to-qr");
     const openScannerBtn = document.getElementById("open-scanner");
     const footerTextEl = document.getElementById("footer-text");
+
+    const detailTitleEl = document.getElementById("detail-title");
+    const backFromDetailBtn = document.getElementById("back-from-detail");
+    const detailName = document.getElementById("detail-name");
+    const detailGroup = document.getElementById("detail-group");
+    const detailMbti = document.getElementById("detail-mbti");
+    const detailLocation = document.getElementById("detail-location");
+    const detailHobby = document.getElementById("detail-hobby");
+    const detailMetTime = document.getElementById("detail-mettime");
+    const detailLabelName = document.getElementById("detail-label-name");
+    const detailLabelGroup = document.getElementById("detail-label-group");
+    const detailLabelMbti = document.getElementById("detail-label-mbti");
+    const detailLabelLocation = document.getElementById("detail-label-location");
+    const detailLabelHobby = document.getElementById("detail-label-hobby");
+    const detailLabelMetTime = document.getElementById("detail-label-mettime");
 
     const videoEl = document.getElementById("video");
     const scanCanvas = document.getElementById("scan-canvas");
@@ -750,11 +884,17 @@
 
       introText.textContent = t("intro");
       fullNameLabel.textContent = t("fullNameLabel");
+      groupLabel.textContent = t("groupLabel");
       mbtiLabel.textContent = t("mbtiLabel");
       locationLabel.textContent = t("locationLabel");
+      hobbyLabel.textContent = t("hobbyLabel");
+
       fullNameInput.placeholder = t("fullNamePlaceholder");
+      groupSelect.options[0].textContent = t("groupPlaceholder");
       mbtiInput.placeholder = t("mbtiPlaceholder");
       locationInput.placeholder = t("locationPlaceholder");
+      hobbyInput.placeholder = t("hobbyPlaceholder");
+
       saveProfileBtn.textContent = t("saveProfile");
       editProfileBtn.textContent = t("editProfile");
 
@@ -771,8 +911,17 @@
       clearMetBtn.textContent = t("clearMet");
       backToMainBtn.textContent = t("back");
       backToQrBtn.textContent = t("backToQR");
+      backFromDetailBtn.textContent = t("back");
 
       footerTextEl.textContent = t("footer");
+
+      detailTitleEl.textContent = t("detailTitle");
+      detailLabelName.textContent = t("detailLabelName");
+      detailLabelGroup.textContent = t("detailLabelGroup");
+      detailLabelMbti.textContent = t("detailLabelMbti");
+      detailLabelLocation.textContent = t("detailLabelLocation");
+      detailLabelHobby.textContent = t("detailLabelHobby");
+      detailLabelMetTime.textContent = t("detailLabelMetTime");
 
       applyTheme();
     }
@@ -781,20 +930,22 @@
       currentLang = currentLang === "ko" ? "en" : "ko";
       setCookie(langCookieKey, currentLang, 365);
       applyLanguage();
-      // Also refresh profile summary so chip labels use correct language
       updateProfileSummary();
+      renderMetList();
     }
 
     langToggleBtn.addEventListener("click", toggleLanguage);
 
     // ============ QR generation ============
-    // Encode as: FullName|MBTI|Location
+    // Encode as: Name|Group|MBTI|Location|Hobby
     function updateQR() {
       if (!profile) return;
       const name = profile.fullName || "";
+      const group = profile.group || "";
       const mbti = profile.mbti || "";
       const loc = profile.location || "";
-      const data = `${name}|${mbti}|${loc}`;
+      const hobby = profile.hobby || "";
+      const data = `${name}|${group}|${mbti}|${loc}|${hobby}`;
 
       const qrContainer = document.getElementById("qrcode");
       qrContainer.innerHTML = "";
@@ -811,13 +962,17 @@
       if (!profile) return;
 
       const labelName = currentLang === "ko" ? "이름" : "Name";
+      const labelGroup = currentLang === "ko" ? "순" : "Group";
       const labelMbti = "MBTI";
-      const labelCity = currentLang === "ko" ? "도시" : "City";
+      const labelCity = currentLang === "ko" ? "사는 곳" : "Location";
+      const labelHobby = currentLang === "ko" ? "취미" : "Hobby";
 
       const items = [
         { label: labelName, value: profile.fullName },
+        { label: labelGroup, value: profile.group },
         { label: labelMbti, value: profile.mbti },
         { label: labelCity, value: profile.location },
+        { label: labelHobby, value: profile.hobby },
       ];
       items.forEach(i => {
         if (!i.value) return;
@@ -848,56 +1003,57 @@
         return;
       }
 
-      metList
-        .slice()
-        .sort((a, b) => b.timestamp - a.timestamp)
-        .forEach(item => {
-          const row = document.createElement("div");
-          row.className = "scan-row";
+      const labelGroup = currentLang === "ko" ? "순" : "Group";
 
-          const header = document.createElement("div");
-          header.className = "scan-row-header";
-          const nameEl = document.createElement("div");
-          nameEl.textContent = item.name || (currentLang === "ko" ? "이름 없음" : "Unknown");
-          const timeEl = document.createElement("div");
-          const dt = new Date(item.timestamp);
-          timeEl.textContent = dt.toLocaleString();
-          timeEl.style.fontSize = "0.75rem";
-          timeEl.style.opacity = "0.8";
+      // sort by latest
+      const sorted = metList
+        .map((item, idx) => ({ item, idx }))
+        .sort((a, b) => b.item.timestamp - a.item.timestamp);
 
-          header.appendChild(nameEl);
-          header.appendChild(timeEl);
+      sorted.forEach(({ item, idx }) => {
+        const row = document.createElement("div");
+        row.className = "scan-row";
+        row.dataset.index = String(idx);
 
-          const meta = document.createElement("div");
-          meta.className = "scan-row-meta";
-          if (item.mbti) {
-            const mbtiSpan = document.createElement("span");
-            mbtiSpan.textContent = "MBTI: " + item.mbti;
-            meta.appendChild(mbtiSpan);
-          }
-          if (item.location) {
-            const locLabel = currentLang === "ko" ? "사는 곳: " : "Lives in: ";
-            const locSpan = document.createElement("span");
-            locSpan.textContent = locLabel + item.location;
-            meta.appendChild(locSpan);
-          }
+        const header = document.createElement("div");
+        header.className = "scan-row-header";
+        const nameEl = document.createElement("div");
+        nameEl.textContent = item.name || (currentLang === "ko" ? "이름 없음" : "Unknown");
+        const timeEl = document.createElement("div");
+        const dt = new Date(item.timestamp);
+        timeEl.textContent = dt.toLocaleString();
+        timeEl.style.fontSize = "0.75rem";
+        timeEl.style.opacity = "0.8";
 
-          row.appendChild(header);
-          row.appendChild(meta);
-          scanListEl.appendChild(row);
-        });
+        header.appendChild(nameEl);
+        header.appendChild(timeEl);
+
+        const meta = document.createElement("div");
+        meta.className = "scan-row-meta";
+        const groupSpan = document.createElement("span");
+        groupSpan.textContent = `${labelGroup}: ${item.group || "-"}`;
+        meta.appendChild(groupSpan);
+
+        row.appendChild(header);
+        row.appendChild(meta);
+        scanListEl.appendChild(row);
+      });
     }
 
     // ============ Profile handling ============
     function saveProfileFromInputs() {
       const fullName = fullNameInput.value.trim();
+      const group = groupSelect.value.trim();
       const mbti = mbtiInput.value.trim();
       const location = locationInput.value.trim();
-      if (!fullName) {
-        alert(t("alertEnterName"));
+      const hobby = hobbyInput.value.trim();
+
+      if (!fullName || !group || !mbti || !location || !hobby) {
+        alert(t("alertEnterRequired"));
         return false;
       }
-      profile = { fullName, mbti, location };
+
+      profile = { fullName, group, mbti, location, hobby };
       setCookie(profileCookieKey, JSON.stringify(profile), 365);
       return true;
     }
@@ -913,8 +1069,10 @@
     editProfileBtn.addEventListener("click", () => {
       if (profile) {
         fullNameInput.value = profile.fullName || "";
+        groupSelect.value = profile.group || "";
         mbtiInput.value = profile.mbti || "";
         locationInput.value = profile.location || "";
+        hobbyInput.value = profile.hobby || "";
       }
       showScreen("s1");
     });
@@ -933,7 +1091,7 @@
       renderMetList();
     });
 
-    // Navigation buttons for screens 2 & 4
+    // Navigation buttons for screens 2, 4, 5
     document.getElementById("open-met-list").addEventListener("click", () => {
       renderMetList();
       showScreen("s4");
@@ -945,6 +1103,30 @@
 
     backToQrBtn.addEventListener("click", () => {
       showScreen("s2");
+    });
+
+    backFromDetailBtn.addEventListener("click", () => {
+      showScreen("s4");
+    });
+
+    // Click on row -> Screen 5
+    scanListEl.addEventListener("click", (e) => {
+      const row = e.target.closest(".scan-row");
+      if (!row) return;
+      const idx = parseInt(row.dataset.index, 10);
+      const person = metList[idx];
+      if (!person) return;
+
+      detailName.textContent = person.name || "";
+      detailGroup.textContent = person.group || "";
+      detailMbti.textContent = person.mbti || "";
+      detailLocation.textContent = person.location || "";
+      detailHobby.textContent = person.hobby || "";
+
+      const dt = person.timestamp ? new Date(person.timestamp) : null;
+      detailMetTime.textContent = dt ? dt.toLocaleString() : "";
+
+      showScreen("s5");
     });
 
     // ============ Scanner ============
@@ -1009,7 +1191,6 @@
         if (!videoStream) return;
 
         const now = performance.now();
-        // Throttle decode attempts to ~5 times/sec
         if (now - lastDecodeTime < 200) {
           scanLoopId = requestAnimationFrame(loop);
           return;
@@ -1024,7 +1205,6 @@
             scanCanvas.height = vh;
             ctx.drawImage(videoEl, 0, 0, vw, vh);
 
-            // Crop to center square (~70% of min dimension)
             const size = Math.floor(Math.min(vw, vh) * 0.7);
             const x = Math.floor((vw - size) / 2);
             const y = Math.floor((vh - size) / 2);
@@ -1049,16 +1229,32 @@
       loop();
     }
 
-    // Decode format: "Full Name|MBTI|Location"
+    // Decode format: Name|Group|MBTI|Location|Hobby
+    // Also supports older Name|MBTI|Location format
     function handleScannedData(dataStr) {
       const parts = dataStr.split("|");
       if (parts.length < 1) {
         scanStatus.textContent = t("scanStatusFormatUnsupported");
         return;
       }
+
       const name = (parts[0] || "").trim();
-      const mbti = (parts[1] || "").trim();
-      const location = (parts[2] || "").trim();
+      let group = "";
+      let mbti = "";
+      let location = "";
+      let hobby = "";
+
+      if (parts.length >= 5) {
+        // New format
+        group = (parts[1] || "").trim();
+        mbti = (parts[2] || "").trim();
+        location = (parts[3] || "").trim();
+        hobby = (parts[4] || "").trim();
+      } else if (parts.length >= 3) {
+        // Old format: name|mbti|location
+        mbti = (parts[1] || "").trim();
+        location = (parts[2] || "").trim();
+      }
 
       if (!name) {
         scanStatus.textContent = t("scanStatusMissingName");
@@ -1066,24 +1262,29 @@
       }
 
       const existing = metList.find(
-        m => m.name === name && m.mbti === mbti && m.location === location
+        m =>
+          m.name === name &&
+          (m.group || "") === group &&
+          (m.mbti || "") === mbti &&
+          (m.location || "") === location &&
+          (m.hobby || "") === hobby
       );
 
       if (!existing) {
         metList.push({
           name,
+          group,
           mbti,
           location,
+          hobby,
           timestamp: Date.now(),
         });
         saveMetList();
         updateMetCount();
       }
 
-      scanStatus.textContent = t("scanStatusIntro");
       alert(t("alertScanned", name));
 
-      // After a successful scan: stop camera and show the list
       stopScanner();
       renderMetList();
       showScreen("s4");
@@ -1104,7 +1305,7 @@
       if (storedLang === "ko" || storedLang === "en") {
         currentLang = storedLang;
       } else {
-        currentLang = "ko"; // default to Korean
+        currentLang = "ko";
       }
 
       const storedTheme = getCookie(themeCookieKey);
@@ -1131,12 +1332,15 @@
     }
 
     function initUI() {
+      loadCookies();
       applyLanguage();
 
       if (profile) {
         fullNameInput.value = profile.fullName || "";
+        groupSelect.value = profile.group || "";
         mbtiInput.value = profile.mbti || "";
         locationInput.value = profile.location || "";
+        hobbyInput.value = profile.hobby || "";
         updateProfileSummary();
         updateQR();
         showScreen("s2");
@@ -1149,10 +1353,7 @@
       renderMetList();
     }
 
-    window.addEventListener("load", () => {
-      loadCookies();
-      initUI();
-    });
+    window.addEventListener("load", initUI);
   </script>
 </body>
 </html>
