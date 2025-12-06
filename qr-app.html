@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -208,20 +209,22 @@
       font-size: 0.8rem;
     }
 
+    /* Bigger QR box */
     .qr-box {
       margin-top: 4px;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 8px;
-      border-radius: 16px;
+      padding: 16px;
+      border-radius: 18px;
       border: 1px dashed var(--border);
       background: radial-gradient(circle at top, var(--accent-soft), transparent);
     }
 
-    .qr-box img {
-      max-width: 180px;
-      width: 60%;
+    .qr-box img,
+    .qr-box canvas {
+      max-width: 280px;   /* bigger */
+      width: 80%;         /* bigger on mobile */
       height: auto;
     }
 
@@ -325,9 +328,10 @@
       justify-content: center;
     }
 
+    /* Slightly bigger scan frame */
     #scan-overlay-inner {
-      width: 65%;
-      max-width: 260px;
+      width: 80%;
+      max-width: 300px;
       aspect-ratio: 1 / 1;
       border-radius: 22px;
       border: 2px solid rgba(248, 250, 252, 0.85);
@@ -472,7 +476,7 @@
         </div>
 
         <div class="meta-row">
-          <span id="scan-status">Point the camera at a QR code.</span>
+          <span id="scan-status">Point the QR into the frame and hold still…</span>
           <div style="display:flex;gap:6px;">
             <button id="flip-camera" class="btn btn-outline" type="button">
               Flip camera
@@ -542,6 +546,7 @@
     let usingRear = true;
     let scanLoopId = null;
     let lastScannedValue = null;
+    let lastDecodeTime = 0;
 
     // ============ DOM refs ============
     const screens = {
@@ -602,8 +607,8 @@
       qrContainer.innerHTML = "";
       new QRCode(qrContainer, {
         text: data,
-        width: 256,
-        height: 256,
+        width: 280,  // a bit bigger source size as well
+        height: 280,
         correctLevel: QRCode.CorrectLevel.L
       });
     }
@@ -752,9 +757,13 @@
       try {
         pillStatus.textContent = "Camera active";
         lastScannedValue = null;
+        scanStatus.textContent = "Point the QR into the frame and hold still…";
+
         const constraints = {
           video: {
-            facingMode: usingRear ? { ideal: "environment" } : "user"
+            facingMode: usingRear ? { ideal: "environment" } : "user",
+            width: { ideal: 1280 },      // ask for higher resolution
+            height: { ideal: 720 }
           },
           audio: false
         };
@@ -801,6 +810,14 @@
       const loop = () => {
         if (!videoStream) return;
 
+        const now = performance.now();
+        // Throttle decode attempts to ~5 times/sec
+        if (now - lastDecodeTime < 200) {
+          scanLoopId = requestAnimationFrame(loop);
+          return;
+        }
+        lastDecodeTime = now;
+
         if (videoEl.readyState === videoEl.HAVE_ENOUGH_DATA) {
           const vw = videoEl.videoWidth;
           const vh = videoEl.videoHeight;
@@ -808,8 +825,8 @@
             scanCanvas.width = vw;
             scanCanvas.height = vh;
             ctx.drawImage(videoEl, 0, 0, vw, vh);
-            const imageData = ctx.getImageData(0, 0, vw, vh);
 
+            const imageData = ctx.getImageData(0, 0, vw, vh);
             const code = jsQR(imageData.data, imageData.width, imageData.height, {
               inversionAttempts: "attemptBoth"
             });
@@ -819,6 +836,8 @@
                 lastScannedValue = code.data;
                 handleScannedData(code.data);
               }
+            } else {
+              scanStatus.textContent = "Trying to read the QR… move closer or hold still.";
             }
           }
         }
