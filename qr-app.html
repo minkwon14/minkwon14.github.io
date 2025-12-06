@@ -3,61 +3,123 @@
 <head>
 <meta charset="UTF-8">
 <title>QR Profile App</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
+<!-- Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
 :root {
-  --bg:#f7f7f8; --text:#111; --card:#fff; --border:#ddd; --accent:#4A6CF7;
+  --bg:#f7f7f8;
+  --text:#111;
+  --card:#fff;
+  --border:#ccc;
+  --accent:#4A6CF7;
 }
 [data-theme="dark"] {
-  --bg:#121212; --text:#eee; --card:#1e1e1e; --border:#333; --accent:#6d8bff;
+  --bg:#121212;
+  --text:#eee;
+  --card:#1e1e1e;
+  --border:#333;
+  --accent:#6d8bff;
 }
 body {
-  font-family:Inter,sans-serif; background:var(--bg); color:var(--text);
+  font-family:Inter,sans-serif;
+  background:var(--bg);
+  color:var(--text);
   margin:0;
 }
 header {
-  padding:20px; background:var(--card); border-bottom:1px solid var(--border);
-  text-align:center; font-size:24px; font-weight:600; position:relative;
+  background:var(--card);
+  border-bottom:1px solid var(--border);
+  padding:20px;
+  text-align:center;
+  font-size:22px;
+  font-weight:600;
+  position:relative;
 }
 .toggle-dark {
-  position:absolute; right:20px; top:20px; padding:6px 14px;
-  background:var(--card); border:1px solid var(--border); border-radius:6px;
+  position:absolute;
+  right:20px;
+  top:20px;
+  padding:6px 14px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:6px;
   cursor:pointer;
 }
 nav {
-  display:flex; justify-content:center; gap:12px; padding:20px;
+  display:flex;
+  gap:10px;
+  padding:15px;
+  justify-content:center;
 }
 nav button {
-  padding:10px 16px; border:none; border-radius:6px; background:var(--accent);
-  color:white; cursor:pointer;
+  background:var(--accent);
+  border:none;
+  color:white;
+  padding:10px 16px;
+  border-radius:6px;
+  cursor:pointer;
 }
-.page { display:none; max-width:500px; margin:auto; padding:20px; }
+
+.page {
+  display:none;
+  padding:20px;
+  max-width:500px;
+  margin:auto;
+}
 .page.active { display:block; }
+
 .card {
-  background:var(--card); border:1px solid var(--border); border-radius:10px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
   padding:20px;
 }
+
 input {
-  width:100%; padding:12px; border:1px solid var(--border); border-radius:6px;
-  margin-bottom:12px; background:var(--bg); color:var(--text);
+  width:100%;
+  padding:12px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  margin-bottom:10px;
+  background:var(--bg);
+  color:var(--text);
 }
+
 .btn-main {
-  width:100%; padding:12px; background:var(--accent); color:white;
-  border:none; border-radius:6px; cursor:pointer;
+  width:100%;
+  padding:12px;
+  background:var(--accent);
+  border:none;
+  border-radius:6px;
+  color:white;
+  font-size:16px;
+  cursor:pointer;
 }
-#qrcode { margin-top:20px; text-align:center; }
-pre {
-  padding:15px; background:var(--card); border:1px solid var(--border);
-  border-radius:8px; white-space:pre-wrap;
+
+#reader {
+  width:100%;
+  max-width:350px;
+  margin:auto;
+}
+
+#scanResult {
+  background:var(--card);
+  padding:15px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  white-space:pre-wrap;
 }
 </style>
 </head>
+
 <body>
+
 <header>
   QR Profile App
-  <button class="toggle-dark" onclick="toggleDarkMode()">Dark Mode</button>
+  <button class="toggle-dark" onclick="toggleDarkMode()">Dark</button>
 </header>
 
 <nav>
@@ -69,67 +131,90 @@ pre {
 <div id="createPage" class="page active">
   <div class="card">
     <h3>Create QR Code</h3>
+
     <input id="name" placeholder="Name">
-    <input id="mbti" placeholder="MBTI (e.g., INFP)">
+    <input id="mbti" placeholder="MBTI (e.g., INTP)">
     <input id="location" placeholder="Location">
+
     <button class="btn-main" onclick="generateQR()">Generate QR</button>
-    <div id="qrcode"></div>
+    <div id="qrcode" style="text-align:center; margin-top:20px;"></div>
   </div>
 </div>
 
 <!-- SCAN PAGE -->
 <div id="scanPage" class="page">
   <div class="card">
-    <h3>Scan QR</h3>
-    <div id="reader" style="width:100%;"></div>
+    <h3>Scan QR Code</h3>
+
+    <div id="reader"></div>
+
     <h4>Result:</h4>
     <pre id="scanResult">Waiting...</pre>
   </div>
 </div>
+
+<!-- Libraries -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://unpkg.com/html5-qrcode"></script>
+
+<!-- MOBILE-FRIENDLY SCANNER -->
+<script src="https://unpkg.com/html5-qrcode@2.3.8"></script>
 
 <script>
 function toggleDarkMode(){
-  const t=document.documentElement.getAttribute("data-theme");
-  document.documentElement.setAttribute("data-theme", t==="dark"?"light":"dark");
+  const cur=document.documentElement.getAttribute("data-theme");
+  document.documentElement.setAttribute("data-theme",cur==="dark"?"light":"dark");
 }
 
 function showPage(id){
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
   document.getElementById(id).classList.add("active");
-  if(id==="scanPage") startScanner();
+
+  if(id === "scanPage") startScanner();
 }
 
 function generateQR(){
-  const data={
+  const data = {
     name:document.getElementById("name").value,
     mbti:document.getElementById("mbti").value,
     location:document.getElementById("location").value
   };
-  document.getElementById("qrcode").innerHTML="";
+
+  document.getElementById("qrcode").innerHTML = "";
   new QRCode(document.getElementById("qrcode"), JSON.stringify(data));
 }
 
-let scanner=null;
+let scannerStarted = false;
+
 function startScanner(){
-  if(scanner) return;
+  if(scannerStarted) return;
+  scannerStarted = true;
 
-  scanner=new Html5Qrcode("reader");
+  const html5QrCode = new Html5Qrcode("reader");
 
-  Html5Qrcode.getCameras().then(devices=>{
-    scanner.start(
-      devices[0].id,
-      {fps:10, qrbox:250},
-      message=>{
-        try{
+  Html5Qrcode.getCameras().then(cameras => {
+    const camId = cameras.length > 1
+      ? cameras.find(c => c.label.toLowerCase().includes("back"))?.id || cameras[0].id
+      : cameras[0].id;
+
+    html5QrCode.start(
+      camId,
+      {
+        fps: 10,
+        qrbox: { width: 250, height: 250 }
+      },
+      qrText => {
+        try {
           document.getElementById("scanResult").textContent =
-            JSON.stringify(JSON.parse(message), null, 2);
-        }catch(e){
-          document.getElementById("scanResult").textContent = message;
+            JSON.stringify(JSON.parse(qrText), null, 2);
+        } catch {
+          document.getElementById("scanResult").textContent = qrText;
         }
-      }
+      },
+      error => {}
     );
+  }).catch(err => {
+    document.getElementById("scanResult").textContent =
+      "Camera error: " + err;
   });
 }
 </script>
