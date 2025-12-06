@@ -541,6 +541,7 @@
     let videoStream = null;
     let usingRear = true;
     let scanLoopId = null;
+    let lastScannedValue = null;
 
     // ============ DOM refs ============
     const screens = {
@@ -750,6 +751,7 @@
       }
       try {
         pillStatus.textContent = "Camera active";
+        lastScannedValue = null;
         const constraints = {
           video: {
             facingMode: usingRear ? { ideal: "environment" } : "user"
@@ -758,6 +760,16 @@
         };
         videoStream = await navigator.mediaDevices.getUserMedia(constraints);
         videoEl.srcObject = videoStream;
+
+        // Wait until video metadata is ready
+        await new Promise(resolve => {
+          if (videoEl.readyState >= 2) {
+            resolve();
+          } else {
+            videoEl.onloadedmetadata = () => resolve();
+          }
+        });
+
         await videoEl.play();
         showScreen("s3");
         startScanLoop();
@@ -788,16 +800,26 @@
 
       const loop = () => {
         if (!videoStream) return;
+
         if (videoEl.readyState === videoEl.HAVE_ENOUGH_DATA) {
-          scanCanvas.width = videoEl.videoWidth;
-          scanCanvas.height = videoEl.videoHeight;
-          ctx.drawImage(videoEl, 0, 0, scanCanvas.width, scanCanvas.height);
-          const imageData = ctx.getImageData(0, 0, scanCanvas.width, scanCanvas.height);
-          const code = jsQR(imageData.data, imageData.width, imageData.height, {
-            inversionAttempts: "dontInvert",
-          });
-          if (code && code.data) {
-            handleScannedData(code.data);
+          const vw = videoEl.videoWidth;
+          const vh = videoEl.videoHeight;
+          if (vw && vh) {
+            scanCanvas.width = vw;
+            scanCanvas.height = vh;
+            ctx.drawImage(videoEl, 0, 0, vw, vh);
+            const imageData = ctx.getImageData(0, 0, vw, vh);
+
+            const code = jsQR(imageData.data, imageData.width, imageData.height, {
+              inversionAttempts: "attemptBoth"
+            });
+
+            if (code && code.data) {
+              if (code.data !== lastScannedValue) {
+                lastScannedValue = code.data;
+                handleScannedData(code.data);
+              }
+            }
           }
         }
         scanLoopId = requestAnimationFrame(loop);
@@ -808,23 +830,37 @@
     function handleScannedData(dataStr) {
       try {
         const obj = JSON.parse(dataStr);
-        if (!obj.name && !obj.fullName) return;
+        if (!obj.name && !obj.fullName) {
+          scanStatus.textContent = "QR found, but data format is not supported.";
+          return;
+        }
+
+        const name = obj.name || obj.fullName;
+        const mbti = obj.mbti || obj.MBTI || "";
+        const location = obj.location || obj.where || obj.city || "";
+
         const existing = metList.find(
-          m => m.name === (obj.name || obj.fullName) &&
-               m.mbti === (obj.mbti || obj.MBTI) &&
-               m.location === (obj.location || obj.where || obj.city)
+          m => m.name === name && m.mbti === mbti && m.location === location
         );
+
         if (!existing) {
           metList.push({
-            name: obj.name || obj.fullName,
-            mbti: obj.mbti || obj.MBTI,
-            location: obj.location || obj.where || obj.city,
+            name,
+            mbti,
+            location,
             timestamp: Date.now(),
           });
           saveMetList();
           updateMetCount();
         }
-        scanStatus.textContent = "Scanned: " + (obj.name || obj.fullName || "New person");
+
+        scanStatus.textContent = "Scanned: " + name;
+        alert("Scanned and saved: " + name);
+
+        // After a successful scan: stop camera and show the list
+        stopScanner();
+        renderMetList();
+        showScreen("s4");
       } catch (e) {
         console.warn("Invalid QR data", e);
         scanStatus.textContent = "QR not recognized for this app.";
