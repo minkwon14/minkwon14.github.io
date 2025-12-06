@@ -210,7 +210,7 @@
       font-size: 0.8rem;
     }
 
-    /* Bigger QR box, centered */
+    /* QR box centered */
     .qr-box {
       margin-top: 4px;
       display: flex;
@@ -298,12 +298,6 @@
       font-weight: 700;
     }
 
-    .toggle-row button {
-      font-size: 0.75rem;
-      padding: 4px 8px;
-    }
-
-    /* Scanner view */
     #scanner-container {
       position: relative;
       overflow: hidden;
@@ -345,7 +339,6 @@
       opacity: 0.9;
     }
 
-    /* List of scanned contacts */
     #scan-list {
       max-height: 60vh;
       overflow-y: auto;
@@ -394,7 +387,6 @@
       opacity: 0.8;
     }
 
-    /* Detail (Screen 5) */
     .detail-list {
       display: flex;
       flex-direction: column;
@@ -439,7 +431,7 @@
         <button id="theme-toggle" class="btn btn-outline" type="button">자동</button>
       </div>
 
-      <!-- Screen 1: Profile setup -->
+      <!-- Screen 1 -->
       <section id="screen-1" class="screen active">
         <p class="subtle" id="intro-text">
           만나서 서로 스캔할 수 있는 나만의 QR 카드를 만들어 보세요.
@@ -454,7 +446,6 @@
           <label for="group" id="label-group">순 (Group)</label>
           <select id="group">
             <option value="" disabled selected>선택하세요</option>
-            <!-- 가나다 순 -->
             <option value="김수진">김수진</option>
             <option value="랠리스">랠리스</option>
             <option value="류다현">류다현</option>
@@ -487,7 +478,7 @@
         </button>
       </section>
 
-      <!-- Screen 2: QR + summary -->
+      <!-- Screen 2 -->
       <section id="screen-2" class="screen">
         <div class="chip-list" id="profile-summary"></div>
 
@@ -517,7 +508,7 @@
         </div>
       </section>
 
-      <!-- Screen 3: Scanner -->
+      <!-- Screen 3 -->
       <section id="screen-3" class="screen">
         <div id="scanner-container">
           <video id="video" playsinline></video>
@@ -540,7 +531,7 @@
         </div>
       </section>
 
-      <!-- Screen 4: List of scanned info -->
+      <!-- Screen 4 -->
       <section id="screen-4" class="screen">
         <div class="meta-row">
           <span class="subtle" id="met-list-title">지금까지 만난 사람</span>
@@ -557,7 +548,7 @@
         </div>
       </section>
 
-      <!-- Screen 5: Detail view -->
+      <!-- Screen 5 -->
       <section id="screen-5" class="screen">
         <div class="meta-row">
           <span class="subtle" id="detail-title">상세 정보</span>
@@ -601,29 +592,28 @@
   </div>
 
   <script>
-    // ============ Simple cookie helpers ============
+    // ---------- Cookies ----------
     function setCookie(name, value, days) {
       const d = new Date();
-      d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
-      const expires = "expires=" + d.toUTCString();
-      document.cookie = name + "=" + encodeURIComponent(value) + ";" + expires + ";path=/";
+      d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+      document.cookie = name + "=" + encodeURIComponent(value) +
+        ";expires=" + d.toUTCString() + ";path=/";
     }
 
     function getCookie(name) {
       const cname = name + "=";
-      const decodedCookie = decodeURIComponent(document.cookie);
-      const ca = decodedCookie.split(';');
-      for (let i = 0; i < ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0) === ' ') c = c.substring(1);
+      const decoded = decodeURIComponent(document.cookie);
+      const parts = decoded.split(";");
+      for (let c of parts) {
+        c = c.trim();
         if (c.indexOf(cname) === 0) {
-          return c.substring(cname.length, c.length);
+          return c.substring(cname.length);
         }
       }
       return "";
     }
 
-    // ============ State ============
+    // ---------- State ----------
     const profileCookieKey = "meet_profile";
     const metCookieKey = "meet_met_list";
     const themeCookieKey = "meet_theme";
@@ -631,17 +621,16 @@
 
     let profile = null;
     let metList = [];
-    let themeMode = "auto"; // auto | light | dark
-    let currentLang = "ko"; // ko | en
+    let themeMode = "auto";
+    let currentLang = "ko";
 
-    // Scanner state
     let videoStream = null;
     let usingRear = true;
     let scanLoopId = null;
     let lastScannedValue = null;
     let lastDecodeTime = 0;
 
-    // ============ i18n strings ============
+    // ---------- i18n ----------
     const STRINGS = {
       ko: {
         appTitle: "밋 트래커",
@@ -679,7 +668,6 @@
         scanStatusStopped: "스캐너가 종료되었습니다.",
         scanStatusFormatUnsupported: "QR은 인식했지만 이 앱에서 사용하는 형식이 아닙니다.",
         scanStatusMissingName: "QR은 인식했지만 이름이 없습니다.",
-        scanStatusNotApp: "이 앱에서 사용하는 QR 형식이 아닙니다.",
 
         flipCamera: "카메라 전환",
         doneScan: "완료",
@@ -742,7 +730,6 @@
         scanStatusStopped: "Scanner stopped.",
         scanStatusFormatUnsupported: "QR detected, but format is not supported by this app.",
         scanStatusMissingName: "QR detected, but name is missing.",
-        scanStatusNotApp: "This QR format is not used by this app.",
 
         flipCamera: "Flip camera",
         doneScan: "Done",
@@ -773,13 +760,10 @@
 
     function t(key, ...args) {
       const s = STRINGS[currentLang][key];
-      if (typeof s === "function") {
-        return s(...args);
-      }
-      return s ?? "";
+      return typeof s === "function" ? s(...args) : (s ?? "");
     }
 
-    // ============ DOM refs ============
+    // ---------- DOM refs ----------
     const screens = {
       s1: document.getElementById("screen-1"),
       s2: document.getElementById("screen-2"),
@@ -818,12 +802,12 @@
     const scanStatus = document.getElementById("scan-status");
     const flipCameraBtn = document.getElementById("flip-camera");
     const stopScanBtn = document.getElementById("stop-scan");
+    const openScannerBtn = document.getElementById("open-scanner");
 
     const metListTitleEl = document.getElementById("met-list-title");
     const clearMetBtn = document.getElementById("clear-met");
     const backToMainBtn = document.getElementById("back-to-main");
     const backToQrBtn = document.getElementById("back-to-qr");
-    const openScannerBtn = document.getElementById("open-scanner");
     const footerTextEl = document.getElementById("footer-text");
 
     const detailTitleEl = document.getElementById("detail-title");
@@ -844,37 +828,22 @@
     const videoEl = document.getElementById("video");
     const scanCanvas = document.getElementById("scan-canvas");
 
-    // ============ Screen helpers ============
+    // ---------- Helpers ----------
     function showScreen(name) {
       Object.values(screens).forEach(el => el.classList.remove("active"));
       if (screens[name]) screens[name].classList.add("active");
     }
 
-    // ============ Theme handling ============
     function applyTheme() {
       document.body.classList.remove("dark", "light");
-      if (themeMode === "dark") {
-        document.body.classList.add("dark");
-      } else if (themeMode === "light") {
-        document.body.classList.add("light");
-      }
+      if (themeMode === "dark") document.body.classList.add("dark");
+      else if (themeMode === "light") document.body.classList.add("light");
       themeToggleBtn.textContent =
         themeMode === "auto" ? t("themeAuto") :
         themeMode === "dark" ? t("themeDark") :
         t("themeLight");
     }
 
-    function toggleTheme() {
-      if (themeMode === "auto") themeMode = "dark";
-      else if (themeMode === "dark") themeMode = "light";
-      else themeMode = "auto";
-      setCookie(themeCookieKey, themeMode, 365);
-      applyTheme();
-    }
-
-    themeToggleBtn.addEventListener("click", toggleTheme);
-
-    // ============ Language handling ============
     function applyLanguage() {
       document.documentElement.lang = currentLang === "ko" ? "ko" : "en";
       document.title = t("appTitle");
@@ -912,7 +881,6 @@
       backToMainBtn.textContent = t("back");
       backToQrBtn.textContent = t("backToQR");
       backFromDetailBtn.textContent = t("back");
-
       footerTextEl.textContent = t("footer");
 
       detailTitleEl.textContent = t("detailTitle");
@@ -934,19 +902,19 @@
       renderMetList();
     }
 
-    langToggleBtn.addEventListener("click", toggleLanguage);
+    function toggleTheme() {
+      if (themeMode === "auto") themeMode = "dark";
+      else if (themeMode === "dark") themeMode = "light";
+      else themeMode = "auto";
+      setCookie(themeCookieKey, themeMode, 365);
+      applyTheme();
+    }
 
-    // ============ QR generation ============
-    // Encode as: Name|Group|MBTI|Location|Hobby
+    // ---------- QR ----------
     function updateQR() {
       if (!profile) return;
-      const name = profile.fullName || "";
-      const group = profile.group || "";
-      const mbti = profile.mbti || "";
-      const loc = profile.location || "";
-      const hobby = profile.hobby || "";
-      const data = `${name}|${group}|${mbti}|${loc}|${hobby}`;
-
+      const { fullName, group, mbti, location, hobby } = profile;
+      const data = `${fullName || ""}|${group || ""}|${mbti || ""}|${location || ""}|${hobby || ""}`;
       const qrContainer = document.getElementById("qrcode");
       qrContainer.innerHTML = "";
       new QRCode(qrContainer, {
@@ -974,6 +942,7 @@
         { label: labelCity, value: profile.location },
         { label: labelHobby, value: profile.hobby },
       ];
+
       items.forEach(i => {
         if (!i.value) return;
         const chip = document.createElement("div");
@@ -989,8 +958,9 @@
       });
     }
 
+    // ---------- Met list ----------
     function updateMetCount() {
-      metCount.textContent = metList.length.toString();
+      metCount.textContent = String(metList.length);
     }
 
     function renderMetList() {
@@ -1005,7 +975,6 @@
 
       const labelGroup = currentLang === "ko" ? "순" : "Group";
 
-      // sort by latest
       const sorted = metList
         .map((item, idx) => ({ item, idx }))
         .sort((a, b) => b.item.timestamp - a.item.timestamp);
@@ -1019,6 +988,7 @@
         header.className = "scan-row-header";
         const nameEl = document.createElement("div");
         nameEl.textContent = item.name || (currentLang === "ko" ? "이름 없음" : "Unknown");
+
         const timeEl = document.createElement("div");
         const dt = new Date(item.timestamp);
         timeEl.textContent = dt.toLocaleString();
@@ -1040,7 +1010,7 @@
       });
     }
 
-    // ============ Profile handling ============
+    // ---------- Profile handling ----------
     function saveProfileFromInputs() {
       const fullName = fullNameInput.value.trim();
       const group = groupSelect.value.trim();
@@ -1058,78 +1028,11 @@
       return true;
     }
 
-    document.getElementById("save-profile").addEventListener("click", () => {
-      if (!saveProfileFromInputs()) return;
-      pillStatus.textContent = t("pillSaved");
-      updateProfileSummary();
-      updateQR();
-      showScreen("s2");
-    });
-
-    editProfileBtn.addEventListener("click", () => {
-      if (profile) {
-        fullNameInput.value = profile.fullName || "";
-        groupSelect.value = profile.group || "";
-        mbtiInput.value = profile.mbti || "";
-        locationInput.value = profile.location || "";
-        hobbyInput.value = profile.hobby || "";
-      }
-      showScreen("s1");
-    });
-
-    // ============ Met list handling ============
     function saveMetList() {
       setCookie(metCookieKey, JSON.stringify(metList), 365);
     }
 
-    clearMetBtn.addEventListener("click", () => {
-      if (!metList.length) return;
-      if (!confirm(t("alertClearConfirm"))) return;
-      metList = [];
-      saveMetList();
-      updateMetCount();
-      renderMetList();
-    });
-
-    // Navigation buttons for screens 2, 4, 5
-    document.getElementById("open-met-list").addEventListener("click", () => {
-      renderMetList();
-      showScreen("s4");
-    });
-
-    backToMainBtn.addEventListener("click", () => {
-      showScreen("s2");
-    });
-
-    backToQrBtn.addEventListener("click", () => {
-      showScreen("s2");
-    });
-
-    backFromDetailBtn.addEventListener("click", () => {
-      showScreen("s4");
-    });
-
-    // Click on row -> Screen 5
-    scanListEl.addEventListener("click", (e) => {
-      const row = e.target.closest(".scan-row");
-      if (!row) return;
-      const idx = parseInt(row.dataset.index, 10);
-      const person = metList[idx];
-      if (!person) return;
-
-      detailName.textContent = person.name || "";
-      detailGroup.textContent = person.group || "";
-      detailMbti.textContent = person.mbti || "";
-      detailLocation.textContent = person.location || "";
-      detailHobby.textContent = person.hobby || "";
-
-      const dt = person.timestamp ? new Date(person.timestamp) : null;
-      detailMetTime.textContent = dt ? dt.toLocaleString() : "";
-
-      showScreen("s5");
-    });
-
-    // ============ Scanner ============
+    // ---------- Scanner ----------
     async function startScanner() {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         alert(t("alertCameraUnsupported"));
@@ -1152,11 +1055,8 @@
         videoEl.srcObject = videoStream;
 
         await new Promise(resolve => {
-          if (videoEl.readyState >= 2) {
-            resolve();
-          } else {
-            videoEl.onloadedmetadata = () => resolve();
-          }
+          if (videoEl.readyState >= 2) resolve();
+          else videoEl.onloadedmetadata = () => resolve();
         });
 
         await videoEl.play();
@@ -1229,8 +1129,6 @@
       loop();
     }
 
-    // Decode format: Name|Group|MBTI|Location|Hobby
-    // Also supports older Name|MBTI|Location format
     function handleScannedData(dataStr) {
       const parts = dataStr.split("|");
       if (parts.length < 1) {
@@ -1245,13 +1143,11 @@
       let hobby = "";
 
       if (parts.length >= 5) {
-        // New format
         group = (parts[1] || "").trim();
         mbti = (parts[2] || "").trim();
         location = (parts[3] || "").trim();
         hobby = (parts[4] || "").trim();
       } else if (parts.length >= 3) {
-        // Old format: name|mbti|location
         mbti = (parts[1] || "").trim();
         location = (parts[2] || "").trim();
       }
@@ -1284,29 +1180,85 @@
       }
 
       alert(t("alertScanned", name));
-
       stopScanner();
       renderMetList();
       showScreen("s4");
     }
 
-    openScannerBtn.addEventListener("click", startScanner);
-    stopScanBtn.addEventListener("click", stopScanner);
+    // ---------- Events ----------
+    function wireEvents() {
+      langToggleBtn.addEventListener("click", toggleLanguage);
+      themeToggleBtn.addEventListener("click", toggleTheme);
 
-    flipCameraBtn.addEventListener("click", async () => {
-      usingRear = !usingRear;
-      stopScanner();
-      await startScanner();
-    });
+      saveProfileBtn.addEventListener("click", () => {
+        if (!saveProfileFromInputs()) return;
+        pillStatus.textContent = t("pillSaved");
+        updateProfileSummary();
+        updateQR();
+        showScreen("s2");
+      });
 
-    // ============ Initialization ============
+      editProfileBtn.addEventListener("click", () => {
+        if (profile) {
+          fullNameInput.value = profile.fullName || "";
+          groupSelect.value = profile.group || "";
+          mbtiInput.value = profile.mbti || "";
+          locationInput.value = profile.location || "";
+          hobbyInput.value = profile.hobby || "";
+        }
+        showScreen("s1");
+      });
+
+      clearMetBtn.addEventListener("click", () => {
+        if (!metList.length) return;
+        if (!confirm(t("alertClearConfirm"))) return;
+        metList = [];
+        saveMetList();
+        updateMetCount();
+        renderMetList();
+      });
+
+      document.getElementById("open-met-list").addEventListener("click", () => {
+        renderMetList();
+        showScreen("s4");
+      });
+
+      backToMainBtn.addEventListener("click", () => showScreen("s2"));
+      backToQrBtn.addEventListener("click", () => showScreen("s2"));
+      backFromDetailBtn.addEventListener("click", () => showScreen("s4"));
+
+      openScannerBtn.addEventListener("click", startScanner);
+      stopScanBtn.addEventListener("click", stopScanner);
+      flipCameraBtn.addEventListener("click", async () => {
+        usingRear = !usingRear;
+        stopScanner();
+        await startScanner();
+      });
+
+      scanListEl.addEventListener("click", e => {
+        const row = e.target.closest(".scan-row");
+        if (!row) return;
+        const idx = parseInt(row.dataset.index, 10);
+        const person = metList[idx];
+        if (!person) return;
+
+        detailName.textContent = person.name || "";
+        detailGroup.textContent = person.group || "";
+        detailMbti.textContent = person.mbti || "";
+        detailLocation.textContent = person.location || "";
+        detailHobby.textContent = person.hobby || "";
+        detailMetTime.textContent = person.timestamp
+          ? new Date(person.timestamp).toLocaleString()
+          : "";
+
+        showScreen("s5");
+      });
+    }
+
+    // ---------- Init ----------
     function loadCookies() {
       const storedLang = getCookie(langCookieKey);
-      if (storedLang === "ko" || storedLang === "en") {
-        currentLang = storedLang;
-      } else {
-        currentLang = "ko";
-      }
+      if (storedLang === "ko" || storedLang === "en") currentLang = storedLang;
 
       const storedTheme = getCookie(themeCookieKey);
       if (storedTheme === "auto" || storedTheme === "dark" || storedTheme === "light") {
@@ -1315,25 +1267,19 @@
 
       const storedProfile = getCookie(profileCookieKey);
       if (storedProfile) {
-        try {
-          profile = JSON.parse(storedProfile);
-        } catch (e) {
-          profile = null;
-        }
+        try { profile = JSON.parse(storedProfile); } catch { profile = null; }
       }
+
       const storedMet = getCookie(metCookieKey);
       if (storedMet) {
-        try {
-          metList = JSON.parse(storedMet) || [];
-        } catch (e) {
-          metList = [];
-        }
+        try { metList = JSON.parse(storedMet) || []; } catch { metList = []; }
       }
     }
 
     function initUI() {
       loadCookies();
       applyLanguage();
+      wireEvents();
 
       if (profile) {
         fullNameInput.value = profile.fullName || "";
