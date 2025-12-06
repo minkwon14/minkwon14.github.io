@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -223,8 +222,8 @@
 
     .qr-box img,
     .qr-box canvas {
-      max-width: 280px;   /* bigger */
-      width: 80%;         /* bigger on mobile */
+      max-width: 300px;
+      width: 80%;
       height: auto;
     }
 
@@ -328,7 +327,6 @@
       justify-content: center;
     }
 
-    /* Slightly bigger scan frame */
     #scan-overlay-inner {
       width: 80%;
       max-width: 300px;
@@ -476,7 +474,7 @@
         </div>
 
         <div class="meta-row">
-          <span id="scan-status">Point the QR into the frame and hold still…</span>
+          <span id="scan-status">Align the QR inside the square and hold still…</span>
           <div style="display:flex;gap:6px;">
             <button id="flip-camera" class="btn btn-outline" type="button">
               Flip camera
@@ -596,19 +594,20 @@
     themeToggleBtn.addEventListener("click", toggleTheme);
 
     // ============ QR generation ============
+    // Encode as: FullName|MBTI|Location  (simple string)
     function updateQR() {
       if (!profile) return;
-      const data = JSON.stringify({
-        name: profile.fullName,
-        mbti: profile.mbti,
-        location: profile.location,
-      });
+      const name = profile.fullName || "";
+      const mbti = profile.mbti || "";
+      const loc = profile.location || "";
+      const data = `${name}|${mbti}|${loc}`;
+
       const qrContainer = document.getElementById("qrcode");
       qrContainer.innerHTML = "";
       new QRCode(qrContainer, {
         text: data,
-        width: 280,  // a bit bigger source size as well
-        height: 280,
+        width: 300,
+        height: 300,
         correctLevel: QRCode.CorrectLevel.L
       });
     }
@@ -757,12 +756,12 @@
       try {
         pillStatus.textContent = "Camera active";
         lastScannedValue = null;
-        scanStatus.textContent = "Point the QR into the frame and hold still…";
+        scanStatus.textContent = "Align the QR inside the square and hold still…";
 
         const constraints = {
           video: {
             facingMode: usingRear ? { ideal: "environment" } : "user",
-            width: { ideal: 1280 },      // ask for higher resolution
+            width: { ideal: 1280 },
             height: { ideal: 720 }
           },
           audio: false
@@ -770,7 +769,6 @@
         videoStream = await navigator.mediaDevices.getUserMedia(constraints);
         videoEl.srcObject = videoStream;
 
-        // Wait until video metadata is ready
         await new Promise(resolve => {
           if (videoEl.readyState >= 2) {
             resolve();
@@ -826,9 +824,14 @@
             scanCanvas.height = vh;
             ctx.drawImage(videoEl, 0, 0, vw, vh);
 
-            const imageData = ctx.getImageData(0, 0, vw, vh);
+            // Crop to center square (~70% of min dimension)
+            const size = Math.floor(Math.min(vw, vh) * 0.7);
+            const x = Math.floor((vw - size) / 2);
+            const y = Math.floor((vh - size) / 2);
+            const imageData = ctx.getImageData(x, y, size, size);
+
             const code = jsQR(imageData.data, imageData.width, imageData.height, {
-              inversionAttempts: "attemptBoth"
+              inversionAttempts: "dontInvert"
             });
 
             if (code && code.data) {
@@ -837,7 +840,7 @@
                 handleScannedData(code.data);
               }
             } else {
-              scanStatus.textContent = "Trying to read the QR… move closer or hold still.";
+              scanStatus.textContent = "Trying to read the QR… move a bit closer or hold still.";
             }
           }
         }
@@ -846,44 +849,44 @@
       loop();
     }
 
+    // Decode our simple format: "Full Name|MBTI|Location"
     function handleScannedData(dataStr) {
-      try {
-        const obj = JSON.parse(dataStr);
-        if (!obj.name && !obj.fullName) {
-          scanStatus.textContent = "QR found, but data format is not supported.";
-          return;
-        }
-
-        const name = obj.name || obj.fullName;
-        const mbti = obj.mbti || obj.MBTI || "";
-        const location = obj.location || obj.where || obj.city || "";
-
-        const existing = metList.find(
-          m => m.name === name && m.mbti === mbti && m.location === location
-        );
-
-        if (!existing) {
-          metList.push({
-            name,
-            mbti,
-            location,
-            timestamp: Date.now(),
-          });
-          saveMetList();
-          updateMetCount();
-        }
-
-        scanStatus.textContent = "Scanned: " + name;
-        alert("Scanned and saved: " + name);
-
-        // After a successful scan: stop camera and show the list
-        stopScanner();
-        renderMetList();
-        showScreen("s4");
-      } catch (e) {
-        console.warn("Invalid QR data", e);
-        scanStatus.textContent = "QR not recognized for this app.";
+      const parts = dataStr.split("|");
+      if (parts.length < 1) {
+        scanStatus.textContent = "QR found, but data format is not supported.";
+        return;
       }
+      const name = (parts[0] || "").trim();
+      const mbti = (parts[1] || "").trim();
+      const location = (parts[2] || "").trim();
+
+      if (!name) {
+        scanStatus.textContent = "QR found, but name is missing.";
+        return;
+      }
+
+      const existing = metList.find(
+        m => m.name === name && m.mbti === mbti && m.location === location
+      );
+
+      if (!existing) {
+        metList.push({
+          name,
+          mbti,
+          location,
+          timestamp: Date.now(),
+        });
+        saveMetList();
+        updateMetCount();
+      }
+
+      scanStatus.textContent = "Scanned: " + name;
+      alert("Scanned and saved: " + name);
+
+      // After a successful scan: stop camera and show the list
+      stopScanner();
+      renderMetList();
+      showScreen("s4");
     }
 
     document.getElementById("open-scanner").addEventListener("click", startScanner);
