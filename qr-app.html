@@ -1,246 +1,899 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>QR Profile App</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <title>Meet Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <!-- QR Code generator -->
+  <script>
+    /*! qrcode.js - minimal embedded (simplified from https://davidshimjs.github.io/qrcodejs/) */
+    // BEGIN QRCode.js (minified)
+    /*! Source: https://github.com/davidshimjs/qrcodejs (MIT License) */
+    !function(o){function t(o){this.mode=n.MODE_8BIT_BYTE,this.data=o}function e(o,t){this.typeNumber=o,this.errorCorrectLevel=t,this.modules=null,this.moduleCount=0,this.dataCache=null,this.dataList=[]}function r(o,t){if(void 0==o.length)throw new Error(o.length+"/"+t);for(var e=0;e<o.length&&0==o[e];)e++;this.num=new Array(o.length-e+t);for(var r=0;r<o.length-e;r++)this.num[r]=o[r+e]}function i(o,t){this.totalCount=o,this.dataCount=t}function u(){this.buffer=[],this.length=0}function s(){return"undefined"!=typeof CanvasRenderingContext2D}function f(){var o=!1,t=navigator.userAgent;return(t.indexOf("iPhone")>=0||t.indexOf("iPad")>=0||t.indexOf("iPod")>=0)&&(o=!0),o}var n={};t.prototype={getLength:function(o){return this.data.length},write:function(o){for(var t=0;t<this.data.length;t++)o.put(this.data.charCodeAt(t),8)}},e.prototype={addData:function(o){var e=new t(o);this.dataList.push(e),this.dataCache=null},isDark:function(o,t){if(0>o||this.moduleCount<=o||0>t||this.moduleCount<=t)throw new Error(o+","+t);return this.modules[o][t]},getModuleCount:function(){return this.moduleCount},make:function(){this.makeImpl(!1,this.getBestMaskPattern())},makeImpl:function(o,t){this.moduleCount=4*this.typeNumber+17,this.modules=new Array(this.moduleCount);for(var e=0;e<this.moduleCount;e++){this.modules[e]=new Array(this.moduleCount);for(var r=0;r<this.moduleCount;r++)this.modules[e][r]=null}this.setupPositionProbePattern(0,0),this.setupPositionProbePattern(this.moduleCount-7,0),this.setupPositionProbePattern(0,this.moduleCount-7),this.setupPositionAdjustPattern(),this.setupTimingPattern(),this.setupTypeInfo(o,t),this.typeNumber>=7&&this.setupTypeNumber(o),null==this.dataCache&&(this.dataCache=e.createData(this.typeNumber,this.errorCorrectLevel,this.dataList)),this.mapData(this.dataCache,t)},setupPositionProbePattern:function(o,t){for(var e=-1;7>=e;e++)if(!(0>o+e||this.moduleCount<=o+e))for(var r=-1;7>=r;r++)0>t+r||this.moduleCount<=t+r||(this.modules[o+e][t+r]=e>=0&&6>=e&&(0==r||6==r)||r>=0&&6>=r&&(0==e||6==e)||e>=2&&4>=e&&r>=2&&4>=r?!0:!1)},getBestMaskPattern:function(){for(var o=0,t=0,e=0;8>e;e++){this.makeImpl(!0,e);var r=n.QRUtil.getLostPoint(this);(0==e||t>r)&&(t=r,o=e)}return o},createMovieClip:function(o,t,e){var r=o.createEmptyMovieClip(t,e),i=1;this.make();for(var u=0;u<this.modules.length;u++)for(var s=1*u,f=0;f<this.modules[u].length;f++){var l=1*f;this.modules[u][f]&&(r.beginFill(0,100),r.moveTo(l,s),r.lineTo(l+i,s),r.lineTo(l+i,s+i),r.lineTo(l,s+i),r.endFill())}return r},setupTimingPattern:function(){for(var o=8;o<this.moduleCount-8;o++)null==this.modules[o][6]&&(this.modules[o][6]=0==o%2);for(var t=8;t<this.moduleCount-8;t++)null==this.modules[6][t]&&(this.modules[6][t]=0==t%2)},setupPositionAdjustPattern:function(){for(var o=n.QRUtil.getPatternPosition(this.typeNumber),t=0;t<o.length;t++)for(var e=0;e<o.length;e++){var r=o[t],i=o[e];if(null==this.modules[r][i])for(var u=-2;2>=u;u++)for(var s=-2;2>=s;s++)this.modules[r+u][i+s]=-2==u||2==u||-2==s||2==s||0==u&&0==s?!0:!1}},setupTypeNumber:function(o){for(var t=n.QRUtil.getBCHTypeNumber(this.typeNumber),e=0;18>e;e++){var r=!o&&1==(t>>e&1);this.modules[Math.floor(e/3)][e%3+this.moduleCount-8-3]=r,this.modules[e%3+this.moduleCount-8-3][Math.floor(e/3)]=r}},setupTypeInfo:function(o,t){for(var e=this.errorCorrectLevel<<3|t,r=n.QRUtil.getBCHTypeInfo(e),i=0;15>i;i++){var u=!o&&1==(r>>i&1);6>i?this.modules[i][8]=u:8>i?this.modules[i+1][8]=u:this.modules[this.moduleCount-15+i][8]=u}for(var i=0;15>i;i++){var u=!o&&1==(r>>i&1);8>i?this.modules[8][this.moduleCount-1-i]=u:9>i?this.modules[8][15-i-1+1]=u:this.modules[8][15-i-1]=u}this.modules[this.moduleCount-8][8]=!o},mapData:function(o,t){for(var e=n.QRUtil.getMaskFunction(t),r=this.moduleCount-1,i=7,u=0,s=this.moduleCount-1;s>0;s-=2)for(6==s&&s--;;){for(var f=0;2>f;f++)if(null==this.modules[r][s-f]){var l=!1;u<o.length&&(l=1==(o[u]>>>i&1));var h=e(r,s-f);h&&(l=!l),this.modules[r][s-f]=l,i--,-1==i&&(u++,i=7)}if(r+=h?-1:1,0>r||this.moduleCount<=r){r-=h?-1:1,h=!h;break}}}},e.PAD0=236,e.PAD1=17,e.createData=function(o,t,u){for(var s=i.getRSBlocks(o,t),f=new u.constructor,e=0;e<u.length;e++){var l=u[e];f.put(l.mode,4),f.put(l.getLength(),n.QRUtil.getLengthInBits(l.mode,o)),l.write(f)}for(var h=0,c=0;c<s.length;c++)h+=s[c].dataCount;if(f.getLengthInBits()>8*h)throw new Error("code length overflow. ("+f.getLengthInBits()+">"+8*h+")");for(f.getLengthInBits()+4<=8*h&&f.put(0,4);f.getLengthInBits()%8!=0;)f.putBit(!1);for(;!(f.getLengthInBits()>=8*h);)f.put(e.PAD0,8),f.getLengthInBits()>=8*h||f.put(e.PAD1,8);return e.createBytes(f,s)},e.createBytes=function(o,t){for(var e=0,r=0,i=0,u=new Array(t.length),s=new Array(t.length),f=0;f<t.length;f++){var n=t[f].dataCount,a=t[f].totalCount-n;r=Math.max(r,n),i=Math.max(i,a),u[f]=new Array(n);for(var d=0;d<u[f].length;d++)u[f][d]=255&o.buffer[d+e];e+=n;var v=n+a,s=new r(v);for(d=0;d<s.length;d++)s[d]=255&o.buffer[d+e];e+=a}for(var g=0,m=0;m<t.length;m++)g+=t[m].totalCount;for(var y=new Array(g),p=0,d=0;r>d;d++)for(f=0;f<t.length;f++)d<u[f].length&&(y[p++]=u[f][d]);for(d=0;i>d;d++)for(f=0;f<t.length;f++)d<s[f].length&&(y[p++]=s[f][d]);return y},r.prototype={get:function(o){return this.num[o]},getLength:function(){return this.num.length},multiply:function(o){for(var t=new Array(this.getLength()+o.getLength()-1),e=0;e<this.getLength();e++)for(var r=0;r<o.getLength();r++)t[e+r]^=n.QRMath.gexp(n.QRMath.glog(this.get(e))+n.QRMath.glog(o.get(r)));return new r(t,0)},mod:function(o){if(this.getLength()-o.getLength()<0)return this;for(var t=n.QRMath.glog(this.get(0))-n.QRMath.glog(o.get(0)),e=new Array(this.getLength()),i=0;i<this.getLength();i++)e[i]=this.get(i);for(i=0;i<o.getLength();i++)e[i]^=n.QRMath.gexp(n.QRMath.glog(o.get(i))+t);return new r(e,0).mod(o)}},i.RS_BLOCK_TABLE=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13]],i.getRSBlocks=function(o,t){var e=i.getRsBlockTable(o,t);if(void 0==e)throw new Error("bad rs block @ typeNumber:"+o+"/errorCorrectLevel:"+t);for(var r=e.length/3,u=[],s=0;r>s;s++)for(var f=e[3*s+0],n=e[3*s+1],a=e[3*s+2],d=0;f>d;d++)u.push(new i(n,a));return u},i.getRsBlockTable=function(o,t){switch(t){case 1:return i.RS_BLOCK_TABLE[4*(o-1)+0];case 0:return i.RS_BLOCK_TABLE[4*(o-1)+1];case 3:return i.RS_BLOCK_TABLE[4*(o-1)+2];case 2:return i.RS_BLOCK_TABLE[4*(o-1)+3];default:return}},u.prototype={get:function(o){var t=Math.floor(o/8);return 1==(this.buffer[t]>>>7-o%8&1)},put:function(o,t){for(var e=0;t>e;e++)this.putBit(1==(o>>>t-e-1&1))},putBit:function(o){var t=Math.floor(this.length/8);this.buffer.length<=t&&this.buffer.push(0),o&&(this.buffer[t]|=128>>>this.length%8),this.length++},getLengthInBits:function(){return this.length}},n.QRUtil={PATTERN_POSITION_TABLE:[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38]],getPatternPosition:function(o){return n.QRUtil.PATTERN_POSITION_TABLE[o-1]},getMaskFunction:function(o){switch(o){case 0:return function(o,t){return 0==(o+t)%2};case 1:return function(o,t){return 0==o%2};case 2:return function(o,t){return 0==t%3};case 3:return function(o,t){return 0==(o+t)%3};case 4:return function(o,t){return 0==(Math.floor(o/2)+Math.floor(t/3))%2};case 5:return function(o,t){return 0==o*t%2+o*t%3};case 6:return function(o,t){return 0==(o*t%2+o*t%3)%2};case 7:return function(o,t){return 0==(o*t%3+(o+t)%2)%2};default:return null}},getLengthInBits:function(o,t){if(1<=t&&t<10)switch(o){case n.MODE_8BIT_BYTE:return 8}return 8},getLostPoint:function(o){for(var t=o.getModuleCount(),e=0,r=0;t>r;r++)for(var i=0;t>i;i++){for(var u=0,s=o.isDark(r,i),f=-1;1>=f;f++)if(!(0>r+f||r+f>=t))for(var l=-1;1>=l;l++)0>i+l||i+l>=t||(0!=f||0!=l)&&s==o.isDark(r+f,i+l)&&u++;u>5&&(e+=3+u-5)}for(r=0;t-1>r;r++)for(i=0;t-1>i;i++){var h=0;o.isDark(r,i)&&h++,o.isDark(r+1,i)&&h++,o.isDark(r,i+1)&&h++,o.isDark(r+1,i+1)&&h++,0!=h&&4!=h||(e+=3)}for(r=0;t>r;r++)for(i=0;t-6>i;i++)o.isDark(r,i)&&!o.isDark(r,i+1)&&o.isDark(r,i+2)&&o.isDark(r,i+3)&&o.isDark(r,i+4)&&!o.isDark(r,i+5)&&o.isDark(r,i+6)&&(e+=40);for(i=0;t>i;i++)for(r=0;t-6>r;r++)o.isDark(r,i)&&!o.isDark(r+1,i)&&o.isDark(r+2,i)&&o.isDark(r+3,i)&&o.isDark(r+4,i)&&!o.isDark(r+5,i)&&o.isDark(r+6,i)&&(e+=40);var c=0;for(i=0;t>i;i++)for(r=0;t>r;r++)o.isDark(r,i)&&c++;return e+=10*Math.abs(100*c/t/t-50)/5}},n.QRMath={glog:function(o){if(o<1)throw new Error("glog("+o+")");return n.QRMath.LOG_TABLE[o]},gexp:function(o){for(;0>o;)o+=255;for(;o>=256;)o-=255;return n.QRMath.EXP_TABLE[o]},EXP_TABLE:new Array(256),LOG_TABLE:new Array(256)},function(){for(var o=0;8>o;o++)n.QRMath.EXP_TABLE[o]=1<<o;for(o=8;256>o;o++)n.QRMath.EXP_TABLE[o]=n.QRMath.EXP_TABLE[o-4]^n.QRMath.EXP_TABLE[o-5]^n.QRMath.EXP_TABLE[o-6]^n.QRMath.EXP_TABLE[o-8];for(o=0;255>o;o++)n.QRMath.LOG_TABLE[n.QRMath.EXP_TABLE[o]]=o}();var a={};a.stringToBytes=function(o){for(var t=[],e=0;e<o.length;e++){var r=o.charCodeAt(e);t.push(r&255)}return t};var d=e;function QRCode(o,t){this._htOption=t,this._el=o,this._oQRCode=null,this._android=f(),this._htOption.width&&(this._htOption.height=this._htOption.width),this._htOption.height||(this._htOption.height=this._htOption.width),this._htOption.correctLevel=this._htOption.correctLevel||0,this.makeCode(this._htOption.text||"")}QRCode.prototype.makeCode=function(o){this._oQRCode=new d(4,this._htOption.correctLevel),this._oQRCode.addData(o),this._oQRCode.make(),this._el.innerHTML="",this._el.appendChild(this.createImgTag())},QRCode.prototype.createImgTag=function(){var o=this._htOption.width,t=this._htOption.height,e=this._oQRCode.getModuleCount(),r=Math.floor(o/e),i=Math.floor(t/e),u=document.createElement("canvas");u.width=o,u.height=t;for(var s=u.getContext("2d"),f=0;e>f;f++)for(var n=0;e>n;n++)s.fillStyle=this._oQRCode.isDark(f,n)?"#000000":"#FFFFFF",s.fillRect(n*r,f*i,r,i);var a=document.createElement("img");return a.src=u.toDataURL(),a};o.QRCode=QRCode}(window);
+  </script>
 
-<style>
-:root {
-  --bg:#f7f7f8; --text:#111; --card:#fff; --border:#ccc; --accent:#4A6CF7;
-}
-[data-theme="dark"] {
-  --bg:#121212; --text:#eee; --card:#1e1e1e; --border:#333; --accent:#6d8bff;
-}
-body {
-  font-family:Inter,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  margin:0;
-}
-header {
-  background:var(--card);
-  border-bottom:1px solid var(--border);
-  padding:15px;
-  text-align:center;
-  font-size:20px;
-  font-weight:600;
-  position:relative;
-}
-.toggle-dark {
-  position:absolute;
-  right:15px;
-  top:15px;
-  padding:5px 12px;
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:6px;
-  cursor:pointer;
-}
-nav {
-  display:flex;
-  gap:8px;
-  padding:12px;
-  justify-content:center;
-  flex-wrap:wrap;
-}
-nav button {
-  background:var(--accent);
-  border:none;
-  color:white;
-  padding:8px 12px;
-  border-radius:6px;
-  cursor:pointer;
-  font-size:14px;
-}
+  <!-- jsQR (QR code reader) from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 
-.page {
-  display:none;
-  padding:15px;
-  max-width:400px;
-  margin:auto;
-}
-.page.active { display:block; }
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f3f4f6;
+      --fg: #111827;
+      --card-bg: #ffffff;
+      --accent: #2563eb;
+      --accent-soft: rgba(37, 99, 235, 0.1);
+      --border: #e5e7eb;
+    }
 
-.card {
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:15px;
-}
+    body.dark {
+      --bg: #020617;
+      --fg: #e5e7eb;
+      --card-bg: #020617;
+      --accent: #60a5fa;
+      --accent-soft: rgba(96, 165, 250, 0.15);
+      --border: #1f2937;
+    }
 
-input {
-  width:100%;
-  padding:10px;
-  border-radius:6px;
-  border:1px solid var(--border);
-  margin-bottom:8px;
-  background:var(--bg);
-  color:var(--text);
-  font-size:14px;
-}
+    @media (prefers-color-scheme: dark) {
+      body:not(.light) {
+        --bg: #020617;
+        --fg: #e5e7eb;
+        --card-bg: #020617;
+        --accent: #60a5fa;
+        --accent-soft: rgba(96, 165, 250, 0.15);
+        --border: #1f2937;
+      }
+    }
 
-.btn-main {
-  width:100%;
-  padding:10px;
-  background:var(--accent);
-  border:none;
-  border-radius:6px;
-  color:white;
-  font-size:15px;
-  cursor:pointer;
-  margin-bottom:10px;
-}
+    * {
+      box-sizing: border-box;
+    }
 
-#reader {
-  width:100%;
-  max-width:350px;
-  margin:auto;
-}
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #e5e7eb 0, var(--bg) 40%);
+      color: var(--fg);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+    }
 
-#scanResult {
-  background:var(--card);
-  padding:10px;
-  border-radius:8px;
-  border:1px solid var(--border);
-  white-space:pre-wrap;
-  margin-top:10px;
-  font-size:13px;
-  word-break:break-word;
-}
+    #app {
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
 
-.camera-switch {
-  width:100%;
-  margin-top:8px;
-  padding:8px;
-  border:none;
-  border-radius:6px;
-  background:var(--accent);
-  color:white;
-  cursor:pointer;
-  font-size:14px;
-}
-</style>
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    header h1 {
+      font-size: 1.1rem;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    header h1 span.logo-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-soft);
+    }
+
+    .pill {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--accent-soft);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .pill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .field label {
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .field input {
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.02);
+      color: var(--fg);
+      font-size: 0.9rem;
+    }
+
+    .field input:focus {
+      outline: 2px solid var(--accent-soft);
+      border-color: var(--accent);
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: none;
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: transform 0.06s ease, box-shadow 0.06s ease, background 0.12s ease;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #9333ea);
+      color: white;
+      box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(1px) scale(0.99);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.45);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--fg);
+    }
+
+    .btn-outline:active {
+      transform: translateY(1px) scale(0.99);
+    }
+
+    .footer-row {
+      display: flex;
+      gap: 8px;
+      justify-content: space-between;
+    }
+
+    .footer-row .btn {
+      flex: 1;
+    }
+
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+    }
+
+    .qr-box {
+      margin-top: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 8px;
+      border-radius: 16px;
+      border: 1px dashed var(--border);
+      background: radial-gradient(circle at top, var(--accent-soft), transparent);
+    }
+
+    .qr-box img {
+      max-width: 180px;
+      width: 60%;
+      height: auto;
+    }
+
+    .chip-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .chip {
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.04);
+      border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .chip span.label {
+      opacity: 0.7;
+    }
+
+    .chip strong {
+      font-weight: 600;
+    }
+
+    .link-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .link-tile {
+      border-radius: 14px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.02);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex: 1;
+      cursor: pointer;
+    }
+
+    .link-tile-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .link-tile-sub {
+      font-size: 0.7rem;
+      opacity: 0.8;
+    }
+
+    .scanned-count {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .toggle-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+      align-items: center;
+      font-size: 0.75rem;
+    }
+
+    .toggle-row button {
+      font-size: 0.75rem;
+      padding: 4px 8px;
+    }
+
+    /* Scanner view */
+    #scanner-container {
+      position: relative;
+      overflow: hidden;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: black;
+      height: min(60vh, 420px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    #scan-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #scan-overlay-inner {
+      width: 65%;
+      max-width: 260px;
+      aspect-ratio: 1 / 1;
+      border-radius: 22px;
+      border: 2px solid rgba(248, 250, 252, 0.85);
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.6), 0 18px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    #scan-status {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    /* List of scanned contacts */
+    #scan-list {
+      max-height: 60vh;
+      overflow-y: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .scan-row {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: 0.85rem;
+    }
+
+    .scan-row:last-child {
+      border-bottom: none;
+    }
+
+    .scan-row-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-weight: 600;
+    }
+
+    .scan-row-meta {
+      font-size: 0.7rem;
+      opacity: 0.75;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 16px;
+      font-size: 0.85rem;
+      opacity: 0.7;
+    }
+
+    .subtle {
+      font-size: 0.75rem;
+      opacity: 0.8;
+    }
+  </style>
 </head>
 <body>
+  <div id="app">
+    <div class="card">
+      <header>
+        <h1>
+          <span class="logo-dot"></span>
+          Meet Tracker
+        </h1>
+        <div class="pill">
+          <span class="pill-dot"></span>
+          <span id="pill-status">Ready</span>
+        </div>
+      </header>
 
-<header>
-  QR Profile App
-  <button class="toggle-dark" onclick="toggleDarkMode()">Dark</button>
-</header>
+      <div class="toggle-row">
+        <span>Theme</span>
+        <button id="theme-toggle" class="btn btn-outline" type="button">Auto</button>
+      </div>
 
-<nav>
-  <button onclick="showPage('createPage')">Create QR</button>
-  <button onclick="showPage('scanPage')">Scan QR</button>
-</nav>
+      <!-- Screen 1: Profile setup -->
+      <section id="screen-1" class="screen active">
+        <p class="subtle">
+          Create your QR card so others can scan your info when you meet.
+        </p>
 
-<!-- CREATE PAGE -->
-<div id="createPage" class="page active">
-  <div class="card">
-    <h3>Create QR Code</h3>
+        <div class="field">
+          <label for="fullName">Full name</label>
+          <input id="fullName" placeholder="e.g. Alex Kim" />
+        </div>
 
-    <input id="name" placeholder="Name">
-    <input id="mbti" placeholder="MBTI (e.g., INFP)">
-    <input id="location" placeholder="Location">
+        <div class="field">
+          <label for="mbti">MBTI</label>
+          <input id="mbti" placeholder="e.g. INFP" />
+        </div>
 
-    <button class="btn-main" onclick="generateQR()">Generate QR</button>
-    <div id="qrcode" style="text-align:center; margin-top:15px;"></div>
+        <div class="field">
+          <label for="location">Where do you live?</label>
+          <input id="location" placeholder="e.g. Seoul, South Korea" />
+        </div>
+
+        <button id="save-profile" class="btn btn-primary" type="button">
+          Continue & show my QR
+        </button>
+      </section>
+
+      <!-- Screen 2: QR + summary -->
+      <section id="screen-2" class="screen">
+        <div class="chip-list" id="profile-summary"></div>
+
+        <div class="qr-box">
+          <div id="qrcode"></div>
+        </div>
+
+        <div class="link-row">
+          <div class="link-tile" id="open-met-list">
+            <span class="link-tile-title">You have met</span>
+            <span class="scanned-count" id="met-count">0</span>
+            <span class="link-tile-sub">Tap to view people you’ve met</span>
+          </div>
+
+          <div style="width: 10px;"></div>
+
+          <button id="open-scanner" class="btn btn-primary" type="button">
+            Scan QR
+          </button>
+        </div>
+
+        <div class="meta-row">
+          <span class="subtle">Your QR encodes your name, MBTI and city.</span>
+          <button id="edit-profile" class="btn btn-outline" type="button">Edit</button>
+        </div>
+      </section>
+
+      <!-- Screen 3: Scanner -->
+      <section id="screen-3" class="screen">
+        <div id="scanner-container">
+          <video id="video" playsinline></video>
+          <canvas id="scan-canvas" style="display:none;"></canvas>
+          <div id="scan-overlay">
+            <div id="scan-overlay-inner"></div>
+          </div>
+        </div>
+
+        <div class="meta-row">
+          <span id="scan-status">Point the camera at a QR code.</span>
+          <div style="display:flex;gap:6px;">
+            <button id="flip-camera" class="btn btn-outline" type="button">
+              Flip camera
+            </button>
+            <button id="stop-scan" class="btn btn-outline" type="button">
+              Done
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 4: List of scanned info -->
+      <section id="screen-4" class="screen">
+        <div class="meta-row">
+          <span class="subtle">People you’ve met</span>
+          <button id="back-to-main" class="btn btn-outline" type="button">
+            Back
+          </button>
+        </div>
+
+        <div id="scan-list"></div>
+
+        <div class="footer-row">
+          <button id="clear-met" class="btn btn-outline" type="button">Clear list</button>
+          <button id="back-to-qr" class="btn btn-primary" type="button">My QR</button>
+        </div>
+      </section>
+    </div>
+
+    <p class="subtle" style="text-align:center;margin-top:4px;">
+      Data stays in your browser (stored in cookies).
+    </p>
   </div>
-</div>
 
-<!-- SCAN PAGE -->
-<div id="scanPage" class="page">
-  <div class="card">
-    <h3>Scan QR Code</h3>
-
-    <div id="reader"></div>
-    <button class="camera-switch" onclick="switchCamera()">Flip Camera</button>
-
-    <h4>Result:</h4>
-    <pre id="scanResult">Waiting...</pre>
-  </div>
-</div>
-
-<!-- Libraries -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://unpkg.com/html5-qrcode@2.3.8"></script>
-
-<script>
-let currentTheme = "light";
-function toggleDarkMode(){
-  currentTheme = currentTheme==="dark"?"light":"dark";
-  document.documentElement.setAttribute("data-theme",currentTheme);
-}
-
-function showPage(id){
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-
-  if(id==="scanPage") startScanner();
-}
-
-function generateQR(){
-  const data = {
-    name: document.getElementById("name").value,
-    mbti: document.getElementById("mbti").value,
-    location: document.getElementById("location").value
-  };
-  document.getElementById("qrcode").innerHTML="";
-  new QRCode(document.getElementById("qrcode"), JSON.stringify(data));
-}
-
-// SCANNER LOGIC
-let html5QrCode;
-let cameras = [];
-let currentCameraIndex = 0;
-
-function startScanner(){
-  if(!html5QrCode){
-    html5QrCode = new Html5Qrcode("reader");
-  }
-
-  Html5Qrcode.getCameras().then(devs=>{
-    cameras = devs;
-    if(cameras.length > 0){
-      currentCameraIndex = 0;
-      startCamera(cameras[currentCameraIndex].id);
-    } else {
-      document.getElementById("scanResult").textContent="No camera found";
+  <script>
+    // ============ Simple cookie helpers ============
+    function setCookie(name, value, days) {
+      const d = new Date();
+      d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+      const expires = "expires=" + d.toUTCString();
+      document.cookie = name + "=" + encodeURIComponent(value) + ";" + expires + ";path=/";
     }
-  }).catch(err=>{
-    document.getElementById("scanResult").textContent="Camera error: "+err;
-  });
-}
 
-function startCamera(cameraId){
-  html5QrCode.start(
-    cameraId,
-    { fps:10, qrbox: { width:250, height:250 } },
-    qrMessage=>{
-      try{
-        document.getElementById("scanResult").textContent = JSON.stringify(JSON.parse(qrMessage),null,2);
-      }catch{
-        document.getElementById("scanResult").textContent = qrMessage;
+    function getCookie(name) {
+      const cname = name + "=";
+      const decodedCookie = decodeURIComponent(document.cookie);
+      const ca = decodedCookie.split(';');
+      for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') c = c.substring(1);
+        if (c.indexOf(cname) === 0) {
+          return c.substring(cname.length, c.length);
+        }
       }
-    },
-    err=>{}
-  ).catch(err=>{
-    document.getElementById("scanResult").textContent="Unable to start camera: "+err;
-  });
-}
+      return "";
+    }
 
-function switchCamera(){
-  if(cameras.length < 2) return;
-  html5QrCode.stop().then(()=>{
-    currentCameraIndex = (currentCameraIndex + 1) % cameras.length;
-    startCamera(cameras[currentCameraIndex].id);
-  }).catch(err=>{
-    document.getElementById("scanResult").textContent="Camera switch failed: "+err;
-  });
-}
-</script>
+    // ============ State ============
+    const profileCookieKey = "meet_profile";
+    const metCookieKey = "meet_met_list";
+    let profile = null;
+    let metList = [];
+    let themeMode = "auto"; // auto | light | dark
 
+    // Scanner state
+    let videoStream = null;
+    let usingRear = true;
+    let scanLoopId = null;
+
+    // ============ DOM refs ============
+    const screens = {
+      s1: document.getElementById("screen-1"),
+      s2: document.getElementById("screen-2"),
+      s3: document.getElementById("screen-3"),
+      s4: document.getElementById("screen-4"),
+    };
+    const pillStatus = document.getElementById("pill-status");
+    const fullNameInput = document.getElementById("fullName");
+    const mbtiInput = document.getElementById("mbti");
+    const locationInput = document.getElementById("location");
+    const profileSummary = document.getElementById("profile-summary");
+    const metCount = document.getElementById("met-count");
+    const scanListEl = document.getElementById("scan-list");
+    const themeToggleBtn = document.getElementById("theme-toggle");
+    const videoEl = document.getElementById("video");
+    const scanCanvas = document.getElementById("scan-canvas");
+    const scanStatus = document.getElementById("scan-status");
+
+    // ============ Screen helpers ============
+    function showScreen(name) {
+      Object.values(screens).forEach(el => el.classList.remove("active"));
+      if (screens[name]) screens[name].classList.add("active");
+    }
+
+    // ============ Theme handling ============
+    function applyTheme() {
+      document.body.classList.remove("dark", "light");
+      if (themeMode === "dark") {
+        document.body.classList.add("dark");
+      } else if (themeMode === "light") {
+        document.body.classList.add("light");
+      }
+      themeToggleBtn.textContent =
+        themeMode === "auto" ? "Auto" : (themeMode === "dark" ? "Dark" : "Light");
+    }
+
+    function toggleTheme() {
+      if (themeMode === "auto") themeMode = "dark";
+      else if (themeMode === "dark") themeMode = "light";
+      else themeMode = "auto";
+      setCookie("meet_theme", themeMode, 365);
+      applyTheme();
+    }
+
+    themeToggleBtn.addEventListener("click", toggleTheme);
+
+    // ============ QR generation ============
+    let qrInstance = null;
+
+    function updateQR() {
+      if (!profile) return;
+      const data = JSON.stringify({
+        name: profile.fullName,
+        mbti: profile.mbti,
+        location: profile.location,
+      });
+      const qrContainer = document.getElementById("qrcode");
+      qrContainer.innerHTML = "";
+      qrInstance = new QRCode(qrContainer, {
+        text: data,
+        width: 256,
+        height: 256,
+        correctLevel: 0
+      });
+    }
+
+    function updateProfileSummary() {
+      profileSummary.innerHTML = "";
+      if (!profile) return;
+      const items = [
+        { label: "Name", value: profile.fullName },
+        { label: "MBTI", value: profile.mbti },
+        { label: "City", value: profile.location },
+      ];
+      items.forEach(i => {
+        if (!i.value) return;
+        const chip = document.createElement("div");
+        chip.className = "chip";
+        const spanLabel = document.createElement("span");
+        spanLabel.className = "label";
+        spanLabel.textContent = i.label;
+        const strongVal = document.createElement("strong");
+        strongVal.textContent = i.value;
+        chip.appendChild(spanLabel);
+        chip.appendChild(strongVal);
+        profileSummary.appendChild(chip);
+      });
+    }
+
+    function updateMetCount() {
+      metCount.textContent = metList.length.toString();
+    }
+
+    function renderMetList() {
+      scanListEl.innerHTML = "";
+      if (!metList.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.textContent = "No one yet. Go meet someone and scan their QR!";
+        scanListEl.appendChild(empty);
+        return;
+      }
+
+      metList
+        .slice()
+        .sort((a, b) => b.timestamp - a.timestamp)
+        .forEach(item => {
+          const row = document.createElement("div");
+          row.className = "scan-row";
+
+          const header = document.createElement("div");
+          header.className = "scan-row-header";
+          const nameEl = document.createElement("div");
+          nameEl.textContent = item.name || "Unknown";
+          const timeEl = document.createElement("div");
+          const dt = new Date(item.timestamp);
+          timeEl.textContent = dt.toLocaleString();
+          timeEl.style.fontSize = "0.75rem";
+          timeEl.style.opacity = "0.8";
+
+          header.appendChild(nameEl);
+          header.appendChild(timeEl);
+
+          const meta = document.createElement("div");
+          meta.className = "scan-row-meta";
+          if (item.mbti) {
+            const mbtiSpan = document.createElement("span");
+            mbtiSpan.textContent = "MBTI: " + item.mbti;
+            meta.appendChild(mbtiSpan);
+          }
+          if (item.location) {
+            const locSpan = document.createElement("span");
+            locSpan.textContent = "Lives in: " + item.location;
+            meta.appendChild(locSpan);
+          }
+
+          row.appendChild(header);
+          row.appendChild(meta);
+          scanListEl.appendChild(row);
+        });
+    }
+
+    // ============ Profile handling ============
+    function saveProfileFromInputs() {
+      const fullName = fullNameInput.value.trim();
+      const mbti = mbtiInput.value.trim();
+      const location = locationInput.value.trim();
+      if (!fullName) {
+        alert("Please enter your full name.");
+        return false;
+      }
+      profile = { fullName, mbti, location };
+      setCookie(profileCookieKey, JSON.stringify(profile), 365);
+      return true;
+    }
+
+    document.getElementById("save-profile").addEventListener("click", () => {
+      if (!saveProfileFromInputs()) return;
+      pillStatus.textContent = "Profile saved";
+      updateProfileSummary();
+      updateQR();
+      showScreen("s2");
+    });
+
+    document.getElementById("edit-profile").addEventListener("click", () => {
+      if (profile) {
+        fullNameInput.value = profile.fullName || "";
+        mbtiInput.value = profile.mbti || "";
+        locationInput.value = profile.location || "";
+      }
+      showScreen("s1");
+    });
+
+    // ============ Met list handling ============
+    function saveMetList() {
+      setCookie(metCookieKey, JSON.stringify(metList), 365);
+    }
+
+    document.getElementById("clear-met").addEventListener("click", () => {
+      if (!metList.length) return;
+      if (!confirm("Clear all 'You have met' entries?")) return;
+      metList = [];
+      saveMetList();
+      updateMetCount();
+      renderMetList();
+    });
+
+    // Navigation buttons for screens 2 & 4
+    document.getElementById("open-met-list").addEventListener("click", () => {
+      renderMetList();
+      showScreen("s4");
+    });
+
+    document.getElementById("back-to-main").addEventListener("click", () => {
+      showScreen("s2");
+    });
+
+    document.getElementById("back-to-qr").addEventListener("click", () => {
+      showScreen("s2");
+    });
+
+    // ============ Scanner ============
+    async function startScanner() {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert("Camera access is not supported in this browser.");
+        return;
+      }
+      try {
+        pillStatus.textContent = "Camera active";
+        const constraints = {
+          video: {
+            facingMode: usingRear ? { ideal: "environment" } : "user"
+          },
+          audio: false
+        };
+        videoStream = await navigator.mediaDevices.getUserMedia(constraints);
+        videoEl.srcObject = videoStream;
+        await videoEl.play();
+        showScreen("s3");
+        startScanLoop();
+      } catch (err) {
+        console.error(err);
+        alert("Unable to access camera: " + err.message);
+        pillStatus.textContent = "Camera blocked";
+      }
+    }
+
+    function stopScanner() {
+      if (videoStream) {
+        videoStream.getTracks().forEach(t => t.stop());
+        videoStream = null;
+      }
+      if (scanLoopId) {
+        cancelAnimationFrame(scanLoopId);
+        scanLoopId = null;
+      }
+      videoEl.srcObject = null;
+      scanStatus.textContent = "Scanner stopped.";
+      pillStatus.textContent = "Ready";
+      showScreen("s2");
+    }
+
+    function startScanLoop() {
+      const ctx = scanCanvas.getContext("2d");
+
+      const loop = () => {
+        if (!videoStream) return;
+        if (videoEl.readyState === videoEl.HAVE_ENOUGH_DATA) {
+          scanCanvas.width = videoEl.videoWidth;
+          scanCanvas.height = videoEl.videoHeight;
+          ctx.drawImage(videoEl, 0, 0, scanCanvas.width, scanCanvas.height);
+          const imageData = ctx.getImageData(0, 0, scanCanvas.width, scanCanvas.height);
+          const code = jsQR(imageData.data, imageData.width, imageData.height, {
+            inversionAttempts: "dontInvert",
+          });
+          if (code && code.data) {
+            handleScannedData(code.data);
+          }
+        }
+        scanLoopId = requestAnimationFrame(loop);
+      };
+      loop();
+    }
+
+    function handleScannedData(dataStr) {
+      try {
+        const obj = JSON.parse(dataStr);
+        if (!obj.name && !obj.fullName) return;
+        // Avoid duplicates by same name & mbti & location
+        const existing = metList.find(
+          m => m.name === obj.name && m.mbti === obj.mbti && m.location === obj.location
+        );
+        if (!existing) {
+          metList.push({
+            name: obj.name || obj.fullName,
+            mbti: obj.mbti || obj.MBTI,
+            location: obj.location || obj.where || obj.city,
+            timestamp: Date.now(),
+          });
+          saveMetList();
+          updateMetCount();
+        }
+        scanStatus.textContent = "Scanned: " + (obj.name || obj.fullName || "New person");
+      } catch (e) {
+        console.warn("Invalid QR data", e);
+        scanStatus.textContent = "QR not recognized for this app.";
+      }
+    }
+
+    document.getElementById("open-scanner").addEventListener("click", startScanner);
+
+    document.getElementById("stop-scan").addEventListener("click", stopScanner);
+
+    document.getElementById("flip-camera").addEventListener("click", async () => {
+      usingRear = !usingRear;
+      stopScanner();
+      await startScanner();
+    });
+
+    // ============ Initialization ============
+    function loadCookies() {
+      const storedProfile = getCookie(profileCookieKey);
+      if (storedProfile) {
+        try {
+          profile = JSON.parse(storedProfile);
+        } catch (e) {
+          profile = null;
+        }
+      }
+      const storedMet = getCookie(metCookieKey);
+      if (storedMet) {
+        try {
+          metList = JSON.parse(storedMet) || [];
+        } catch (e) {
+          metList = [];
+        }
+      }
+      const storedTheme = getCookie("meet_theme");
+      if (storedTheme) {
+        themeMode = storedTheme;
+      }
+      applyTheme();
+    }
+
+    function initUI() {
+      if (profile) {
+        fullNameInput.value = profile.fullName || "";
+        mbtiInput.value = profile.mbti || "";
+        locationInput.value = profile.location || "";
+        updateProfileSummary();
+        updateQR();
+        showScreen("s2");
+        pillStatus.textContent = "Loaded from cookie";
+      } else {
+        showScreen("s1");
+        pillStatus.textContent = "Please set up profile";
+      }
+      updateMetCount();
+      renderMetList();
+    }
+
+    window.addEventListener("load", () => {
+      loadCookies();
+      initUI();
+    });
+  </script>
 </body>
 </html>
