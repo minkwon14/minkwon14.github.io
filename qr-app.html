@@ -5,23 +5,14 @@
 <title>QR Profile App</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<!-- Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
 :root {
-  --bg:#f7f7f8;
-  --text:#111;
-  --card:#fff;
-  --border:#ccc;
-  --accent:#4A6CF7;
+  --bg:#f7f7f8; --text:#111; --card:#fff; --border:#ccc; --accent:#4A6CF7;
 }
 [data-theme="dark"] {
-  --bg:#121212;
-  --text:#eee;
-  --card:#1e1e1e;
-  --border:#333;
-  --accent:#6d8bff;
+  --bg:#121212; --text:#eee; --card:#1e1e1e; --border:#333; --accent:#6d8bff;
 }
 body {
   font-family:Inter,sans-serif;
@@ -32,17 +23,17 @@ body {
 header {
   background:var(--card);
   border-bottom:1px solid var(--border);
-  padding:20px;
+  padding:15px;
   text-align:center;
-  font-size:22px;
+  font-size:20px;
   font-weight:600;
   position:relative;
 }
 .toggle-dark {
   position:absolute;
-  right:20px;
-  top:20px;
-  padding:6px 14px;
+  right:15px;
+  top:15px;
+  padding:5px 12px;
   background:var(--card);
   border:1px solid var(--border);
   border-radius:6px;
@@ -50,23 +41,25 @@ header {
 }
 nav {
   display:flex;
-  gap:10px;
-  padding:15px;
+  gap:8px;
+  padding:12px;
   justify-content:center;
+  flex-wrap:wrap;
 }
 nav button {
   background:var(--accent);
   border:none;
   color:white;
-  padding:10px 16px;
+  padding:8px 12px;
   border-radius:6px;
   cursor:pointer;
+  font-size:14px;
 }
 
 .page {
   display:none;
-  padding:20px;
-  max-width:500px;
+  padding:15px;
+  max-width:400px;
   margin:auto;
 }
 .page.active { display:block; }
@@ -75,28 +68,30 @@ nav button {
   background:var(--card);
   border:1px solid var(--border);
   border-radius:12px;
-  padding:20px;
+  padding:15px;
 }
 
 input {
   width:100%;
-  padding:12px;
+  padding:10px;
   border-radius:6px;
   border:1px solid var(--border);
-  margin-bottom:10px;
+  margin-bottom:8px;
   background:var(--bg);
   color:var(--text);
+  font-size:14px;
 }
 
 .btn-main {
   width:100%;
-  padding:12px;
+  padding:10px;
   background:var(--accent);
   border:none;
   border-radius:6px;
   color:white;
-  font-size:16px;
+  font-size:15px;
   cursor:pointer;
+  margin-bottom:10px;
 }
 
 #reader {
@@ -107,14 +102,28 @@ input {
 
 #scanResult {
   background:var(--card);
-  padding:15px;
+  padding:10px;
   border-radius:8px;
   border:1px solid var(--border);
   white-space:pre-wrap;
+  margin-top:10px;
+  font-size:13px;
+  word-break:break-word;
+}
+
+.camera-switch {
+  width:100%;
+  margin-top:8px;
+  padding:8px;
+  border:none;
+  border-radius:6px;
+  background:var(--accent);
+  color:white;
+  cursor:pointer;
+  font-size:14px;
 }
 </style>
 </head>
-
 <body>
 
 <header>
@@ -133,11 +142,11 @@ input {
     <h3>Create QR Code</h3>
 
     <input id="name" placeholder="Name">
-    <input id="mbti" placeholder="MBTI (e.g., INTP)">
+    <input id="mbti" placeholder="MBTI (e.g., INFP)">
     <input id="location" placeholder="Location">
 
     <button class="btn-main" onclick="generateQR()">Generate QR</button>
-    <div id="qrcode" style="text-align:center; margin-top:20px;"></div>
+    <div id="qrcode" style="text-align:center; margin-top:15px;"></div>
   </div>
 </div>
 
@@ -147,6 +156,7 @@ input {
     <h3>Scan QR Code</h3>
 
     <div id="reader"></div>
+    <button class="camera-switch" onclick="switchCamera()">Flip Camera</button>
 
     <h4>Result:</h4>
     <pre id="scanResult">Waiting...</pre>
@@ -155,68 +165,82 @@ input {
 
 <!-- Libraries -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
-<!-- MOBILE-FRIENDLY SCANNER -->
 <script src="https://unpkg.com/html5-qrcode@2.3.8"></script>
 
 <script>
+let currentTheme = "light";
 function toggleDarkMode(){
-  const cur=document.documentElement.getAttribute("data-theme");
-  document.documentElement.setAttribute("data-theme",cur==="dark"?"light":"dark");
+  currentTheme = currentTheme==="dark"?"light":"dark";
+  document.documentElement.setAttribute("data-theme",currentTheme);
 }
 
 function showPage(id){
-  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 
-  if(id === "scanPage") startScanner();
+  if(id==="scanPage") startScanner();
 }
 
 function generateQR(){
   const data = {
-    name:document.getElementById("name").value,
-    mbti:document.getElementById("mbti").value,
-    location:document.getElementById("location").value
+    name: document.getElementById("name").value,
+    mbti: document.getElementById("mbti").value,
+    location: document.getElementById("location").value
   };
-
-  document.getElementById("qrcode").innerHTML = "";
+  document.getElementById("qrcode").innerHTML="";
   new QRCode(document.getElementById("qrcode"), JSON.stringify(data));
 }
 
-let scannerStarted = false;
+// SCANNER LOGIC
+let html5QrCode;
+let cameras = [];
+let currentCameraIndex = 0;
 
 function startScanner(){
-  if(scannerStarted) return;
-  scannerStarted = true;
+  if(!html5QrCode){
+    html5QrCode = new Html5Qrcode("reader");
+  }
 
-  const html5QrCode = new Html5Qrcode("reader");
+  Html5Qrcode.getCameras().then(devs=>{
+    cameras = devs;
+    if(cameras.length > 0){
+      currentCameraIndex = 0;
+      startCamera(cameras[currentCameraIndex].id);
+    } else {
+      document.getElementById("scanResult").textContent="No camera found";
+    }
+  }).catch(err=>{
+    document.getElementById("scanResult").textContent="Camera error: "+err;
+  });
+}
 
-  Html5Qrcode.getCameras().then(cameras => {
-    const camId = cameras.length > 1
-      ? cameras.find(c => c.label.toLowerCase().includes("back"))?.id || cameras[0].id
-      : cameras[0].id;
+function startCamera(cameraId){
+  html5QrCode.start(
+    cameraId,
+    { fps:10, qrbox: { width:250, height:250 } },
+    qrMessage=>{
+      try{
+        document.getElementById("scanResult").textContent = JSON.stringify(JSON.parse(qrMessage),null,2);
+      }catch{
+        document.getElementById("scanResult").textContent = qrMessage;
+      }
+    },
+    err=>{}
+  ).catch(err=>{
+    document.getElementById("scanResult").textContent="Unable to start camera: "+err;
+  });
+}
 
-    html5QrCode.start(
-      camId,
-      {
-        fps: 10,
-        qrbox: { width: 250, height: 250 }
-      },
-      qrText => {
-        try {
-          document.getElementById("scanResult").textContent =
-            JSON.stringify(JSON.parse(qrText), null, 2);
-        } catch {
-          document.getElementById("scanResult").textContent = qrText;
-        }
-      },
-      error => {}
-    );
-  }).catch(err => {
-    document.getElementById("scanResult").textContent =
-      "Camera error: " + err;
+function switchCamera(){
+  if(cameras.length < 2) return;
+  html5QrCode.stop().then(()=>{
+    currentCameraIndex = (currentCameraIndex + 1) % cameras.length;
+    startCamera(cameras[currentCameraIndex].id);
+  }).catch(err=>{
+    document.getElementById("scanResult").textContent="Camera switch failed: "+err;
   });
 }
 </script>
+
 </body>
 </html>
