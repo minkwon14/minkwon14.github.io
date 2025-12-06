@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>Meet Tracker</title>
+  <title>밋 트래커</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- QR Code generator (CDN) -->
@@ -253,6 +253,14 @@
       font-weight: 600;
     }
 
+    .top-controls {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+      align-items: center;
+      font-size: 0.75rem;
+    }
+
     .link-row {
       display: flex;
       align-items: center;
@@ -284,14 +292,6 @@
     .scanned-count {
       font-size: 1.1rem;
       font-weight: 700;
-    }
-
-    .toggle-row {
-      display: flex;
-      justify-content: flex-end;
-      gap: 6px;
-      align-items: center;
-      font-size: 0.75rem;
     }
 
     .toggle-row button {
@@ -394,44 +394,44 @@
   <div id="app">
     <div class="card">
       <header>
-        <h1>
+        <h1 id="app-title">
           <span class="logo-dot"></span>
-          Meet Tracker
+          밋 트래커
         </h1>
         <div class="pill">
           <span class="pill-dot"></span>
-          <span id="pill-status">Ready</span>
+          <span id="pill-status">준비 완료</span>
         </div>
       </header>
 
-      <div class="toggle-row">
-        <span>Theme</span>
-        <button id="theme-toggle" class="btn btn-outline" type="button">Auto</button>
+      <div class="top-controls">
+        <button id="lang-toggle" class="btn btn-outline" type="button">한국어</button>
+        <button id="theme-toggle" class="btn btn-outline" type="button">자동</button>
       </div>
 
       <!-- Screen 1: Profile setup -->
       <section id="screen-1" class="screen active">
-        <p class="subtle">
-          Create your QR card so others can scan your info when you meet.
+        <p class="subtle" id="intro-text">
+          만나서 서로 스캔할 수 있는 나만의 QR 카드를 만들어 보세요.
         </p>
 
         <div class="field">
-          <label for="fullName">Full name</label>
-          <input id="fullName" placeholder="e.g. Alex Kim" />
+          <label for="fullName" id="label-fullname">이름</label>
+          <input id="fullName" placeholder="예: 김민수" />
         </div>
 
         <div class="field">
-          <label for="mbti">MBTI</label>
-          <input id="mbti" placeholder="e.g. INFP" />
+          <label for="mbti" id="label-mbti">MBTI</label>
+          <input id="mbti" placeholder="예: INFP" />
         </div>
 
         <div class="field">
-          <label for="location">Where do you live?</label>
-          <input id="location" placeholder="e.g. Seoul, South Korea" />
+          <label for="location" id="label-location">사는 곳</label>
+          <input id="location" placeholder="예: 서울, 대한민국" />
         </div>
 
         <button id="save-profile" class="btn btn-primary" type="button">
-          Continue & show my QR
+          내 정보 저장하고 QR 보기
         </button>
       </section>
 
@@ -445,21 +445,23 @@
 
         <div class="link-row">
           <div class="link-tile" id="open-met-list">
-            <span class="link-tile-title">You have met</span>
+            <span class="link-tile-title" id="met-title">만난 사람</span>
             <span class="scanned-count" id="met-count">0</span>
-            <span class="link-tile-sub">Tap to view people you’ve met</span>
+            <span class="link-tile-sub" id="met-subtitle">지금까지 만난 사람 목록 보기</span>
           </div>
 
           <div style="width: 10px;"></div>
 
           <button id="open-scanner" class="btn btn-primary" type="button">
-            Scan QR
+            QR 스캔하기
           </button>
         </div>
 
         <div class="meta-row">
-          <span class="subtle">Your QR encodes your name, MBTI and city.</span>
-          <button id="edit-profile" class="btn btn-outline" type="button">Edit</button>
+          <span class="subtle" id="qr-description">
+            QR에는 이름, MBTI, 사는 도시 정보가 들어갑니다.
+          </span>
+          <button id="edit-profile" class="btn btn-outline" type="button">내 정보 수정</button>
         </div>
       </section>
 
@@ -474,13 +476,13 @@
         </div>
 
         <div class="meta-row">
-          <span id="scan-status">Align the QR inside the square and hold still…</span>
+          <span id="scan-status">QR를 가운데 네모 안에 맞추고 잠시만 기다려 주세요…</span>
           <div style="display:flex;gap:6px;">
             <button id="flip-camera" class="btn btn-outline" type="button">
-              Flip camera
+              카메라 전환
             </button>
             <button id="stop-scan" class="btn btn-outline" type="button">
-              Done
+              완료
             </button>
           </div>
         </div>
@@ -489,23 +491,23 @@
       <!-- Screen 4: List of scanned info -->
       <section id="screen-4" class="screen">
         <div class="meta-row">
-          <span class="subtle">People you’ve met</span>
+          <span class="subtle" id="met-list-title">지금까지 만난 사람</span>
           <button id="back-to-main" class="btn btn-outline" type="button">
-            Back
+            뒤로
           </button>
         </div>
 
         <div id="scan-list"></div>
 
         <div class="footer-row">
-          <button id="clear-met" class="btn btn-outline" type="button">Clear list</button>
-          <button id="back-to-qr" class="btn btn-primary" type="button">My QR</button>
+          <button id="clear-met" class="btn btn-outline" type="button">전체 삭제</button>
+          <button id="back-to-qr" class="btn btn-primary" type="button">내 QR 보기</button>
         </div>
       </section>
     </div>
 
-    <p class="subtle" style="text-align:center;margin-top:4px;">
-      Data stays in your browser (stored in cookies).
+    <p class="subtle" id="footer-text" style="text-align:center;margin-top:4px;">
+      데이터는 이 브라우저 안에만 저장됩니다 (쿠키 사용).
     </p>
   </div>
 
@@ -535,9 +537,13 @@
     // ============ State ============
     const profileCookieKey = "meet_profile";
     const metCookieKey = "meet_met_list";
+    const themeCookieKey = "meet_theme";
+    const langCookieKey = "meet_lang";
+
     let profile = null;
     let metList = [];
     let themeMode = "auto"; // auto | light | dark
+    let currentLang = "ko"; // ko | en
 
     // Scanner state
     let videoStream = null;
@@ -546,6 +552,120 @@
     let lastScannedValue = null;
     let lastDecodeTime = 0;
 
+    // ============ i18n strings ============
+    const STRINGS = {
+      ko: {
+        appTitle: "밋 트래커",
+        pillReady: "준비 완료",
+        pillSaved: "프로필이 저장되었습니다",
+        pillLoaded: "쿠키에서 불러왔습니다",
+        pillSetup: "프로필을 먼저 설정해 주세요",
+
+        langButton: "한국어",
+        themeAuto: "자동",
+        themeDark: "다크",
+        themeLight: "라이트",
+
+        intro: "만나서 서로 스캔할 수 있는 나만의 QR 카드를 만들어 보세요.",
+        fullNameLabel: "이름",
+        fullNamePlaceholder: "예: 김민수",
+        mbtiLabel: "MBTI",
+        mbtiPlaceholder: "예: INFP",
+        locationLabel: "사는 곳",
+        locationPlaceholder: "예: 서울, 대한민국",
+        saveProfile: "내 정보 저장하고 QR 보기",
+        editProfile: "내 정보 수정",
+
+        metTitle: "만난 사람",
+        metSubtitle: "지금까지 만난 사람 목록 보기",
+        qrDescription: "QR에는 이름, MBTI, 사는 도시 정보가 들어갑니다.",
+        scanButton: "QR 스캔하기",
+
+        scanStatusIntro: "QR를 가운데 네모 안에 맞추고 잠시만 기다려 주세요…",
+        scanStatusTrying: "QR를 읽는 중입니다… 조금 더 가까이 가져가고 가만히 있어 보세요.",
+        scanStatusStopped: "스캐너가 종료되었습니다.",
+        scanStatusFormatUnsupported: "QR은 인식했지만 이 앱에서 사용하는 형식이 아닙니다.",
+        scanStatusMissingName: "QR은 인식했지만 이름이 없습니다.",
+        scanStatusNotApp: "이 앱에서 사용하는 QR 형식이 아닙니다.",
+
+        flipCamera: "카메라 전환",
+        doneScan: "완료",
+
+        metListTitle: "지금까지 만난 사람",
+        clearMet: "전체 삭제",
+        back: "뒤로",
+        backToQR: "내 QR 보기",
+
+        emptyState: "아직 아무도 없어요. 누군가를 만나서 QR를 스캔해 보세요!",
+        footer: "데이터는 이 브라우저 안에만 저장됩니다 (쿠키 사용).",
+
+        alertEnterName: "이름을 입력해 주세요.",
+        alertClearConfirm: "정말로 만난 사람 목록을 모두 삭제할까요?",
+        alertScanned: name => `스캔 완료: ${name} 님 정보를 저장했습니다.`,
+        alertCameraUnsupported: "이 브라우저에서는 카메라를 사용할 수 없습니다.",
+        alertCameraError: msg => `카메라에 접근할 수 없습니다: ${msg}`
+      },
+      en: {
+        appTitle: "Meet Tracker",
+        pillReady: "Ready",
+        pillSaved: "Profile saved",
+        pillLoaded: "Loaded from cookie",
+        pillSetup: "Please set up your profile first",
+
+        langButton: "English",
+        themeAuto: "Auto",
+        themeDark: "Dark",
+        themeLight: "Light",
+
+        intro: "Create your own QR card so you can scan each other when you meet.",
+        fullNameLabel: "Full name",
+        fullNamePlaceholder: "e.g. Alex Kim",
+        mbtiLabel: "MBTI",
+        mbtiPlaceholder: "e.g. INFP",
+        locationLabel: "Where do you live?",
+        locationPlaceholder: "e.g. Seoul, South Korea",
+        saveProfile: "Save my info & show QR",
+        editProfile: "Edit my info",
+
+        metTitle: "People you’ve met",
+        metSubtitle: "See the people you’ve met so far",
+        qrDescription: "Your QR includes your name, MBTI and city.",
+        scanButton: "Scan QR",
+
+        scanStatusIntro: "Align the QR inside the square and hold still…",
+        scanStatusTrying: "Trying to read the QR… move a bit closer and hold still.",
+        scanStatusStopped: "Scanner stopped.",
+        scanStatusFormatUnsupported: "QR detected, but format is not supported by this app.",
+        scanStatusMissingName: "QR detected, but name is missing.",
+        scanStatusNotApp: "This QR format is not used by this app.",
+
+        flipCamera: "Flip camera",
+        doneScan: "Done",
+
+        metListTitle: "People you’ve met",
+        clearMet: "Clear list",
+        back: "Back",
+        backToQR: "My QR",
+
+        emptyState: "No one yet. Go meet someone and scan their QR!",
+        footer: "Data stays in this browser only (stored in cookies).",
+
+        alertEnterName: "Please enter your full name.",
+        alertClearConfirm: "Clear all entries in 'People you’ve met'?",
+        alertScanned: name => `Scanned and saved: ${name}`,
+        alertCameraUnsupported: "Camera access is not supported in this browser.",
+        alertCameraError: msg => `Unable to access camera: ${msg}`
+      }
+    };
+
+    function t(key, ...args) {
+      const s = STRINGS[currentLang][key];
+      if (typeof s === "function") {
+        return s(...args);
+      }
+      return s ?? "";
+    }
+
     // ============ DOM refs ============
     const screens = {
       s1: document.getElementById("screen-1"),
@@ -553,17 +673,42 @@
       s3: document.getElementById("screen-3"),
       s4: document.getElementById("screen-4"),
     };
+
+    const appTitleEl = document.getElementById("app-title");
     const pillStatus = document.getElementById("pill-status");
+    const langToggleBtn = document.getElementById("lang-toggle");
+    const themeToggleBtn = document.getElementById("theme-toggle");
+    const introText = document.getElementById("intro-text");
+
+    const fullNameLabel = document.getElementById("label-fullname");
+    const mbtiLabel = document.getElementById("label-mbti");
+    const locationLabel = document.getElementById("label-location");
     const fullNameInput = document.getElementById("fullName");
     const mbtiInput = document.getElementById("mbti");
     const locationInput = document.getElementById("location");
+    const saveProfileBtn = document.getElementById("save-profile");
+    const editProfileBtn = document.getElementById("edit-profile");
+
     const profileSummary = document.getElementById("profile-summary");
+    const metTitleEl = document.getElementById("met-title");
+    const metSubtitleEl = document.getElementById("met-subtitle");
+    const qrDescriptionEl = document.getElementById("qr-description");
     const metCount = document.getElementById("met-count");
     const scanListEl = document.getElementById("scan-list");
-    const themeToggleBtn = document.getElementById("theme-toggle");
+
+    const scanStatus = document.getElementById("scan-status");
+    const flipCameraBtn = document.getElementById("flip-camera");
+    const stopScanBtn = document.getElementById("stop-scan");
+
+    const metListTitleEl = document.getElementById("met-list-title");
+    const clearMetBtn = document.getElementById("clear-met");
+    const backToMainBtn = document.getElementById("back-to-main");
+    const backToQrBtn = document.getElementById("back-to-qr");
+    const openScannerBtn = document.getElementById("open-scanner");
+    const footerTextEl = document.getElementById("footer-text");
+
     const videoEl = document.getElementById("video");
     const scanCanvas = document.getElementById("scan-canvas");
-    const scanStatus = document.getElementById("scan-status");
 
     // ============ Screen helpers ============
     function showScreen(name) {
@@ -580,21 +725,70 @@
         document.body.classList.add("light");
       }
       themeToggleBtn.textContent =
-        themeMode === "auto" ? "Auto" : (themeMode === "dark" ? "Dark" : "Light");
+        themeMode === "auto" ? t("themeAuto") :
+        themeMode === "dark" ? t("themeDark") :
+        t("themeLight");
     }
 
     function toggleTheme() {
       if (themeMode === "auto") themeMode = "dark";
       else if (themeMode === "dark") themeMode = "light";
       else themeMode = "auto";
-      setCookie("meet_theme", themeMode, 365);
+      setCookie(themeCookieKey, themeMode, 365);
       applyTheme();
     }
 
     themeToggleBtn.addEventListener("click", toggleTheme);
 
+    // ============ Language handling ============
+    function applyLanguage() {
+      document.documentElement.lang = currentLang === "ko" ? "ko" : "en";
+      document.title = t("appTitle");
+
+      appTitleEl.innerHTML = `<span class="logo-dot"></span>${t("appTitle")}`;
+      langToggleBtn.textContent = t("langButton");
+
+      introText.textContent = t("intro");
+      fullNameLabel.textContent = t("fullNameLabel");
+      mbtiLabel.textContent = t("mbtiLabel");
+      locationLabel.textContent = t("locationLabel");
+      fullNameInput.placeholder = t("fullNamePlaceholder");
+      mbtiInput.placeholder = t("mbtiPlaceholder");
+      locationInput.placeholder = t("locationPlaceholder");
+      saveProfileBtn.textContent = t("saveProfile");
+      editProfileBtn.textContent = t("editProfile");
+
+      metTitleEl.textContent = t("metTitle");
+      metSubtitleEl.textContent = t("metSubtitle");
+      qrDescriptionEl.textContent = t("qrDescription");
+      openScannerBtn.textContent = t("scanButton");
+
+      flipCameraBtn.textContent = t("flipCamera");
+      stopScanBtn.textContent = t("doneScan");
+      scanStatus.textContent = t("scanStatusIntro");
+
+      metListTitleEl.textContent = t("metListTitle");
+      clearMetBtn.textContent = t("clearMet");
+      backToMainBtn.textContent = t("back");
+      backToQrBtn.textContent = t("backToQR");
+
+      footerTextEl.textContent = t("footer");
+
+      applyTheme();
+    }
+
+    function toggleLanguage() {
+      currentLang = currentLang === "ko" ? "en" : "ko";
+      setCookie(langCookieKey, currentLang, 365);
+      applyLanguage();
+      // Also refresh profile summary so chip labels use correct language
+      updateProfileSummary();
+    }
+
+    langToggleBtn.addEventListener("click", toggleLanguage);
+
     // ============ QR generation ============
-    // Encode as: FullName|MBTI|Location  (simple string)
+    // Encode as: FullName|MBTI|Location
     function updateQR() {
       if (!profile) return;
       const name = profile.fullName || "";
@@ -615,10 +809,15 @@
     function updateProfileSummary() {
       profileSummary.innerHTML = "";
       if (!profile) return;
+
+      const labelName = currentLang === "ko" ? "이름" : "Name";
+      const labelMbti = "MBTI";
+      const labelCity = currentLang === "ko" ? "도시" : "City";
+
       const items = [
-        { label: "Name", value: profile.fullName },
-        { label: "MBTI", value: profile.mbti },
-        { label: "City", value: profile.location },
+        { label: labelName, value: profile.fullName },
+        { label: labelMbti, value: profile.mbti },
+        { label: labelCity, value: profile.location },
       ];
       items.forEach(i => {
         if (!i.value) return;
@@ -644,7 +843,7 @@
       if (!metList.length) {
         const empty = document.createElement("div");
         empty.className = "empty-state";
-        empty.textContent = "No one yet. Go meet someone and scan their QR!";
+        empty.textContent = t("emptyState");
         scanListEl.appendChild(empty);
         return;
       }
@@ -659,7 +858,7 @@
           const header = document.createElement("div");
           header.className = "scan-row-header";
           const nameEl = document.createElement("div");
-          nameEl.textContent = item.name || "Unknown";
+          nameEl.textContent = item.name || (currentLang === "ko" ? "이름 없음" : "Unknown");
           const timeEl = document.createElement("div");
           const dt = new Date(item.timestamp);
           timeEl.textContent = dt.toLocaleString();
@@ -677,8 +876,9 @@
             meta.appendChild(mbtiSpan);
           }
           if (item.location) {
+            const locLabel = currentLang === "ko" ? "사는 곳: " : "Lives in: ";
             const locSpan = document.createElement("span");
-            locSpan.textContent = "Lives in: " + item.location;
+            locSpan.textContent = locLabel + item.location;
             meta.appendChild(locSpan);
           }
 
@@ -694,7 +894,7 @@
       const mbti = mbtiInput.value.trim();
       const location = locationInput.value.trim();
       if (!fullName) {
-        alert("Please enter your full name.");
+        alert(t("alertEnterName"));
         return false;
       }
       profile = { fullName, mbti, location };
@@ -704,13 +904,13 @@
 
     document.getElementById("save-profile").addEventListener("click", () => {
       if (!saveProfileFromInputs()) return;
-      pillStatus.textContent = "Profile saved";
+      pillStatus.textContent = t("pillSaved");
       updateProfileSummary();
       updateQR();
       showScreen("s2");
     });
 
-    document.getElementById("edit-profile").addEventListener("click", () => {
+    editProfileBtn.addEventListener("click", () => {
       if (profile) {
         fullNameInput.value = profile.fullName || "";
         mbtiInput.value = profile.mbti || "";
@@ -724,9 +924,9 @@
       setCookie(metCookieKey, JSON.stringify(metList), 365);
     }
 
-    document.getElementById("clear-met").addEventListener("click", () => {
+    clearMetBtn.addEventListener("click", () => {
       if (!metList.length) return;
-      if (!confirm("Clear all 'You have met' entries?")) return;
+      if (!confirm(t("alertClearConfirm"))) return;
       metList = [];
       saveMetList();
       updateMetCount();
@@ -739,24 +939,24 @@
       showScreen("s4");
     });
 
-    document.getElementById("back-to-main").addEventListener("click", () => {
+    backToMainBtn.addEventListener("click", () => {
       showScreen("s2");
     });
 
-    document.getElementById("back-to-qr").addEventListener("click", () => {
+    backToQrBtn.addEventListener("click", () => {
       showScreen("s2");
     });
 
     // ============ Scanner ============
     async function startScanner() {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert("Camera access is not supported in this browser.");
+        alert(t("alertCameraUnsupported"));
         return;
       }
       try {
-        pillStatus.textContent = "Camera active";
+        pillStatus.textContent = t("pillReady");
         lastScannedValue = null;
-        scanStatus.textContent = "Align the QR inside the square and hold still…";
+        scanStatus.textContent = t("scanStatusIntro");
 
         const constraints = {
           video: {
@@ -782,8 +982,8 @@
         startScanLoop();
       } catch (err) {
         console.error(err);
-        alert("Unable to access camera: " + err.message);
-        pillStatus.textContent = "Camera blocked";
+        alert(t("alertCameraError", err.message));
+        pillStatus.textContent = t("pillReady");
       }
     }
 
@@ -797,8 +997,8 @@
         scanLoopId = null;
       }
       videoEl.srcObject = null;
-      scanStatus.textContent = "Scanner stopped.";
-      pillStatus.textContent = "Ready";
+      scanStatus.textContent = t("scanStatusStopped");
+      pillStatus.textContent = t("pillReady");
       showScreen("s2");
     }
 
@@ -840,7 +1040,7 @@
                 handleScannedData(code.data);
               }
             } else {
-              scanStatus.textContent = "Trying to read the QR… move a bit closer or hold still.";
+              scanStatus.textContent = t("scanStatusTrying");
             }
           }
         }
@@ -849,11 +1049,11 @@
       loop();
     }
 
-    // Decode our simple format: "Full Name|MBTI|Location"
+    // Decode format: "Full Name|MBTI|Location"
     function handleScannedData(dataStr) {
       const parts = dataStr.split("|");
       if (parts.length < 1) {
-        scanStatus.textContent = "QR found, but data format is not supported.";
+        scanStatus.textContent = t("scanStatusFormatUnsupported");
         return;
       }
       const name = (parts[0] || "").trim();
@@ -861,7 +1061,7 @@
       const location = (parts[2] || "").trim();
 
       if (!name) {
-        scanStatus.textContent = "QR found, but name is missing.";
+        scanStatus.textContent = t("scanStatusMissingName");
         return;
       }
 
@@ -880,8 +1080,8 @@
         updateMetCount();
       }
 
-      scanStatus.textContent = "Scanned: " + name;
-      alert("Scanned and saved: " + name);
+      scanStatus.textContent = t("scanStatusIntro");
+      alert(t("alertScanned", name));
 
       // After a successful scan: stop camera and show the list
       stopScanner();
@@ -889,10 +1089,10 @@
       showScreen("s4");
     }
 
-    document.getElementById("open-scanner").addEventListener("click", startScanner);
-    document.getElementById("stop-scan").addEventListener("click", stopScanner);
+    openScannerBtn.addEventListener("click", startScanner);
+    stopScanBtn.addEventListener("click", stopScanner);
 
-    document.getElementById("flip-camera").addEventListener("click", async () => {
+    flipCameraBtn.addEventListener("click", async () => {
       usingRear = !usingRear;
       stopScanner();
       await startScanner();
@@ -900,6 +1100,18 @@
 
     // ============ Initialization ============
     function loadCookies() {
+      const storedLang = getCookie(langCookieKey);
+      if (storedLang === "ko" || storedLang === "en") {
+        currentLang = storedLang;
+      } else {
+        currentLang = "ko"; // default to Korean
+      }
+
+      const storedTheme = getCookie(themeCookieKey);
+      if (storedTheme === "auto" || storedTheme === "dark" || storedTheme === "light") {
+        themeMode = storedTheme;
+      }
+
       const storedProfile = getCookie(profileCookieKey);
       if (storedProfile) {
         try {
@@ -916,14 +1128,11 @@
           metList = [];
         }
       }
-      const storedTheme = getCookie("meet_theme");
-      if (storedTheme) {
-        themeMode = storedTheme;
-      }
-      applyTheme();
     }
 
     function initUI() {
+      applyLanguage();
+
       if (profile) {
         fullNameInput.value = profile.fullName || "";
         mbtiInput.value = profile.mbti || "";
@@ -931,10 +1140,10 @@
         updateProfileSummary();
         updateQR();
         showScreen("s2");
-        pillStatus.textContent = "Loaded from cookie";
+        pillStatus.textContent = t("pillLoaded");
       } else {
         showScreen("s1");
-        pillStatus.textContent = "Please set up profile";
+        pillStatus.textContent = t("pillSetup");
       }
       updateMetCount();
       renderMetList();
