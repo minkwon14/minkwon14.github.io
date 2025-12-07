@@ -910,6 +910,13 @@
       applyTheme();
     }
 
+    // Utility: clamp string length to avoid QR overflow
+    function clamp(str, maxLen) {
+      if (!str) return "";
+      if (str.length <= maxLen) return str;
+      return str.slice(0, maxLen);
+    }
+
     // ---------- QR (using local qrcode.min.js) ----------
     function updateQR() {
       if (!profile) return;
@@ -917,11 +924,27 @@
       const qrContainer = document.getElementById("qrcode");
       if (!qrContainer) return;
 
-      // Debug: see if library is present
-      console.log("QRCode typeof:", typeof QRCode);
+      let {
+        fullName,
+        group,
+        mbti,
+        location,
+        hobby
+      } = profile;
 
-      const { fullName, group, mbti, location, hobby } = profile;
-      const data = `${fullName || ""}|${group || ""}|${mbti || ""}|${location || ""}|${hobby || ""}`;
+      // Clamp field lengths to reasonable sizes
+      fullName = clamp(fullName, 40);
+      group    = clamp(group,    40);
+      mbti     = clamp(mbti,     20);
+      location = clamp(location, 60);
+      hobby    = clamp(hobby,    60);
+
+      // Update profile in memory (and cookie) with clamped values
+      profile = { fullName, group, mbti, location, hobby };
+      setCookie(profileCookieKey, JSON.stringify(profile), 365);
+
+      // Preferred full payload
+      let data = `${fullName}|${group}|${mbti}|${location}|${hobby}`;
 
       qrContainer.innerHTML = "";
 
@@ -944,18 +967,44 @@
           height: 300,
           colorDark: "#000000",
           colorLight: "#ffffff",
-          correctLevel: QRCode.CorrectLevel.L,
+          correctLevel: QRCode.CorrectLevel.L
         });
       } catch (e) {
-        console.error("QR generation error:", e);
-        const fallback = document.createElement("div");
-        fallback.style.textAlign = "center";
-        fallback.style.fontSize = "0.8rem";
-        fallback.style.opacity = "0.8";
-        fallback.textContent = currentLang === "ko"
-          ? "QR 코드를 생성하는 중 오류가 발생했습니다."
-          : "Error while generating QR code.";
-        qrContainer.appendChild(fallback);
+        console.error("QR generation error (full payload):", e, "len:", data.length);
+
+        // Fallback: shorter payload (이름 + 순만)
+        qrContainer.innerHTML = "";
+        const shortData = `${fullName}|${group}|||`; // still 5 parts
+        try {
+          new QRCode(qrContainer, {
+            text: shortData,
+            width: 300,
+            height: 300,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.L
+          });
+
+          const warn = document.createElement("div");
+          warn.className = "subtle";
+          warn.style.textAlign = "center";
+          warn.style.marginTop = "6px";
+          warn.textContent = currentLang === "ko"
+            ? "텍스트가 너무 길어 QR에는 이름과 순만 들어갔습니다."
+            : "Text was too long; QR contains only name & group.";
+          qrContainer.parentElement.appendChild(warn);
+        } catch (e2) {
+          console.error("QR generation error (short payload):", e2);
+
+          const fallback = document.createElement("div");
+          fallback.style.textAlign = "center";
+          fallback.style.fontSize = "0.8rem";
+          fallback.style.opacity = "0.8";
+          fallback.textContent = currentLang === "ko"
+            ? "QR 코드를 생성하는 중 오류가 발생했습니다."
+            : "Error while generating QR code.";
+          qrContainer.appendChild(fallback);
+        }
       }
     }
 
@@ -1044,16 +1093,23 @@
     }
 
     function saveProfileFromInputs() {
-      const fullName = fullNameInput.value.trim();
-      const group = groupSelect.value.trim();
-      const mbti = mbtiInput.value.trim();
-      const location = locationInput.value.trim();
-      const hobby = hobbyInput.value.trim();
+      let fullName = fullNameInput.value.trim();
+      let group = groupSelect.value.trim();
+      let mbti = mbtiInput.value.trim();
+      let location = locationInput.value.trim();
+      let hobby = hobbyInput.value.trim();
 
       if (!fullName || !group || !mbti || !location || !hobby) {
         alert(t("alertEnterRequired"));
         return false;
       }
+
+      // Clamp before saving
+      fullName = clamp(fullName, 40);
+      group    = clamp(group,    40);
+      mbti     = clamp(mbti,     20);
+      location = clamp(location, 60);
+      hobby    = clamp(hobby,    60);
 
       profile = { fullName, group, mbti, location, hobby };
       setCookie(profileCookieKey, JSON.stringify(profile), 365);
