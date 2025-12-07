@@ -11,12 +11,15 @@
   <style>
     :root {
       color-scheme: light dark;
-      --bg: #f3f4f6;
+      /* Christmas-ish background with subtle red/green */
+      --bg: #0b1020;
       --fg: #111827;
-      --card-bg: #ffffff;
-      --accent: #2563eb;
-      --accent-soft: rgba(37, 99, 235, 0.12);
-      --accent-strong: #16a34a;
+      --card-bg: #fefcf7;
+      /* Primary accent: deep red */
+      --accent: #b91c1c;
+      --accent-soft: rgba(185, 28, 28, 0.14);
+      /* Gold highlight */
+      --accent-strong: #facc15;
       --border: #e5e7eb;
     }
 
@@ -24,9 +27,10 @@
       --bg: #020617;
       --fg: #e5e7eb;
       --card-bg: #020617;
-      --accent: #60a5fa;
-      --accent-soft: rgba(96, 165, 250, 0.2);
-      --accent-strong: #22c55e;
+      /* Dark mode: deep green accent + gold */
+      --accent: #15803d;
+      --accent-soft: rgba(21, 128, 61, 0.24);
+      --accent-strong: #facc15;
       --border: #1f2937;
     }
 
@@ -35,9 +39,9 @@
         --bg: #020617;
         --fg: #e5e7eb;
         --card-bg: #020617;
-        --accent: #60a5fa;
-        --accent-soft: rgba(96, 165, 250, 0.2);
-        --accent-strong: #22c55e;
+        --accent: #15803d;
+        --accent-soft: rgba(21, 128, 61, 0.24);
+        --accent-strong: #facc15;
         --border: #1f2937;
       }
     }
@@ -47,7 +51,10 @@
     body {
       margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #e5e7eb 0, var(--bg) 40%);
+      background:
+        radial-gradient(circle at top left, rgba(220, 38, 38, 0.18), transparent 50%),
+        radial-gradient(circle at top right, rgba(22, 163, 74, 0.2), transparent 55%),
+        radial-gradient(circle at bottom, rgba(250, 204, 21, 0.15), var(--bg) 70%);
       color: var(--fg);
       min-height: 100vh;
       display: flex;
@@ -69,12 +76,28 @@
       background: var(--card-bg);
       border-radius: 16px;
       border: 1px solid var(--border);
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.24);
       padding: 16px;
       display: flex;
       flex-direction: column;
       gap: 12px;
+      position: relative;
+      overflow: hidden;
     }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(135deg, rgba(250, 250, 250, 0.3), transparent 40%),
+        radial-gradient(circle at top right, rgba(250, 204, 21, 0.2), transparent 55%);
+      mix-blend-mode: soft-light;
+      opacity: 0.8;
+    }
+
+    .card > * { position: relative; }
 
     header {
       display: flex;
@@ -92,29 +115,30 @@
     }
 
     header h1 span.logo-dot {
-      width: 8px;
-      height: 8px;
+      width: 10px;
+      height: 10px;
       border-radius: 999px;
-      background: var(--accent);
-      box-shadow: 0 0 0 4px var(--accent-soft);
+      background: linear-gradient(135deg, var(--accent-strong), #f97316);
+      box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.25);
     }
 
     .pill {
       font-size: 0.7rem;
       padding: 2px 8px;
       border-radius: 999px;
-      border: 1px solid var(--border);
-      background: var(--accent-soft);
+      border: 1px solid rgba(250, 204, 21, 0.7);
+      background: rgba(250, 204, 21, 0.14);
       display: inline-flex;
       align-items: center;
       gap: 4px;
+      color: #92400e;
     }
 
     .pill-dot {
       width: 6px;
       height: 6px;
       border-radius: 999px;
-      background: var(--accent);
+      background: var(--accent-strong);
     }
 
     .screen {
@@ -154,7 +178,11 @@
       border-radius: 12px;
       border: 1px solid var(--border);
       padding: 8px 10px;
-      background: rgba(15, 23, 42, 0.02);
+      background: linear-gradient(
+        135deg,
+        rgba(22, 163, 74, 0.06),
+        rgba(185, 28, 28, 0.04)
+      );
       display: flex;
       flex-direction: column;
       gap: 6px;
@@ -162,7 +190,7 @@
 
     .question-text {
       font-size: 0.85rem;
-      font-weight: 500;
+      font-weight: 600;
     }
 
     .options {
@@ -201,18 +229,18 @@
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--accent), #9333ea);
+      background: linear-gradient(135deg, var(--accent), #be123c);
       color: white;
-      box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+      box-shadow: 0 10px 25px rgba(185, 28, 28, 0.45);
     }
 
     .btn-primary:active {
       transform: translateY(1px) scale(0.99);
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.45);
+      box-shadow: 0 4px 12px rgba(185, 28, 28, 0.5);
     }
 
     .btn-outline {
-      background: transparent;
+      background: rgba(248, 250, 252, 0.5);
       border: 1px solid var(--border);
       color: var(--fg);
     }
@@ -244,8 +272,10 @@
       align-items: center;
       padding: 16px;
       border-radius: 18px;
-      border: 1px dashed var(--border);
-      background: radial-gradient(circle at top, var(--accent-soft), transparent);
+      border: 1px dashed rgba(250, 204, 21, 0.7);
+      background:
+        radial-gradient(circle at top, rgba(250, 204, 21, 0.2), transparent 55%),
+        radial-gradient(circle at bottom, rgba(22, 163, 74, 0.16), transparent 55%);
       min-height: 260px;
     }
 
@@ -268,8 +298,8 @@
       font-size: 0.75rem;
       padding: 4px 8px;
       border-radius: 999px;
-      background: rgba(15, 23, 42, 0.04);
-      border: 1px solid var(--border);
+      background: rgba(248, 250, 252, 0.8);
+      border: 1px solid rgba(209, 213, 219, 0.8);
       display: inline-flex;
       align-items: center;
       gap: 4px;
@@ -277,13 +307,6 @@
 
     .chip span.label { opacity: 0.7; }
     .chip strong { font-weight: 600; }
-
-    .chip-match {
-      background: rgba(22, 163, 74, 0.1);
-      border-color: rgba(22, 163, 74, 0.6);
-      color: var(--accent-strong);
-      font-weight: 600;
-    }
 
     .top-controls {
       display: flex;
@@ -303,7 +326,7 @@
       border-radius: 14px;
       padding: 10px 12px;
       border: 1px solid var(--border);
-      background: rgba(15, 23, 42, 0.02);
+      background: rgba(248, 250, 252, 0.82);
       display: flex;
       flex-direction: column;
       gap: 2px;
@@ -358,7 +381,7 @@
       max-width: 300px;
       aspect-ratio: 1 / 1;
       border-radius: 22px;
-      border: 2px solid rgba(248, 250, 252, 0.85);
+      border: 2px solid rgba(248, 250, 252, 0.9);
       box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.6), 0 18px 40px rgba(0, 0, 0, 0.6);
     }
 
@@ -372,6 +395,7 @@
       overflow-y: auto;
       border-radius: 12px;
       border: 1px solid var(--border);
+      background: rgba(248, 250, 252, 0.88);
     }
 
     .scan-row {
@@ -395,20 +419,33 @@
 
     .scan-row-meta {
       font-size: 0.7rem;
-      opacity: 0.75;
+      opacity: 0.85;
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
       align-items: center;
     }
 
-    .match-badge {
+    /* Full match: green */
+    .match-badge-full {
       font-size: 0.7rem;
       border-radius: 999px;
       padding: 2px 6px;
-      background: rgba(22, 163, 74, 0.12);
-      border: 1px solid rgba(22, 163, 74, 0.7);
-      color: var(--accent-strong);
+      background: rgba(22, 163, 74, 0.16);
+      border: 1px solid rgba(22, 163, 74, 0.9);
+      color: #166534;
+      font-weight: 600;
+    }
+
+    /* Partial match: gold/yellow */
+    .match-badge-partial {
+      font-size: 0.7rem;
+      border-radius: 999px;
+      padding: 2px 6px;
+      background: rgba(250, 204, 21, 0.16);
+      border: 1px solid rgba(250, 204, 21, 0.9);
+      color: #92400e;
+      font-weight: 500;
     }
 
     .empty-state {
@@ -420,7 +457,7 @@
 
     .subtle {
       font-size: 0.75rem;
-      opacity: 0.8;
+      opacity: 0.85;
     }
 
     .detail-list {
@@ -431,7 +468,7 @@
     }
 
     .detail-question {
-      font-weight: 500;
+      font-weight: 600;
       margin-bottom: 2px;
     }
 
@@ -440,21 +477,21 @@
       padding: 4px 8px;
       border-radius: 999px;
       border: 1px solid var(--border);
-      background: rgba(15, 23, 42, 0.02);
+      background: rgba(248, 250, 252, 0.8);
       font-size: 0.8rem;
       margin-top: 2px;
     }
 
     .detail-answer-same {
-      background: rgba(22, 163, 74, 0.12);
-      border-color: rgba(22, 163, 74, 0.7);
-      color: var(--accent-strong);
+      background: linear-gradient(135deg, rgba(250, 204, 21, 0.22), rgba(22, 163, 74, 0.18));
+      border-color: rgba(250, 204, 21, 0.95);
+      color: #78350f;
       font-weight: 600;
     }
 
     .detail-name {
       font-size: 1rem;
-      font-weight: 600;
+      font-weight: 700;
       margin-bottom: 4px;
     }
 
@@ -490,7 +527,7 @@
 
         <div class="field">
           <label for="fullName" id="label-fullname">이름</label>
-          <input id="fullName" placeholder="예: 김예수" />
+          <input id="fullName" placeholder="예: 권민서" />
         </div>
 
         <div class="question-block" id="q1-block">
@@ -718,7 +755,7 @@
 
         intro: "오늘 파티에서 나와 비슷한 사람을 찾아볼까요? 질문에 답하고 나만의 QR을 만들어 보세요.",
         fullNameLabel: "이름",
-        fullNamePlaceholder: "예: 김예수",
+        fullNamePlaceholder: "예: 권민서",
         saveProfile: "내 답변 저장하고 QR 보기",
         editProfile: "내 답변 수정",
 
@@ -768,7 +805,7 @@
 
         intro: "Want to find people like you at the party? Answer a few questions and create your own QR.",
         fullNameLabel: "Name",
-        fullNamePlaceholder: "e.g. Jesus Kim",
+        fullNamePlaceholder: "e.g. Minseo Kwon",
         saveProfile: "Save my answers & show QR",
         editProfile: "Edit my answers",
 
@@ -892,7 +929,7 @@
     const stopScanBtn = document.getElementById("stop-scan");
     const openScannerBtn = document.getElementById("open-scanner");
 
-    const metListTitleEl = document.getElementById("met-list-title");
+    const metListTitleDom = document.getElementById("met-list-title");
     const clearMetBtn = document.getElementById("clear-met");
     const backToMainBtn = document.getElementById("back-to-main");
     const backToQrBtn = document.getElementById("back-to-qr");
@@ -1000,17 +1037,12 @@
       stopScanBtn.textContent = t("doneScan");
       scanStatus.textContent = t("scanStatusIntro");
 
-      metListTitleEl.textContent = t("metListTitle");
-      clearMetBtn.textContent = t("clearMet");
-      backToMainBtn.textContent = t("back");
-      backToQrBtn.textContent = t("backToQR");
-      backFromDetailBtn.textContent = t("back");
       footerTextEl.textContent = t("footer");
-
       detailTitleEl.textContent = t("detailTitle");
 
-      renderQuestions();
       applyTheme();
+      renderQuestions();
+      renderMetList(); // updates title with count
     }
 
     function toggleLanguage() {
@@ -1018,7 +1050,6 @@
       setCookie(langCookieKey, currentLang, 365);
       applyLanguage();
       updateProfileSummary();
-      renderMetList();
     }
 
     function toggleTheme() {
@@ -1090,26 +1121,20 @@
       if (!profile) return;
 
       const qs = getQuestions();
+
+      // Chip 1: 이름 권민서
       const chipName = document.createElement("div");
       chipName.className = "chip";
-      const labelSpan = document.createElement("span");
-      labelSpan.className = "label";
-      labelSpan.textContent = currentLang === "ko" ? "이름" : "Name";
-      const strongVal = document.createElement("strong");
-      strongVal.textContent = profile.name;
-      chipName.appendChild(labelSpan);
-      chipName.appendChild(strongVal);
+      const strongName = document.createElement("strong");
+      strongName.textContent = profile.name;
+      chipName.appendChild(strongName);
       profileSummary.appendChild(chipName);
 
-      // Show Q4 "character" as a chip
+      // Chip 2: 캐릭터 제목만 (샬롬 전도사)
       const chipChar = document.createElement("div");
       chipChar.className = "chip";
-      const labelChar = document.createElement("span");
-      labelChar.className = "label";
-      labelChar.textContent = "Q4";
       const strongChar = document.createElement("strong");
       strongChar.textContent = qs[3].options[profile.a4 ?? 0];
-      chipChar.appendChild(labelChar);
       chipChar.appendChild(strongChar);
       profileSummary.appendChild(chipChar);
     }
@@ -1125,11 +1150,27 @@
 
     function answersShareAny(a, b) {
       if (!a || !b) return false;
-      return (a.a1 === b.a1) || (a.a2 === b.a2) || (a.a3 === b.a3) || (a.a4 === b.a4);
+      return (
+        a.a1 === b.a1 ||
+        a.a2 === b.a2 ||
+        a.a3 === b.a3 ||
+        a.a4 === b.a4
+      );
+    }
+
+    function updateMetListTitle() {
+      const base = t("metListTitle");
+      if (currentLang === "ko") {
+        metListTitleDom.textContent = `${base} (${metList.length}명)`;
+      } else {
+        metListTitleDom.textContent = `${base} (${metList.length})`;
+      }
     }
 
     function renderMetList() {
       scanListEl.innerHTML = "";
+      updateMetListTitle();
+
       if (!metList.length) {
         const empty = document.createElement("div");
         empty.className = "empty-state";
@@ -1171,17 +1212,18 @@
         q4Span.textContent = qs[3].options[item.a4 ?? 0] || "";
         meta.appendChild(q4Span);
 
-        // Match badge (all answers same)
-        if (profile && answersAllSame(profile, item)) {
-          const badge = document.createElement("span");
-          badge.className = "match-badge";
-          badge.textContent = t("matchBadge");
-          meta.appendChild(badge);
-        } else if (profile && answersShareAny(profile, item)) {
-          const badge = document.createElement("span");
-          badge.className = "match-badge";
-          badge.textContent = t("matchPartial");
-          meta.appendChild(badge);
+        if (profile) {
+          if (answersAllSame(profile, item)) {
+            const badge = document.createElement("span");
+            badge.className = "match-badge-full";
+            badge.textContent = t("matchBadge");
+            meta.appendChild(badge);
+          } else if (answersShareAny(profile, item)) {
+            const badge = document.createElement("span");
+            badge.className = "match-badge-partial";
+            badge.textContent = t("matchPartial");
+            meta.appendChild(badge);
+          }
         }
 
         row.appendChild(header);
@@ -1215,6 +1257,45 @@
 
     function saveMetList() {
       setCookie(metCookieKey, JSON.stringify(metList), 365);
+    }
+
+    // ---------- Detail view helper ----------
+    function showPersonDetail(person) {
+      const qs = getQuestions();
+      const my = profile;
+
+      detailNameEl.textContent = person.name || "";
+      detailMetTimeEl.textContent = person.timestamp
+        ? new Date(person.timestamp).toLocaleString()
+        : "";
+
+      detailQaEl.innerHTML = "";
+
+      [
+        { q: qs[0], key: "a1", idx: person.a1 },
+        { q: qs[1], key: "a2", idx: person.a2 },
+        { q: qs[2], key: "a3", idx: person.a3 },
+        { q: qs[3], key: "a4", idx: person.a4 }
+      ].forEach(entry => {
+        const wrap = document.createElement("div");
+        const qDiv = document.createElement("div");
+        qDiv.className = "detail-question";
+        qDiv.textContent = entry.q.text;
+
+        const ansDiv = document.createElement("div");
+        ansDiv.className = "detail-answer-pill";
+        if (my && my[entry.key] === entry.idx) {
+          ansDiv.classList.add("detail-answer-same");
+        }
+        const text = entry.q.options[entry.idx ?? 0] || "";
+        ansDiv.textContent = text;
+
+        wrap.appendChild(qDiv);
+        wrap.appendChild(ansDiv);
+        detailQaEl.appendChild(wrap);
+      });
+
+      showScreen("s5");
     }
 
     // ---------- Scanner ----------
@@ -1254,7 +1335,7 @@
       }
     }
 
-    function stopScanner() {
+    function stopScannerAndStayOnScreen2() {
       if (videoStream) {
         videoStream.getTracks().forEach(t => t.stop());
         videoStream = null;
@@ -1267,6 +1348,19 @@
       scanStatus.textContent = t("scanStatusStopped");
       pillStatus.textContent = t("pillReady");
       showScreen("s2");
+    }
+
+    function stopScannerWithoutNavigation() {
+      if (videoStream) {
+        videoStream.getTracks().forEach(t => t.stop());
+        videoStream = null;
+      }
+      if (scanLoopId) {
+        cancelAnimationFrame(scanLoopId);
+        scanLoopId = null;
+      }
+      videoEl.srcObject = null;
+      pillStatus.textContent = t("pillReady");
     }
 
     function startScanLoop() {
@@ -1335,7 +1429,7 @@
       const a3 = decoded.a3 ?? 0;
       const a4 = decoded.a4 ?? 0;
 
-      const existing = metList.find(
+      let existing = metList.find(
         m =>
           m.name === name &&
           m.a1 === a1 &&
@@ -1345,22 +1439,24 @@
       );
 
       if (!existing) {
-        metList.push({
+        existing = {
           name,
           a1,
           a2,
           a3,
           a4,
           timestamp: Date.now()
-        });
+        };
+        metList.push(existing);
         saveMetList();
         updateMetCount();
+        renderMetList();
       }
 
-      alert(t("alertScanned", name));
-      stopScanner();
-      renderMetList();
-      showScreen("s4");
+      // Stop scanner but do NOT navigate back to QR;
+      // instead go straight to detail screen (#5).
+      stopScannerWithoutNavigation();
+      showPersonDetail(existing);
     }
 
     // ---------- Events & init ----------
@@ -1402,10 +1498,10 @@
       backFromDetailBtn.addEventListener("click", () => showScreen("s4"));
 
       openScannerBtn.addEventListener("click", startScanner);
-      stopScanBtn.addEventListener("click", stopScanner);
+      stopScanBtn.addEventListener("click", stopScannerAndStayOnScreen2);
       flipCameraBtn.addEventListener("click", async () => {
         usingRear = !usingRear;
-        stopScanner();
+        stopScannerWithoutNavigation();
         await startScanner();
       });
 
@@ -1415,42 +1511,7 @@
         const idx = parseInt(row.dataset.index, 10);
         const person = metList[idx];
         if (!person) return;
-
-        detailNameEl.textContent = person.name || "";
-        detailMetTimeEl.textContent = person.timestamp
-          ? new Date(person.timestamp).toLocaleString()
-          : "";
-
-        const qs = getQuestions();
-        detailQaEl.innerHTML = "";
-
-        const my = profile;
-
-        [
-          { q: qs[0], key: "a1", idx: person.a1 },
-          { q: qs[1], key: "a2", idx: person.a2 },
-          { q: qs[2], key: "a3", idx: person.a3 },
-          { q: qs[3], key: "a4", idx: person.a4 }
-        ].forEach(entry => {
-          const wrap = document.createElement("div");
-          const qDiv = document.createElement("div");
-          qDiv.className = "detail-question";
-          qDiv.textContent = entry.q.text;
-
-          const ansDiv = document.createElement("div");
-          ansDiv.className = "detail-answer-pill";
-          if (my && my[entry.key] === entry.idx) {
-            ansDiv.classList.add("detail-answer-same");
-          }
-          const text = entry.q.options[entry.idx ?? 0] || "";
-          ansDiv.textContent = text;
-
-          wrap.appendChild(qDiv);
-          wrap.appendChild(ansDiv);
-          detailQaEl.appendChild(wrap);
-        });
-
-        showScreen("s5");
+        showPersonDetail(person);
       });
     }
 
