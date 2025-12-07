@@ -9,6 +9,8 @@
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
   <!-- LOCAL QR code generator (must be in same folder) -->
   <script src="qrcode.min.js"></script>
+  <!-- Compression library for shorter QR payloads -->
+  <script src="https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js"></script>
 
   <style>
     :root {
@@ -41,9 +43,7 @@
       }
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -124,9 +124,7 @@
       gap: 12px;
     }
 
-    .screen.active {
-      display: flex;
-    }
+    .screen.active { display: flex; }
 
     .field {
       display: flex;
@@ -198,9 +196,7 @@
       justify-content: space-between;
     }
 
-    .footer-row .btn {
-      flex: 1;
-    }
+    .footer-row .btn { flex: 1; }
 
     .meta-row {
       display: flex;
@@ -249,13 +245,9 @@
       gap: 4px;
     }
 
-    .chip span.label {
-      opacity: 0.7;
-    }
+    .chip span.label { opacity: 0.7; }
 
-    .chip strong {
-      font-weight: 600;
-    }
+    .chip strong { font-weight: 600; }
 
     .top-controls {
       display: flex;
@@ -356,9 +348,7 @@
       cursor: pointer;
     }
 
-    .scan-row:last-child {
-      border-bottom: none;
-    }
+    .scan-row:last-child { border-bottom: none; }
 
     .scan-row-header {
       display: flex;
@@ -910,11 +900,46 @@
       applyTheme();
     }
 
-    // Utility: clamp string length to avoid extreme overflow cases
-    function clamp(str, maxLen) {
-      if (!str) return "";
-      if (str.length <= maxLen) return str;
-      return str.slice(0, maxLen);
+    // ---------- QR payload encoding ----------
+    // v1: <compressedUsingLZString>
+    function encodeProfileForQR(p) {
+      const obj = {
+        v: 1,
+        fullName: p.fullName || "",
+        group: p.group || "",
+        mbti: p.mbti || "",
+        location: p.location || "",
+        hobby: p.hobby || ""
+      };
+      const json = JSON.stringify(obj);
+      const compressed = LZString.compressToEncodedURIComponent(json);
+      return "v1:" + compressed;
+    }
+
+    function decodeProfileFromQR(str) {
+      if (str.startsWith("v1:")) {
+        const payload = str.slice(3);
+        const json = LZString.decompressFromEncodedURIComponent(payload);
+        if (!json) throw new Error("Failed to decompress QR payload");
+        const obj = JSON.parse(json);
+        return {
+          fullName: obj.fullName || "",
+          group: obj.group || "",
+          mbti: obj.mbti || "",
+          location: obj.location || "",
+          hobby: obj.hobby || ""
+        };
+      } else {
+        // fallback: old format name|group|mbti|location|hobby
+        const parts = str.split("|");
+        return {
+          fullName: (parts[0] || "").trim(),
+          group: (parts[1] || "").trim(),
+          mbti: (parts[2] || "").trim(),
+          location: (parts[3] || "").trim(),
+          hobby: (parts[4] || "").trim()
+        };
+      }
     }
 
     // ---------- QR (using local qrcode.min.js) ----------
@@ -924,21 +949,23 @@
       const qrContainer = document.getElementById("qrcode");
       if (!qrContainer) return;
 
-      // pull current profile
-      let { fullName, group, mbti, location, hobby } = profile;
+      // no hard clamp needed anymore, but we still prevent insane sizes
+      const limit = 500;
+      function clamp(str) {
+        if (!str) return "";
+        return str.length > limit ? str.slice(0, limit) : str;
+      }
 
-      // VERY generous limits; still keeps "all info" in practice,
-      // just prevents accidental huge paste from breaking QR
-      fullName = clamp(fullName, 200);
-      group    = clamp(group,    200);
-      mbti     = clamp(mbti,     200);
-      location = clamp(location, 200);
-      hobby    = clamp(hobby,    200);
-
-      profile = { fullName, group, mbti, location, hobby };
+      profile = {
+        fullName: clamp(profile.fullName),
+        group: clamp(profile.group),
+        mbti: clamp(profile.mbti),
+        location: clamp(profile.location),
+        hobby: clamp(profile.hobby)
+      };
       setCookie(profileCookieKey, JSON.stringify(profile), 365);
 
-      const data = `${fullName}|${group}|${mbti}|${location}|${hobby}`;
+      const data = encodeProfileForQR(profile);
 
       qrContainer.innerHTML = "";
 
@@ -1072,13 +1099,6 @@
         return false;
       }
 
-      // same generous limits as in updateQR
-      fullName = clamp(fullName, 200);
-      group    = clamp(group,    200);
-      mbti     = clamp(mbti,     200);
-      location = clamp(location, 200);
-      hobby    = clamp(hobby,    200);
-
       profile = { fullName, group, mbti, location, hobby };
       setCookie(profileCookieKey, JSON.stringify(profile), 365);
       return true;
@@ -1185,32 +1205,25 @@
     }
 
     function handleScannedData(dataStr) {
-      const parts = dataStr.split("|");
-      if (parts.length < 1) {
+      let decodedProfile;
+      try {
+        decodedProfile = decodeProfileFromQR(dataStr);
+      } catch (e) {
+        console.error("Failed to decode profile from QR:", e);
         scanStatus.textContent = t("scanStatusFormatUnsupported");
         return;
       }
 
-      const name = (parts[0] || "").trim();
-      let group = "";
-      let mbti = "";
-      let location = "";
-      let hobby = "";
-
-      if (parts.length >= 5) {
-        group = (parts[1] || "").trim();
-        mbti = (parts[2] || "").trim();
-        location = (parts[3] || "").trim();
-        hobby = (parts[4] || "").trim();
-      } else if (parts.length >= 3) {
-        mbti = (parts[1] || "").trim();
-        location = (parts[2] || "").trim();
-      }
-
+      const name = (decodedProfile.fullName || "").trim();
       if (!name) {
         scanStatus.textContent = t("scanStatusMissingName");
         return;
       }
+
+      const group = decodedProfile.group || "";
+      const mbti = decodedProfile.mbti || "";
+      const location = decodedProfile.location || "";
+      const hobby = decodedProfile.hobby || "";
 
       const existing = metList.find(
         m =>
