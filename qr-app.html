@@ -5,9 +5,7 @@
   <title>밋 트래커</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Local QR Code generator (must be in same folder) -->
-  <script src="qrcode.min.js"></script>
-  <!-- jsQR (QR code reader) from CDN - this one is already working for you -->
+  <!-- jsQR (QR code reader) -->
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 
   <style>
@@ -223,8 +221,7 @@
       min-height: 220px;
     }
 
-    .qr-box img,
-    .qr-box canvas {
+    .qr-box img {
       max-width: 300px;
       width: 80%;
       height: auto;
@@ -694,8 +691,7 @@
         alertClearConfirm: "정말로 만난 사람 목록을 모두 삭제할까요?",
         alertScanned: name => `스캔 완료: ${name} 님 정보를 저장했습니다.`,
         alertCameraUnsupported: "이 브라우저에서는 카메라를 사용할 수 없습니다.",
-        alertCameraError: msg => `카메라에 접근할 수 없습니다: ${msg}`,
-        qrLibMissing: "qrcode.min.js 파일이 같은 폴더에 있는지 확인해 주세요."
+        alertCameraError: msg => `카메라에 접근할 수 없습니다: ${msg}`
       },
       en: {
         appTitle: "Meet Tracker",
@@ -757,8 +753,7 @@
         alertClearConfirm: "Clear all entries in 'People you’ve met'?",
         alertScanned: name => `Scanned and saved: ${name}`,
         alertCameraUnsupported: "Camera access is not supported in this browser.",
-        alertCameraError: msg => `Unable to access camera: ${msg}`,
-        qrLibMissing: "Please make sure qrcode.min.js is in the same folder as this HTML file."
+        alertCameraError: msg => `Unable to access camera: ${msg}`
       }
     };
 
@@ -914,7 +909,7 @@
       applyTheme();
     }
 
-    // ---------- QR ----------
+    // ---------- QR (image via Google Charts) ----------
     function updateQR() {
       if (!profile) return;
       const qrContainer = document.getElementById("qrcode");
@@ -924,29 +919,14 @@
       const data = `${fullName || ""}|${group || ""}|${mbti || ""}|${location || ""}|${hobby || ""}`;
 
       qrContainer.innerHTML = "";
-
-      if (typeof QRCode === "undefined") {
-        console.error("QRCode library is not available.");
-        const fallback = document.createElement("div");
-        fallback.style.textAlign = "center";
-        fallback.style.fontSize = "0.8rem";
-        fallback.style.opacity = "0.8";
-        fallback.textContent = t("qrLibMissing");
-        qrContainer.appendChild(fallback);
-        return;
-      }
-
-      try {
-        new QRCode(qrContainer, data);
-      } catch (e) {
-        console.error("QR generation error:", e);
-        const fallback = document.createElement("div");
-        fallback.style.textAlign = "center";
-        fallback.style.fontSize = "0.8rem";
-        fallback.style.opacity = "0.8";
-        fallback.textContent = t("qrLibMissing");
-        qrContainer.appendChild(fallback);
-      }
+      const img = document.createElement("img");
+      const size = 300;
+      img.alt = "Profile QR code";
+      img.src = "https://chart.googleapis.com/chart?chs=" +
+        size + "x" + size +
+        "&cht=qr&chld=L|0&chl=" +
+        encodeURIComponent(data);
+      qrContainer.appendChild(img);
     }
 
     function updateProfileSummary() {
@@ -1220,12 +1200,7 @@
         pillStatus.textContent = t("pillSaved");
         updateProfileSummary();
         showScreen("s2");
-
-        try {
-          updateQR();
-        } catch (e) {
-          console.error("QR generation failed:", e);
-        }
+        updateQR();
       });
 
       editProfileBtn.addEventListener("click", () => {
@@ -1318,11 +1293,7 @@
         locationInput.value = profile.location || "";
         hobbyInput.value = profile.hobby || "";
         updateProfileSummary();
-        try {
-          updateQR();
-        } catch (e) {
-          console.error("Initial QR generation failed:", e);
-        }
+        updateQR();
         showScreen("s2");
         pillStatus.textContent = t("pillLoaded");
       } else {
