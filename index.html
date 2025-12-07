@@ -1,190 +1,359 @@
-<!DOCTYPE HTML>
-<!--
-	Story by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
-<html>
-	<head>
-		<title>Minseo Kwon iOS Developer</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="assets/css/main.css" />
-		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-	</head>
-	<body class="is-preload">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Welcome</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-		<!-- Wrapper -->
-			<div id="wrapper" class="divided">
+  <style>
+    /* Reset-ish */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-				<!-- Banner -->
-					<section class="banner style3 invert color1 orient-left content-align-left image-position-right fullscreen onload-image-fade-in onload-content-fade-right", style="background: url('images/banner.jpg'); background-repeat: no-repeat; background-size: cover;">
-						<div class="content">
-							<h1><strong>Minseo Kwon</strong></h1>
-							<p class="major">I am iOS developer from Toronto.</p>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi id ante sed ex pharetra lacinia sit amet vel massa. Donec facilisis laoreet nulla eu bibendum. Donec ut ex risus. Fusce lorem lectus, pharetra pretium massa et, hendrerit vestibulum odio lorem ipsum.</p>
-							<ul class="actions stacked">
-								<li><a href="#projects" class="button big wide smooth-scroll">Get Started</a></li>
-							</ul>
-						</div>
-						<div class="image">
-							<img src="images/min_circle.png" alt="" />
-						</div>
-						
-					</section>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top, #f5f7fb, #e6eaee);
+      color: #111827;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-				<!-- Experiences -->	
-					<section class="wrapper style1 invert color1 align-center" id="projects">
-						<div class="inner">
-							<h2>Experiences</h2>	
-						</div>
-					</section>
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
 
-				<!-- 500px -->
-					<section class="spotlight style1 invert color1 orient-right content-align-left image-position-center onscroll-image-fade-in">
-						<div class="content">
-							<h2><strong>500px</strong></h2>
-							<h4>April, 2019 to Present</h4>
-							<h4>Toronto, Canada</h4>
-							<p>Develop iOS App for photographers to discover and share incredible photos, gain global exposure within a community of 15 million members that know and love photography.</p>
-						</div>
-						<div class="image">
-							<img src="images/experiences/exp_500px.jpg" alt="" />
-						</div>
-					</section>
+    /* Layout */
+    header {
+      width: 100%;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(8px);
+      background: rgba(255, 255, 255, 0.8);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+      z-index: 10;
+    }
 
-				<!-- Mircom -->
-					<section class="spotlight style1 invert color1 orient-left content-align-left image-position-center onscroll-image-fade-in">
-						<div class="content">
-							<h2><strong>Mircom</strong></h2>
-							<h4>January, 2018 to April, 2019</h4>
-							<h4>Vaughan, Canada</h4>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi id ante sed ex pharetra lacinia sit amet vel massa. Donec facilisis laoreet nulla eu bibendum. Donec ut ex risus. Fusce lorem lectus, pharetra pretium massa et, hendrerit vestibulum odio lorem ipsum.</p>
-						</div>
-						<div class="image">
-							<img src="images/experiences/exp_mircom.jpg" alt="" />
-						</div>
-					</section>
+    .logo {
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      font-size: 1.1rem;
+    }
 
-				<!-- Mircom -->
-					<section class="spotlight style1 invert color1 orient-right content-align-left image-position-center onscroll-image-fade-in">
-						<div class="content">
-							<h2><strong>29ground</strong></h2>
-							<h4>2017 to Present</h4>
-							<h4>Toronto, Canada</h4>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi id ante sed ex pharetra lacinia sit amet vel massa. Donec facilisis laoreet nulla eu bibendum. Donec ut ex risus. Fusce lorem lectus, pharetra pretium massa et, hendrerit vestibulum odio lorem ipsum.</p>
-						</div>
-						<div class="image">
-							<img src="images/experiences/exp_29ground.jpg" alt="" />
-						</div>
-					</section>
+    /* Desktop nav */
+    nav {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
 
-				<!-- Projects -->
-					<section class="wrapper style1 invert color1 align-center">
-						<div class="inner">
-							<h2>Projects</h2>
-							<div class="items style3 big onscroll-fade-in">
-								<section>
-									<div class="image">
-										<img src="images/projects/500pxAppIcon.png">
-									</div>
-									<h3><strong>500px</strong></h3>
-									<p>Objective-C, Swift, SwfitUI, MVC, Clean Architecture</p>
-									<a href="https://apps.apple.com/us/app/500px-photography-community/id471965292" class="button small">Appstore</a>
-								</section>
-								<section>
-									<div class="image">
-										<img src="images/projects/mientryAppIcon.png">
-									</div>
-									<h3><strong>MiEntry</strong></h3>
-									<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi dui turpis, cursus eget orci amet aliquam congue semper. Etiam eget ultrices risus nec tempor elit.</p>
-									<a href="https://apps.apple.com/ca/app/mientry/id1353098337" class="button small">Appstore</a>
-								</section>
-								<section>
-									<div class="image">
-										<img src="images/projects/lightChurchAppIcon.png">
-									</div>
-									<h3><strong>LightChurch</strong></h3>
-									<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi dui turpis, cursus eget orci amet aliquam congue semper. Etiam eget ultrices risus nec tempor elit.</p>
-								</section>
-								<section>
-									<div class="image">
-										<img src="images/projects/randomPickerAppIcon.png">
-									</div>
-									<h3><strong>Random Picker</strong></h3>
-									<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi dui turpis, cursus eget orci amet aliquam congue semper. Etiam eget ultrices risus nec tempor elit.</p>
-									<a href="https://apps.apple.com/us/app/random-picker/id1435548123" class="button small">Appstore</a>
-								</section>
-								<section>
-									<div class="image">
-										<img src="images/projects/workInProgress.png">
-									</div>
-									<h3><strong>Lone Survivor</strong></h3>
-									<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi dui turpis, cursus eget orci amet aliquam congue semper. Etiam eget ultrices risus nec tempor elit.</p>
-								</section>
-							</div>
-						</div>
-					</section>
+    nav a {
+      font-size: 0.95rem;
+      opacity: 0.8;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+    }
 
-				<!-- Footer -->
-					<footer class="wrapper style1 invert color1 align-center">
-						<div class="inner">
-							<ul class="icons">
-								<li><a href="https://www.instagram.com/minkwon14" class="icon brands style2 fa-instagram"><span class="label">Instagram</span></a></li>
-								<li><a href="https://www.linkedin.com/in/minseo-kwon-73a629b8/" class="icon brands style2 fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
-								<li><a href="mailto:min.kwon14@gmail.com" class="icon style2 fa-envelope"><span class="label">Email</span></a></li>
-							</ul>
-						</div>
-					</footer>
+    nav a:hover {
+      opacity: 1;
+      transform: translateY(-1px);
+    }
 
-			</div>
+    /* Mobile menu button */
+    .menu-toggle {
+      display: none;
+      border: none;
+      background: none;
+      cursor: pointer;
+      padding: 0.25rem;
+    }
 
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/jquery.scrollex.min.js"></script>
-			<script src="assets/js/jquery.scrolly.min.js"></script>
-			<script src="assets/js/browser.min.js"></script>
-			<script src="assets/js/breakpoints.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
+    .menu-toggle span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      margin: 4px 0;
+      background: #111827;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
 
-	</body>
+    /* Hero section */
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 1.5rem 3rem;
+    }
+
+    .hero {
+      max-width: 960px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: 2.5rem;
+      align-items: center;
+    }
+
+    .hero-text h1 {
+      font-size: clamp(2.1rem, 3vw + 1.5rem, 3rem);
+      line-height: 1.1;
+      margin-bottom: 1rem;
+    }
+
+    .hero-text p {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #4b5563;
+      margin-bottom: 1.75rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .btn-primary,
+    .btn-ghost {
+      padding: 0.75rem 1.4rem;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease,
+        background 0.15s ease, border-color 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: #111827;
+      color: #f9fafb;
+      box-shadow: 0 18px 30px rgba(15, 23, 42, 0.28);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 22px 40px rgba(15, 23, 42, 0.32);
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.8);
+      border-color: rgba(148, 163, 184, 0.6);
+    }
+
+    .btn-ghost:hover {
+      background: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(148, 163, 184, 0.35);
+    }
+
+    .hero-meta {
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+
+    /* Right card / illustration */
+    .hero-card {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 1.5rem;
+      padding: 1.5rem 1.3rem;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      box-shadow: 0 18px 40px rgba(148, 163, 184, 0.45);
+    }
+
+    .hero-card h2 {
+      font-size: 1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .hero-card p {
+      font-size: 0.9rem;
+      color: #4b5563;
+      margin-bottom: 1.2rem;
+    }
+
+    .pill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .pill {
+      font-size: 0.75rem;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(248, 250, 252, 0.9);
+    }
+
+    footer {
+      padding: 1rem 1.5rem 1.25rem;
+      font-size: 0.8rem;
+      text-align: center;
+      color: #6b7280;
+    }
+
+    /* RESPONSIVE STYLES */
+
+    @media (max-width: 768px) {
+      header {
+        padding-inline: 1rem;
+      }
+
+      nav {
+        position: absolute;
+        top: 60px;
+        right: 1rem;
+        flex-direction: column;
+        background: rgba(255, 255, 255, 0.96);
+        border-radius: 0.75rem;
+        padding: 0.75rem 1rem;
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.18);
+        min-width: 160px;
+        transform-origin: top right;
+        transform: scale(0.9);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.18s ease, transform 0.18s ease;
+      }
+
+      nav.open {
+        opacity: 1;
+        pointer-events: auto;
+        transform: scale(1);
+      }
+
+      .menu-toggle {
+        display: block;
+      }
+
+      /* Animate hamburger icon to X when open */
+      .menu-toggle.open span:nth-child(1) {
+        transform: translateY(6px) rotate(45deg);
+      }
+      .menu-toggle.open span:nth-child(2) {
+        opacity: 0;
+      }
+      .menu-toggle.open span:nth-child(3) {
+        transform: translateY(-6px) rotate(-45deg);
+      }
+
+      main {
+        padding-inline: 1rem;
+      }
+
+      .hero {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .hero-card {
+        order: -1; /* move the card above text on mobile */
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero-text p {
+        font-size: 0.95rem;
+      }
+
+      .hero-card {
+        padding: 1.25rem 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">MyWelcome</div>
+
+    <button class="menu-toggle" aria-label="Toggle navigation">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <nav>
+      <a href="#welcome">Home</a>
+      <a href="#about">About</a>
+      <a href="#get-started">Get Started</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="welcome">
+      <div class="hero-text">
+        <h1>Welcome! You&rsquo;re in the right place.</h1>
+        <p>
+          This is a clean, responsive welcome page that looks great on phones,
+          tablets, and desktops. Resize your screen to see how it adapts.
+        </p>
+
+        <div class="hero-actions" id="get-started">
+          <button class="btn-primary">Get Started</button>
+          <button class="btn-ghost">Learn More</button>
+        </div>
+
+        <div class="hero-meta">
+          No frameworks, just HTML, CSS, and a tiny bit of JavaScript.
+        </div>
+      </div>
+
+      <aside class="hero-card" id="about">
+        <h2>Ready out of the box</h2>
+        <p>
+          This layout includes a mobile-friendly navigation menu and a responsive
+          two-column hero section that collapses gracefully on small screens.
+        </p>
+
+        <div class="pill-list">
+          <span class="pill">Responsive</span>
+          <span class="pill">Mobile-first</span>
+          <span class="pill">Accessible</span>
+          <span class="pill">Lightweight</span>
+        </div>
+
+        <p style="font-size: 0.8rem; color: #9ca3af;">
+          Tip: replace the text, logo, and buttons with your app&rsquo;s content.
+        </p>
+      </aside>
+    </section>
+  </main>
+
+  <footer>
+    &copy; <span id="year"></span> MyWelcome. All rights reserved.
+  </footer>
+
+  <script>
+    // Mobile nav toggle
+    const toggle = document.querySelector(".menu-toggle");
+    const nav = document.querySelector("header nav");
+
+    toggle.addEventListener("click", () => {
+      toggle.classList.toggle("open");
+      nav.classList.toggle("open");
+    });
+
+    // Close nav when clicking a link on mobile
+    nav.addEventListener("click", (e) => {
+      if (e.target.tagName === "A" && nav.classList.contains("open")) {
+        nav.classList.remove("open");
+        toggle.classList.remove("open");
+      }
+    });
+
+    // Dynamic year in footer
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
 </html>
-
-
-<!-- 
-					<section class="wrapper style1 align-center">
-						<div class="inner">
-							<h2>Gallery</h2>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi id ante sed ex pharetra lacinia sit amet vel massa. Donec facilisis laoreet nulla eu bibendum. Donec ut ex risus. Fusce lorem lectus, pharetra pretium massa et, hendrerit vestibulum odio lorem ipsum.</p>
-						</div>
-
-							<div class="gallery style2 medium lightbox onscroll-fade-in">
-								<article>
-									<a href="images/gallery/fulls/01.jpg" class="image">
-										<img src="images/gallery/thumbs/01.jpg" alt="" />
-									</a>
-									<div class="caption">
-										<h3>Ipsum Dolor</h3>
-										<p>Lorem ipsum dolor amet, consectetur magna etiam elit. Etiam sed ultrices.</p>
-										<ul class="actions fixed">
-											<li><span class="button small">Details</span></li>
-										</ul>
-									</div>
-								</article>
-								<article>
-									<a href="images/gallery/fulls/02.jpg" class="image">
-										<img src="images/gallery/thumbs/02.jpg" alt="" />
-									</a>
-									<div class="caption">
-										<h3>Feugiat Lorem</h3>
-										<p>Lorem ipsum dolor amet, consectetur magna etiam elit. Etiam sed ultrices.</p>
-										<ul class="actions fixed">
-											<li><span class="button small">Details</span></li>
-										</ul>
-									</div>
-								</article>
-							</div>
-
-					</section>
-				-->
