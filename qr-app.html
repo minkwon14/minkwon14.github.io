@@ -446,6 +446,7 @@
           <label for="group" id="label-group">순 (Group)</label>
           <select id="group">
             <option value="" disabled selected>선택하세요</option>
+            <!-- 가나다 순 -->
             <option value="김수진">김수진</option>
             <option value="랠리스">랠리스</option>
             <option value="류다현">류다현</option>
@@ -916,13 +917,19 @@
       const { fullName, group, mbti, location, hobby } = profile;
       const data = `${fullName || ""}|${group || ""}|${mbti || ""}|${location || ""}|${hobby || ""}`;
       const qrContainer = document.getElementById("qrcode");
-      qrContainer.innerHTML = "";
-      new QRCode(qrContainer, {
-        text: data,
-        width: 300,
-        height: 300,
-        correctLevel: QRCode.CorrectLevel.L
-      });
+      if (!qrContainer) return;
+
+      try {
+        qrContainer.innerHTML = "";
+        new QRCode(qrContainer, {
+          text: data,
+          width: 300,
+          height: 300,
+          correctLevel: QRCode.CorrectLevel.L
+        });
+      } catch (e) {
+        console.error("QR generation error:", e);
+      }
     }
 
     function updateProfileSummary() {
@@ -1192,10 +1199,19 @@
 
       saveProfileBtn.addEventListener("click", () => {
         if (!saveProfileFromInputs()) return;
+
         pillStatus.textContent = t("pillSaved");
         updateProfileSummary();
-        updateQR();
+
+        // Always go to Screen 2 first
         showScreen("s2");
+
+        // Try QR generation but don't break navigation if it fails
+        try {
+          updateQR();
+        } catch (e) {
+          console.error("QR generation failed:", e);
+        }
       });
 
       editProfileBtn.addEventListener("click", () => {
@@ -1288,7 +1304,11 @@
         locationInput.value = profile.location || "";
         hobbyInput.value = profile.hobby || "";
         updateProfileSummary();
-        updateQR();
+        try {
+          updateQR();
+        } catch (e) {
+          console.error("Initial QR generation failed:", e);
+        }
         showScreen("s2");
         pillStatus.textContent = t("pillLoaded");
       } else {
