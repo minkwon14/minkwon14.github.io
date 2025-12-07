@@ -510,6 +510,9 @@
     .scan-row-subtitle {
       opacity: 0.85;
       flex: 0;
+      white-space: nowrap;        /* 💡 keep it on one line */
+      overflow: hidden;           /* optional: avoid overflow */
+      text-overflow: ellipsis;    /* optional: show "…" if too long */
     }
 
     .scan-row-right {
