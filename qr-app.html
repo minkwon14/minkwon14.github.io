@@ -510,7 +510,7 @@
         </div>
 
         <div class="meta-row">
-          <span id="scan-status">QR를 가운데 네모 안에 맞추고 잠시만 기다려 주세요…</span>
+          <span id="scan-status">QR를 가운데 네모 안에 맞추고, 너무 가까이 말고 살짝 떨어져 보세요.</span>
           <div style="display:flex;gap:6px;">
             <button id="flip-camera" class="btn btn-outline" type="button">
               카메라 전환
@@ -654,8 +654,8 @@
         qrDescription: "QR에는 이름, 순, MBTI, 사는 곳, 취미 정보가 들어갑니다.",
         scanButton: "QR 스캔하기",
 
-        scanStatusIntro: "QR를 가운데 네모 안에 맞추고 잠시만 기다려 주세요…",
-        scanStatusTrying: "QR를 읽는 중입니다… 조금 더 가까이 가져가고 가만히 있어 보세요.",
+        scanStatusIntro: "QR를 가운데 네모 안에 맞추고, 너무 가까이 말고 살짝 떨어져 보세요.",
+        scanStatusTrying: "QR를 읽는 중입니다… 화면과 거리를 조금만 조절해 주세요.",
         scanStatusStopped: "스캐너가 종료되었습니다.",
         scanStatusFormatUnsupported: "QR은 인식했지만 이 앱에서 사용하는 형식이 아닙니다.",
         scanStatusMissingName: "QR은 인식했지만 이름이 없습니다.",
@@ -716,8 +716,8 @@
         qrDescription: "Your QR includes your name, group, MBTI, city and hobbies.",
         scanButton: "Scan QR",
 
-        scanStatusIntro: "Align the QR inside the square and hold still…",
-        scanStatusTrying: "Trying to read the QR… move a bit closer and hold still.",
+        scanStatusIntro: "Align the QR inside the square, not too close, and hold still…",
+        scanStatusTrying: "Trying to read the QR… adjust distance slightly and hold still.",
         scanStatusStopped: "Scanner stopped.",
         scanStatusFormatUnsupported: "QR detected, but format is not supported by this app.",
         scanStatusMissingName: "QR detected, but name is missing.",
@@ -949,7 +949,6 @@
       const qrContainer = document.getElementById("qrcode");
       if (!qrContainer) return;
 
-      // no hard clamp needed anymore, but we still prevent insane sizes
       const limit = 500;
       function clamp(str) {
         if (!str) return "";
@@ -1118,11 +1117,12 @@
         lastScannedValue = null;
         scanStatus.textContent = t("scanStatusIntro");
 
+        // ask for slightly lower resolution: easier decoding & more stable
         const constraints = {
           video: {
             facingMode: usingRear ? { ideal: "environment" } : "user",
-            width: { ideal: 1280 },
-            height: { ideal: 720 }
+            width: { ideal: 640 },
+            height: { ideal: 480 }
           },
           audio: false
         };
@@ -1166,7 +1166,7 @@
         if (!videoStream) return;
 
         const now = performance.now();
-        if (now - lastDecodeTime < 200) {
+        if (now - lastDecodeTime < 250) { // ~4fps decode for stability
           scanLoopId = requestAnimationFrame(loop);
           return;
         }
