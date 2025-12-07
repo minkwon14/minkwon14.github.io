@@ -9,8 +9,6 @@
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
   <!-- LOCAL QR code generator (must be in same folder) -->
   <script src="qrcode.min.js"></script>
-  <!-- Compression library for shorter QR payloads -->
-  <script src="https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js"></script>
 
   <style>
     :root {
@@ -215,13 +213,13 @@
       border-radius: 18px;
       border: 1px dashed var(--border);
       background: radial-gradient(circle at top, var(--accent-soft), transparent);
-      min-height: 220px;
+      min-height: 260px;
     }
 
     .qr-box canvas,
     .qr-box img {
-      max-width: 300px;
-      width: 80%;
+      max-width: 360px;
+      width: 85%;
       height: auto;
       margin: 0 auto;
       display: block;
@@ -408,7 +406,6 @@
       <header>
         <h1 id="app-title">
           <span class="logo-dot"></span>
-          샤인 링크
         </h1>
         <div class="pill">
           <span class="pill-dot"></span>
@@ -429,11 +426,11 @@
 
         <div class="field">
           <label for="fullName" id="label-fullname">이름</label>
-          <input id="fullName" placeholder="예: 김민수" />
+          <input id="fullName" placeholder="예: 김예수" />
         </div>
 
         <div class="field">
-          <label for="group" id="label-group">순 (Group)</label>
+          <label for="group" id="label-group">소속 순</label>
           <select id="group">
             <option value="" disabled selected>선택하세요</option>
             <!-- 가나다 순 -->
@@ -456,7 +453,7 @@
 
         <div class="field">
           <label for="location" id="label-location">사는 곳</label>
-          <input id="location" placeholder="예: 서울, 대한민국" />
+          <input id="location" placeholder="예: 어바인" />
         </div>
 
         <div class="field">
@@ -554,7 +551,7 @@
             <span class="detail-value" id="detail-name"></span>
           </div>
           <div class="detail-row">
-            <span class="detail-label" id="detail-label-group">순 (Group)</span>
+            <span class="detail-label" id="detail-label-group">소속 순</span>
             <span class="detail-value" id="detail-group"></span>
           </div>
           <div class="detail-row">
@@ -583,45 +580,7 @@
   </div>
 
   <script>
-    // ---------- Cookies ----------
-    function setCookie(name, value, days) {
-      const d = new Date();
-      d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
-      document.cookie = name + "=" + encodeURIComponent(value) +
-        ";expires=" + d.toUTCString() + ";path=/";
-    }
-
-    function getCookie(name) {
-      const cname = name + "=";
-      const decoded = decodeURIComponent(document.cookie);
-      const parts = decoded.split(";");
-      for (let c of parts) {
-        c = c.trim();
-        if (c.indexOf(cname) === 0) {
-          return c.substring(cname.length);
-        }
-      }
-      return "";
-    }
-
-    // ---------- State ----------
-    const profileCookieKey = "meet_profile";
-    const metCookieKey = "meet_met_list";
-    const themeCookieKey = "meet_theme";
-    const langCookieKey = "meet_lang";
-
-    let profile = null;
-    let metList = [];
-    let themeMode = "auto";
-    let currentLang = "ko";
-
-    let videoStream = null;
-    let usingRear = true;
-    let scanLoopId = null;
-    let lastScannedValue = null;
-    let lastDecodeTime = 0;
-
-    // ---------- i18n ----------
+    // ---------- Strings (샤인 링크) ----------
     const STRINGS = {
       ko: {
         appTitle: "샤인 링크",
@@ -748,6 +707,44 @@
         alertCameraError: msg => `Unable to access camera: ${msg}`
       }
     };
+
+    // ---------- Cookies ----------
+    function setCookie(name, value, days) {
+      const d = new Date();
+      d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+      document.cookie = name + "=" + encodeURIComponent(value) +
+        ";expires=" + d.toUTCString() + ";path=/";
+    }
+
+    function getCookie(name) {
+      const cname = name + "=";
+      const decoded = decodeURIComponent(document.cookie);
+      const parts = decoded.split(";");
+      for (let c of parts) {
+        c = c.trim();
+        if (c.indexOf(cname) === 0) {
+          return c.substring(cname.length);
+        }
+      }
+      return "";
+    }
+
+    // ---------- State ----------
+    const profileCookieKey = "meet_profile";
+    const metCookieKey = "meet_met_list";
+    const themeCookieKey = "meet_theme";
+    const langCookieKey = "meet_lang";
+
+    let profile = null;
+    let metList = [];
+    let themeMode = "auto";
+    let currentLang = "ko";
+
+    let videoStream = null;
+    let usingRear = true;
+    let scanLoopId = null;
+    let lastScannedValue = null;
+    let lastDecodeTime = 0;
 
     function t(key, ...args) {
       const s = STRINGS[currentLang][key];
@@ -901,36 +898,34 @@
     }
 
     // ---------- QR payload encoding ----------
-    // v1: <compressedUsingLZString>
+    // Simple format: v1|fullName|group|mbti|location|hobby
+    function safeField(str) {
+      if (!str) return "";
+      // avoid breaking format: replace our separator with a similar char
+      return String(str).replace(/\|/g, "¦").slice(0, 120);
+    }
+
     function encodeProfileForQR(p) {
-      const obj = {
-        v: 1,
-        fullName: p.fullName || "",
-        group: p.group || "",
-        mbti: p.mbti || "",
-        location: p.location || "",
-        hobby: p.hobby || ""
-      };
-      const json = JSON.stringify(obj);
-      const compressed = LZString.compressToEncodedURIComponent(json);
-      return "v1:" + compressed;
+      const fullName = safeField(p.fullName);
+      const group = safeField(p.group);
+      const mbti = safeField(p.mbti);
+      const location = safeField(p.location);
+      const hobby = safeField(p.hobby);
+      return `v1|${fullName}|${group}|${mbti}|${location}|${hobby}`;
     }
 
     function decodeProfileFromQR(str) {
-      if (str.startsWith("v1:")) {
-        const payload = str.slice(3);
-        const json = LZString.decompressFromEncodedURIComponent(payload);
-        if (!json) throw new Error("Failed to decompress QR payload");
-        const obj = JSON.parse(json);
+      if (str.startsWith("v1|")) {
+        const parts = str.split("|");
         return {
-          fullName: obj.fullName || "",
-          group: obj.group || "",
-          mbti: obj.mbti || "",
-          location: obj.location || "",
-          hobby: obj.hobby || ""
+          fullName: (parts[1] || "").trim(),
+          group: (parts[2] || "").trim(),
+          mbti: (parts[3] || "").trim(),
+          location: (parts[4] || "").trim(),
+          hobby: (parts[5] || "").trim()
         };
       } else {
-        // fallback: old format name|group|mbti|location|hobby
+        // very old format fallback (name|group|mbti|location|hobby)
         const parts = str.split("|");
         return {
           fullName: (parts[0] || "").trim(),
@@ -949,18 +944,12 @@
       const qrContainer = document.getElementById("qrcode");
       if (!qrContainer) return;
 
-      const limit = 500;
-      function clamp(str) {
-        if (!str) return "";
-        return str.length > limit ? str.slice(0, limit) : str;
-      }
-
       profile = {
-        fullName: clamp(profile.fullName),
-        group: clamp(profile.group),
-        mbti: clamp(profile.mbti),
-        location: clamp(profile.location),
-        hobby: clamp(profile.hobby)
+        fullName: profile.fullName || "",
+        group: profile.group || "",
+        mbti: profile.mbti || "",
+        location: profile.location || "",
+        hobby: profile.hobby || ""
       };
       setCookie(profileCookieKey, JSON.stringify(profile), 365);
 
@@ -983,11 +972,11 @@
       try {
         new QRCode(qrContainer, {
           text: data,
-          width: 300,
-          height: 300,
+          width: 360,
+          height: 360,
           colorDark: "#000000",
           colorLight: "#ffffff",
-          correctLevel: QRCode.CorrectLevel.L
+          correctLevel: QRCode.CorrectLevel.M // a bit more error tolerance
         });
       } catch (e) {
         console.error("QR generation error:", e, "len:", data.length);
@@ -1007,7 +996,7 @@
       if (!profile) return;
 
       const labelName = currentLang === "ko" ? "이름" : "Name";
-      const labelGroup = currentLang === "ko" ? "순" : "Group";
+      const labelGroup = currentLang === "ko" ? "소속 순" : "Group";
       const labelMbti = "MBTI";
       const labelCity = currentLang === "ko" ? "사는 곳" : "Location";
       const labelHobby = currentLang === "ko" ? "취미" : "Hobby";
@@ -1049,7 +1038,7 @@
         return;
       }
 
-      const labelGroup = currentLang === "ko" ? "순" : "Group";
+      const labelGroup = currentLang === "ko" ? "소속 순" : "Group";
 
       const sorted = metList
         .map((item, idx) => ({ item, idx }))
@@ -1117,7 +1106,6 @@
         lastScannedValue = null;
         scanStatus.textContent = t("scanStatusIntro");
 
-        // ask for slightly lower resolution: easier decoding & more stable
         const constraints = {
           video: {
             facingMode: usingRear ? { ideal: "environment" } : "user",
@@ -1166,7 +1154,7 @@
         if (!videoStream) return;
 
         const now = performance.now();
-        if (now - lastDecodeTime < 250) { // ~4fps decode for stability
+        if (now - lastDecodeTime < 250) { // ~4 fps decoding
           scanLoopId = requestAnimationFrame(loop);
           return;
         }
