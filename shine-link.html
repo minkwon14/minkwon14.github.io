@@ -69,6 +69,7 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
+      position: relative;
     }
 
     .card {
@@ -295,6 +296,12 @@
       transform: translateY(1px) scale(0.99);
     }
 
+    .btn-sm {
+      padding: 4px 8px;
+      font-size: 0.75rem;
+      border-radius: 999px;
+    }
+
     .footer-row {
       display: flex;
       gap: 8px;
@@ -471,9 +478,8 @@
       border-bottom: 1px solid var(--border);
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 4px;
       font-size: 0.85rem;
-      cursor: pointer;
     }
 
     .scan-row:last-child { border-bottom: none; }
@@ -483,26 +489,46 @@
       justify-content: space-between;
       gap: 8px;
       font-weight: 600;
+      align-items: center;
+    }
+
+    .scan-row-main {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      cursor: pointer;
+      flex: 1;
     }
 
     .scan-row-meta {
-      font-size: 0.7rem;
-      opacity: 0.85;
+      font-size: 0.8rem;
       display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
       align-items: center;
+      gap: 8px;
+    }
+
+    .scan-row-subtitle {
+      opacity: 0.85;
+      flex: 0;
+    }
+
+    .scan-row-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     /* Full match: green */
     .match-badge-full {
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       border-radius: 999px;
       padding: 2px 6px;
       background: rgba(22, 163, 74, 0.18);
       border: 1px solid rgba(22, 163, 74, 0.95);
       color: #166534;
       font-weight: 600;
+      white-space: nowrap;
     }
 
     body.dark .match-badge-full {
@@ -513,13 +539,14 @@
 
     /* Partial match: gold/yellow */
     .match-badge-partial {
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       border-radius: 999px;
       padding: 2px 6px;
       background: rgba(250, 204, 21, 0.2);
       border: 1px solid rgba(250, 204, 21, 0.95);
       color: #92400e;
       font-weight: 500;
+      white-space: nowrap;
     }
 
     body.dark .match-badge-partial {
@@ -586,6 +613,70 @@
     .detail-mettime {
       font-size: 0.75rem;
       opacity: 0.8;
+    }
+
+    /* Toast / in-app dialog */
+    #toast {
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%) translateY(100%);
+      bottom: 12px;
+      z-index: 50;
+      max-width: 480px;
+      width: calc(100% - 32px);
+      pointer-events: none;
+      transition: transform 0.25s ease-out, opacity 0.25s ease-out;
+      opacity: 0;
+    }
+
+    #toast.visible {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    #toast-inner {
+      pointer-events: auto;
+      border-radius: 999px;
+      padding: 10px 14px;
+      border: 1px solid rgba(250, 204, 21, 0.9);
+      background: radial-gradient(circle at left, rgba(250, 204, 21, 0.3), transparent 55%),
+                  rgba(15, 23, 42, 0.96);
+      color: #fefce8;
+      box-shadow:
+        0 18px 35px rgba(15, 23, 42, 0.85),
+        0 0 0 1px rgba(31, 41, 55, 0.8);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+    }
+
+    body.light #toast-inner {
+      background: radial-gradient(circle at left, rgba(250, 204, 21, 0.3), transparent 55%),
+                  #111827;
+      color: #fefce8;
+    }
+
+    #toast-icon {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, #fefce8, var(--accent-gold));
+      box-shadow: 0 0 10px rgba(250, 204, 21, 0.8);
+      flex-shrink: 0;
+    }
+
+    #toast-message {
+      flex: 1;
+    }
+
+    #toast-close {
+      border: none;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      font-size: 0.9rem;
+      padding: 0 2px;
     }
   </style>
 </head>
@@ -717,7 +808,6 @@
 
         <div class="footer-row">
           <button id="clear-met" class="btn btn-outline" type="button">전체 삭제</button>
-          <button id="back-to-qr" class="btn btn-primary" type="button">내 QR 보기</button>
         </div>
       </section>
 
@@ -740,6 +830,15 @@
     <p class="subtle" id="footer-text" style="text-align:center;margin-top:4px;">
       데이터는 이 브라우저 안에만 저장됩니다 (쿠키 사용).
     </p>
+
+    <!-- Toast / in-app dialog -->
+    <div id="toast">
+      <div id="toast-inner">
+        <div id="toast-icon"></div>
+        <div id="toast-message"></div>
+        <button id="toast-close" aria-label="close">&times;</button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -830,12 +929,11 @@
     // Helper: extract a short title from Q4 option string
     function getQ4ShortTitle(optionText) {
       if (!optionText) return "";
-      // Try Korean quotes ‘ ’ or " "
+      // Try Korean/English quotes
       const quoteMatch = optionText.match(/[‘'"](.*?)[’'"]/);
       if (quoteMatch && quoteMatch[1]) {
         return quoteMatch[1].trim();
       }
-      // Fallback: last word
       const parts = optionText.split(/[\s]/).filter(Boolean);
       return parts.length ? parts[parts.length - 1] : optionText;
     }
@@ -877,18 +975,18 @@
         metListTitle: "지금까지 만난 사람",
         clearMet: "전체 삭제",
         back: "뒤로",
-        backToQR: "내 QR 보기",
 
         emptyState: "아직 아무도 없어요. 누군가를 만나서 QR를 스캔해 보세요!",
         footer: "데이터는 이 브라우저 안에만 저장됩니다 (쿠키 사용).",
 
         detailTitle: "상세 정보",
-        matchBadge: "나와 네 문제 모두 같아요!",
-        matchPartial: "같은 답이 있는 친구예요!",
+        matchBadge: "완전 일치",
+        matchPartial: "부분 일치",
 
         alertEnterRequired: "이름과 모든 질문에 답해 주세요.",
         alertClearConfirm: "정말로 만난 사람 목록을 모두 삭제할까요?",
         alertScanned: name => `스캔 완료: ${name} 님 정보를 저장했습니다.`,
+        alertScannedFriendly: name => `만나서 반가워요, ${name}님!`,
         alertCameraUnsupported: "이 브라우저에서는 카메라를 사용할 수 없습니다.",
         alertCameraError: msg => `카메라에 접근할 수 없습니다: ${msg}`
       },
@@ -927,18 +1025,18 @@
         metListTitle: "People you’ve met",
         clearMet: "Clear list",
         back: "Back",
-        backToQR: "My QR",
 
         emptyState: "No one yet. Go meet someone and scan their QR!",
         footer: "Data stays in this browser only (stored in cookies).",
 
         detailTitle: "Details",
-        matchBadge: "All 4 answers match you!",
-        matchPartial: "You share some answers!",
+        matchBadge: "Perfect match",
+        matchPartial: "Partial match",
 
         alertEnterRequired: "Please fill in your name and answer all questions.",
         alertClearConfirm: "Clear everyone in your met list?",
         alertScanned: name => `Scanned and saved: ${name}`,
+        alertScannedFriendly: name => `Nice to meet you, ${name}!`,
         alertCameraUnsupported: "Camera access is not supported in this browser.",
         alertCameraError: msg => `Unable to access camera: ${msg}`
       }
@@ -984,10 +1082,40 @@
     let lastScannedValue = null;
     let lastDecodeTime = 0;
 
+    // toast state
+    let toastTimeoutId = null;
+
     function t(key, ...args) {
       const s = STRINGS[currentLang][key];
       return typeof s === "function" ? s(...args) : (s ?? "");
     }
+
+    // ---------- Toast helpers ----------
+    const toastEl = document.getElementById("toast");
+    const toastMsgEl = document.getElementById("toast-message");
+    const toastCloseBtn = document.getElementById("toast-close");
+
+    function showToast(message, durationMs = 2600) {
+      toastMsgEl.textContent = message;
+      toastEl.classList.add("visible");
+
+      if (toastTimeoutId) {
+        clearTimeout(toastTimeoutId);
+      }
+      toastTimeoutId = setTimeout(() => {
+        hideToast();
+      }, durationMs);
+    }
+
+    function hideToast() {
+      toastEl.classList.remove("visible");
+      if (toastTimeoutId) {
+        clearTimeout(toastTimeoutId);
+        toastTimeoutId = null;
+      }
+    }
+
+    toastCloseBtn.addEventListener("click", hideToast);
 
     // ---------- DOM refs ----------
     const screens = {
@@ -1033,7 +1161,6 @@
     const metListTitleDom = document.getElementById("met-list-title");
     const clearMetBtn = document.getElementById("clear-met");
     const backToMainBtn = document.getElementById("back-to-main");
-    const backToQrBtn = document.getElementById("back-to-qr");
     const footerTextEl = document.getElementById("footer-text");
 
     const detailTitleEl = document.getElementById("detail-title");
@@ -1222,7 +1349,7 @@
       img.alt = "QR Code";
       img.src = "https://api.qrserver.com/v1/create-qr-code/?" +
         "size=360x360&data=" + encodeURIComponent(data) +
-        "&ecc=M"; // medium error correction
+        "&ecc=M";
 
       qrContainer.appendChild(img);
     }
@@ -1306,6 +1433,11 @@
 
         const header = document.createElement("div");
         header.className = "scan-row-header";
+
+        const main = document.createElement("div");
+        main.className = "scan-row-main";
+        main.dataset.action = "detail";
+
         const nameEl = document.createElement("div");
         nameEl.textContent = item.name || (currentLang === "ko" ? "이름 없음" : "Unknown");
 
@@ -1315,30 +1447,48 @@
         timeEl.style.fontSize = "0.75rem";
         timeEl.style.opacity = "0.8";
 
-        header.appendChild(nameEl);
-        header.appendChild(timeEl);
+        main.appendChild(nameEl);
+        main.appendChild(timeEl);
 
-        const meta = document.createElement("div");
-        meta.className = "scan-row-meta";
+        const right = document.createElement("div");
+        right.className = "scan-row-right";
 
-        // Q4 character (full text is okay here)
-        const q4Span = document.createElement("span");
-        q4Span.textContent = qs[3].options[item.a4 ?? 0] || "";
-        meta.appendChild(q4Span);
-
+        // Match badge
         if (profile) {
           if (answersAllSame(profile, item)) {
             const badge = document.createElement("span");
             badge.className = "match-badge-full";
             badge.textContent = t("matchBadge");
-            meta.appendChild(badge);
+            right.appendChild(badge);
           } else if (answersShareAny(profile, item)) {
             const badge = document.createElement("span");
             badge.className = "match-badge-partial";
             badge.textContent = t("matchPartial");
-            meta.appendChild(badge);
+            right.appendChild(badge);
           }
         }
+
+        // Delete button
+        const delBtn = document.createElement("button");
+        delBtn.className = "btn btn-outline btn-sm";
+        delBtn.textContent = currentLang === "ko" ? "삭제" : "Delete";
+        delBtn.type = "button";
+        delBtn.dataset.action = "delete";
+        right.appendChild(delBtn);
+
+        header.appendChild(main);
+        header.appendChild(right);
+
+        const meta = document.createElement("div");
+        meta.className = "scan-row-meta";
+
+        // Subtitle: only Q4 short title
+        const q4Full = qs[3].options[item.a4 ?? 0] || "";
+        const shortTitle = getQ4ShortTitle(q4Full);
+        const sub = document.createElement("span");
+        sub.className = "scan-row-subtitle";
+        sub.textContent = shortTitle;
+        meta.appendChild(sub);
 
         row.appendChild(header);
         row.appendChild(meta);
@@ -1570,6 +1720,9 @@
       // Stop scanner and go directly to detail screen
       stopScannerWithoutNavigation();
       showPersonDetail(existing);
+
+      // Friendly in-app toast instead of browser alert
+      showToast(t("alertScannedFriendly", name));
     }
 
     // ---------- Events & init ----------
@@ -1607,7 +1760,6 @@
       });
 
       backToMainBtn.addEventListener("click", () => showScreen("s2"));
-      backToQrBtn.addEventListener("click", () => showScreen("s2"));
       backFromDetailBtn.addEventListener("click", () => showScreen("s4"));
 
       openScannerBtn.addEventListener("click", startScanner);
@@ -1624,7 +1776,21 @@
         const idx = parseInt(row.dataset.index, 10);
         const person = metList[idx];
         if (!person) return;
-        showPersonDetail(person);
+
+        const action = e.target.dataset.action || e.target.closest("[data-action]")?.dataset.action;
+
+        if (action === "delete") {
+          // Delete this individual record
+          metList.splice(idx, 1);
+          saveMetList();
+          updateMetCount();
+          renderMetList();
+          return;
+        }
+
+        if (action === "detail" || !action) {
+          showPersonDetail(person);
+        }
       });
     }
 
