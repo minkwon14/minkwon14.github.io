@@ -433,7 +433,7 @@
           <label for="group" id="label-group">소속 순</label>
           <select id="group">
             <option value="" disabled selected>선택하세요</option>
-            <!-- options will be filled by JS from GROUPS -->
+            <!-- options filled by JS -->
           </select>
         </div>
 
@@ -441,7 +441,7 @@
           <label for="mbti" id="label-mbti">MBTI</label>
           <select id="mbti">
             <option value="" disabled selected>선택하세요</option>
-            <!-- options will be filled by JS from MBTI_TYPES -->
+            <!-- options filled by JS -->
           </select>
         </div>
 
@@ -579,7 +579,7 @@
       { id: 0, nameKo: "무소속", nameEn: "No group" },
       { id: 1, nameKo: "새가족", nameEn: "Newcomer" },
       { id: 2, nameKo: "김수진", nameEn: "Kim Sujin" },
-      { id: 3, nameKo: "앨리스", nameEn: "Alice" }, // 랠리스 -> 앨리스
+      { id: 3, nameKo: "앨리스", nameEn: "Alice" },
       { id: 4, nameKo: "류다현", nameEn: "Ryu Dahyun" },
       { id: 5, nameKo: "아이린", nameEn: "Irene" },
       { id: 6, nameKo: "장준용", nameEn: "Jang Junyong" },
@@ -594,7 +594,7 @@
       "ESTJ","ESFJ","ENFJ","ENTJ"
     ];
 
-    // ---------- Strings (샤인 링크) ----------
+    // ---------- Strings ----------
     const STRINGS = {
       ko: {
         appTitle: "샤인 링크",
@@ -749,7 +749,7 @@
     const themeCookieKey = "meet_theme";
     const langCookieKey = "meet_lang";
 
-    let profile = null; // { fullName, group, mbti, location, hobby }
+    let profile = null;
     let metList = [];
     let themeMode = "auto";
     let currentLang = "ko";
@@ -892,7 +892,6 @@
       detailLabelHobby.textContent = t("detailLabelHobby");
       detailLabelMetTime.textContent = t("detailLabelMetTime");
 
-      // Re-render group & MBTI dropdown display labels
       populateGroupOptions(true);
       populateMbtiOptions(true);
 
@@ -915,38 +914,29 @@
       applyTheme();
     }
 
-    // ---------- Dropdown population ----------
+    // ---------- Dropdowns ----------
     function populateGroupOptions(keepValue) {
       const oldValue = keepValue ? groupSelect.value : "";
-      // Remove existing options except [0]
-      while (groupSelect.options.length > 1) {
-        groupSelect.remove(1);
-      }
+      while (groupSelect.options.length > 1) groupSelect.remove(1);
       GROUPS.forEach(g => {
         const opt = document.createElement("option");
         opt.value = String(g.id);
         opt.textContent = currentLang === "ko" ? g.nameKo : g.nameEn;
         groupSelect.appendChild(opt);
       });
-      if (keepValue && oldValue) {
-        groupSelect.value = oldValue;
-      }
+      if (keepValue && oldValue) groupSelect.value = oldValue;
     }
 
     function populateMbtiOptions(keepValue) {
       const oldValue = keepValue ? mbtiSelect.value : "";
-      while (mbtiSelect.options.length > 1) {
-        mbtiSelect.remove(1);
-      }
+      while (mbtiSelect.options.length > 1) mbtiSelect.remove(1);
       MBTI_TYPES.forEach((mbti, idx) => {
         const opt = document.createElement("option");
         opt.value = String(idx);
         opt.textContent = mbti;
         mbtiSelect.appendChild(opt);
       });
-      if (keepValue && oldValue) {
-        mbtiSelect.value = oldValue;
-      }
+      if (keepValue && oldValue) mbtiSelect.value = oldValue;
     }
 
     function groupIndexToLabel(index) {
@@ -979,9 +969,8 @@
       return found ? found.id : -1;
     }
 
-    // ---------- QR payload encoding ----------
-    // v2: v2|fullName|groupIndex|mbtiIndex|location|hobby
-    // v1: v1|fullName|groupLabel|mbtiLabel|location|hobby  (legacy)
+    // ---------- QR encoding ----------
+    // Format: 이름|groupIndex|mbtiIndex|사는곳|취미
     function safeField(str) {
       if (!str) return "";
       return String(str).replace(/\|/g, "¦").slice(0, 120);
@@ -992,60 +981,35 @@
       const location = safeField(p.location);
       const hobby = safeField(p.hobby);
 
-      // Enum indexes
-      const gIdx = groupLabelToIndex(p.group);
-      const mIdx = mbtiLabelToIndex(p.mbti);
+      let gIdx = groupLabelToIndex(p.group);
+      let mIdx = mbtiLabelToIndex(p.mbti);
 
-      if (gIdx >= 0 && mIdx >= 0) {
-        // v2 with indexes
-        return `v2|${fullName}|${gIdx}|${mIdx}|${location}|${hobby}`;
-      } else {
-        // fallback v1 with labels
-        const groupLabel = safeField(p.group);
-        const mbtiLabel = safeField(p.mbti);
-        return `v1|${fullName}|${groupLabel}|${mbtiLabel}|${location}|${hobby}`;
-      }
+      if (gIdx < 0) gIdx = 0;
+      if (mIdx < 0) mIdx = 0;
+
+      return `${fullName}|${gIdx}|${mIdx}|${location}|${hobby}`;
     }
 
     function decodeProfileFromQR(str) {
-      if (str.startsWith("v2|")) {
-        const parts = str.split("|");
-        const fullName = (parts[1] || "").trim();
-        const gIdx = parseInt(parts[2] || "-1", 10);
-        const mIdx = parseInt(parts[3] || "-1", 10);
-        const location = (parts[4] || "").trim();
-        const hobby = (parts[5] || "").trim();
+      const parts = str.split("|");
+      // 최소 5개 파츠 필요
+      if (parts.length < 5) throw new Error("Invalid QR format");
+      const fullName = (parts[0] || "").trim();
+      const gIdx = parseInt(parts[1] || "0", 10);
+      const mIdx = parseInt(parts[2] || "0", 10);
+      const location = (parts[3] || "").trim();
+      const hobby = (parts[4] || "").trim();
 
-        return {
-          fullName,
-          group: groupIndexToKo(gIdx),   // store KO label internally
-          mbti: mbtiIndexToLabel(mIdx),
-          location,
-          hobby
-        };
-      } else if (str.startsWith("v1|")) {
-        const parts = str.split("|");
-        return {
-          fullName: (parts[1] || "").trim(),
-          group: (parts[2] || "").trim(),
-          mbti: (parts[3] || "").trim(),
-          location: (parts[4] || "").trim(),
-          hobby: (parts[5] || "").trim()
-        };
-      } else {
-        // very old / plain: name|group|mbti|location|hobby
-        const parts = str.split("|");
-        return {
-          fullName: (parts[0] || "").trim(),
-          group: (parts[1] || "").trim(),
-          mbti: (parts[2] || "").trim(),
-          location: (parts[3] || "").trim(),
-          hobby: (parts[4] || "").trim()
-        };
-      }
+      return {
+        fullName,
+        group: groupIndexToKo(gIdx),
+        mbti: mbtiIndexToLabel(mIdx),
+        location,
+        hobby
+      };
     }
 
-    // ---------- QR (using local qrcode.min.js) ----------
+    // ---------- QR generation ----------
     function updateQR() {
       if (!profile) return;
 
@@ -1099,6 +1063,7 @@
       }
     }
 
+    // ---------- UI helpers ----------
     function updateProfileSummary() {
       profileSummary.innerHTML = "";
       if (!profile) return;
@@ -1213,6 +1178,7 @@
       setCookie(metCookieKey, JSON.stringify(metList), 365);
     }
 
+    // ---------- Scanner ----------
     async function startScanner() {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         alert(t("alertCameraUnsupported"));
@@ -1271,7 +1237,7 @@
         if (!videoStream) return;
 
         const now = performance.now();
-        if (now - lastDecodeTime < 250) { // ~4 fps
+        if (now - lastDecodeTime < 250) {
           scanLoopId = requestAnimationFrame(loop);
           return;
         }
@@ -1358,13 +1324,13 @@
       showScreen("s4");
     }
 
+    // ---------- Events & init ----------
     function wireEvents() {
       langToggleBtn.addEventListener("click", toggleLanguage);
       themeToggleBtn.addEventListener("click", toggleTheme);
 
       saveProfileBtn.addEventListener("click", () => {
         if (!saveProfileFromInputs()) return;
-
         pillStatus.textContent = t("pillSaved");
         updateProfileSummary();
         showScreen("s2");
@@ -1375,7 +1341,6 @@
         if (profile) {
           fullNameInput.value = profile.fullName || "";
 
-          // Map stored KO group label back to index
           const gIdx = groupLabelToIndex(profile.group);
           groupSelect.value = gIdx >= 0 ? String(gIdx) : "";
 
@@ -1463,13 +1428,10 @@
 
       if (profile) {
         fullNameInput.value = profile.fullName || "";
-
         const gIdx = groupLabelToIndex(profile.group);
         groupSelect.value = gIdx >= 0 ? String(gIdx) : "";
-
         const mIdx = mbtiLabelToIndex(profile.mbti);
         mbtiSelect.value = mIdx >= 0 ? String(mIdx) : "";
-
         locationInput.value = profile.location || "";
         hobbyInput.value = profile.hobby || "";
         updateProfileSummary();
