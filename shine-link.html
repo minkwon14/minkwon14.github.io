@@ -706,7 +706,8 @@
 
         <div class="field">
           <label for="fullName" id="label-fullname">이름</label>
-          <input id="fullName" placeholder="예: 권민서" />
+          <!-- updated placeholder here -->
+          <input id="fullName" placeholder="예: 김예수" />
         </div>
 
         <div class="question-block" id="q1-block">
@@ -926,16 +927,21 @@
       return QUESTIONS[currentLang];
     }
 
-    // Helper: extract a short title from Q4 option string
-    function getQ4ShortTitle(optionText) {
-      if (!optionText) return "";
-      // Try Korean/English quotes
-      const quoteMatch = optionText.match(/[‘'"](.*?)[’'"]/);
-      if (quoteMatch && quoteMatch[1]) {
-        return quoteMatch[1].trim();
+    // Helper: stable short title from Q4 option index
+    function getQ4ShortTitle(optionText, index) {
+      if (currentLang === "ko") {
+        const map = ["샬롬 전도사", "평안 수호자", "추억 기록자"];
+        if (index != null && map[index]) return map[index];
+      } else {
+        const map = ["Shalom Ambassador", "Guardian of Calm", "Memory Keeper"];
+        if (index != null && map[index]) return map[index];
       }
-      const parts = optionText.split(/[\s]/).filter(Boolean);
-      return parts.length ? parts[parts.length - 1] : optionText;
+      // Fallback: try quotes
+      if (optionText) {
+        const quoteMatch = optionText.match(/[‘'"](.*?)[’'"]/);
+        if (quoteMatch && quoteMatch[1]) return quoteMatch[1].trim();
+      }
+      return optionText || "";
     }
 
     // ---------- Strings ----------
@@ -954,7 +960,7 @@
 
         intro: "오늘 파티에서 나와 비슷한 사람을 찾아볼까요? 질문에 답하고 나만의 QR을 만들어 보세요.",
         fullNameLabel: "이름",
-        fullNamePlaceholder: "예: 권민서",
+        fullNamePlaceholder: "예: 김예수",
         saveProfile: "내 답변 저장하고 QR 보기",
         editProfile: "내 답변 수정",
 
@@ -1280,7 +1286,7 @@
 
       applyTheme();
       renderQuestions();
-      renderMetList(); // updates title with count
+      renderMetList(); // updates title with count + subtitle
     }
 
     function toggleLanguage() {
@@ -1369,9 +1375,10 @@
       chipName.appendChild(strongName);
       profileSummary.appendChild(chipName);
 
-      // Chip 2: only title from Q4, e.g. "샬롬 전도사"
-      const q4Full = qs[3].options[profile.a4 ?? 0];
-      const shortTitle = getQ4ShortTitle(q4Full);
+      // Chip 2: only title from Q4 (e.g. "샬롬 전도사")
+      const idx4 = profile.a4 ?? 0;
+      const q4Full = qs[3].options[idx4];
+      const shortTitle = getQ4ShortTitle(q4Full, idx4);
       const chipChar = document.createElement("div");
       chipChar.className = "chip";
       const strongChar = document.createElement("strong");
@@ -1482,9 +1489,10 @@
         const meta = document.createElement("div");
         meta.className = "scan-row-meta";
 
-        // Subtitle: only Q4 short title
-        const q4Full = qs[3].options[item.a4 ?? 0] || "";
-        const shortTitle = getQ4ShortTitle(q4Full);
+        // Subtitle: only Q4 short title, single line
+        const idx4 = item.a4 ?? 0;
+        const q4Full = qs[3].options[idx4] || "";
+        const shortTitle = getQ4ShortTitle(q4Full, idx4);
         const sub = document.createElement("span");
         sub.className = "scan-row-subtitle";
         sub.textContent = shortTitle;
