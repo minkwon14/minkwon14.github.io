@@ -7,8 +7,8 @@
 
   <!-- QR code reader -->
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
-  <!-- Battle-tested QR code generator -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <!-- LOCAL QR code generator (must be in same folder) -->
+  <script src="qrcode.min.js"></script>
 
   <style>
     :root {
@@ -910,7 +910,7 @@
       applyTheme();
     }
 
-    // ---------- QR (using qrcodejs) ----------
+    // ---------- QR (using local qrcode.min.js) ----------
     function updateQR() {
       if (!profile) return;
       const qrContainer = document.getElementById("qrcode");
@@ -921,26 +921,26 @@
 
       qrContainer.innerHTML = "";
 
-      if (typeof QRCode === "undefined") {
+      try {
+        new QRCode(qrContainer, {
+          text: data,
+          width: 300,
+          height: 300,
+          colorDark: "#000000",
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.L
+        });
+      } catch (e) {
+        console.error("QR generation error:", e);
         const fallback = document.createElement("div");
         fallback.style.textAlign = "center";
         fallback.style.fontSize = "0.8rem";
         fallback.style.opacity = "0.8";
         fallback.textContent = currentLang === "ko"
-          ? "QR 코드 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해주세요."
-          : "Unable to load QR library. Please check your internet connection.";
+          ? "QR 코드를 생성하는 중 오류가 발생했습니다."
+          : "Error while generating QR code.";
         qrContainer.appendChild(fallback);
-        return;
       }
-
-      new QRCode(qrContainer, {
-        text: data,
-        width: 300,
-        height: 300,
-        colorDark: "#000000",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.L
-      });
     }
 
     function updateProfileSummary() {
