@@ -11,26 +11,26 @@
   <style>
     :root {
       color-scheme: light dark;
-      /* Christmas-ish background with subtle red/green */
+      /* Light mode – cozy holiday vibes */
       --bg: #0b1020;
       --fg: #111827;
-      --card-bg: #fefcf7;
-      /* Primary accent: deep red */
-      --accent: #b91c1c;
-      --accent-soft: rgba(185, 28, 28, 0.14);
-      /* Gold highlight */
-      --accent-strong: #facc15;
+      --card-bg: #fdf7ec;
+      --accent: #b91c1c; /* deep red */
+      --accent-soft: rgba(185, 28, 28, 0.18);
+      --accent-green: #15803d;
+      --accent-gold: #facc15;
       --border: #e5e7eb;
     }
 
     body.dark {
+      /* Dark mode – richer navy + green, readable text */
       --bg: #020617;
       --fg: #e5e7eb;
-      --card-bg: #020617;
-      /* Dark mode: deep green accent + gold */
-      --accent: #15803d;
-      --accent-soft: rgba(21, 128, 61, 0.24);
-      --accent-strong: #facc15;
+      --card-bg: #020a18;
+      --accent: #22c55e; /* green accent */
+      --accent-soft: rgba(34, 197, 94, 0.22);
+      --accent-green: #22c55e;
+      --accent-gold: #facc15;
       --border: #1f2937;
     }
 
@@ -38,10 +38,11 @@
       body:not(.light) {
         --bg: #020617;
         --fg: #e5e7eb;
-        --card-bg: #020617;
-        --accent: #15803d;
-        --accent-soft: rgba(21, 128, 61, 0.24);
-        --accent-strong: #facc15;
+        --card-bg: #020a18;
+        --accent: #22c55e;
+        --accent-soft: rgba(34, 197, 94, 0.22);
+        --accent-green: #22c55e;
+        --accent-gold: #facc15;
         --border: #1f2937;
       }
     }
@@ -52,9 +53,9 @@
       margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background:
-        radial-gradient(circle at top left, rgba(220, 38, 38, 0.18), transparent 50%),
-        radial-gradient(circle at top right, rgba(22, 163, 74, 0.2), transparent 55%),
-        radial-gradient(circle at bottom, rgba(250, 204, 21, 0.15), var(--bg) 70%);
+        radial-gradient(circle at top left, rgba(220, 38, 38, 0.22), transparent 55%),
+        radial-gradient(circle at top right, rgba(22, 163, 74, 0.26), transparent 60%),
+        radial-gradient(circle at bottom, rgba(250, 204, 21, 0.18), var(--bg) 70%);
       color: var(--fg);
       min-height: 100vh;
       display: flex;
@@ -74,9 +75,11 @@
 
     .card {
       background: var(--card-bg);
-      border-radius: 16px;
+      border-radius: 18px;
       border: 1px solid var(--border);
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.24);
+      box-shadow:
+        0 22px 50px rgba(15, 23, 42, 0.45),
+        0 0 0 1px rgba(148, 163, 184, 0.15);
       padding: 16px;
       display: flex;
       flex-direction: column;
@@ -85,16 +88,25 @@
       overflow: hidden;
     }
 
+    /* subtle sparkle / ribbon overlay */
     .card::before {
       content: "";
       position: absolute;
       inset: 0;
       pointer-events: none;
       background:
-        linear-gradient(135deg, rgba(250, 250, 250, 0.3), transparent 40%),
-        radial-gradient(circle at top right, rgba(250, 204, 21, 0.2), transparent 55%);
+        linear-gradient(135deg, rgba(250, 250, 250, 0.26), transparent 50%),
+        radial-gradient(circle at top right, rgba(250, 204, 21, 0.28), transparent 60%),
+        linear-gradient(
+          60deg,
+          transparent 0,
+          transparent 40%,
+          rgba(254, 202, 202, 0.35) 50%,
+          transparent 60%,
+          transparent 100%
+        );
       mix-blend-mode: soft-light;
-      opacity: 0.8;
+      opacity: 0.9;
     }
 
     .card > * { position: relative; }
@@ -115,11 +127,13 @@
     }
 
     header h1 span.logo-dot {
-      width: 10px;
-      height: 10px;
+      width: 11px;
+      height: 11px;
       border-radius: 999px;
-      background: linear-gradient(135deg, var(--accent-strong), #f97316);
-      box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.25);
+      background: radial-gradient(circle at 30% 30%, #fefce8, var(--accent-gold));
+      box-shadow:
+        0 0 0 4px rgba(250, 204, 21, 0.25),
+        0 0 12px rgba(250, 204, 21, 0.6);
     }
 
     .pill {
@@ -127,18 +141,24 @@
       padding: 2px 8px;
       border-radius: 999px;
       border: 1px solid rgba(250, 204, 21, 0.7);
-      background: rgba(250, 204, 21, 0.14);
+      background: rgba(250, 250, 250, 0.7);
       display: inline-flex;
       align-items: center;
       gap: 4px;
       color: #92400e;
     }
 
+    body.dark .pill {
+      background: rgba(31, 41, 55, 0.95);
+      color: #fef9c3;
+    }
+
     .pill-dot {
       width: 6px;
       height: 6px;
       border-radius: 999px;
-      background: var(--accent-strong);
+      background: var(--accent-gold);
+      box-shadow: 0 0 6px rgba(250, 204, 21, 0.9);
     }
 
     .screen {
@@ -169,6 +189,11 @@
       font-size: 0.9rem;
     }
 
+    body.dark .field input {
+      background: rgba(15, 23, 42, 0.8);
+      border-color: rgba(55, 65, 81, 0.9);
+    }
+
     .field input:focus {
       outline: 2px solid var(--accent-soft);
       border-color: var(--accent);
@@ -178,14 +203,22 @@
       border-radius: 12px;
       border: 1px solid var(--border);
       padding: 8px 10px;
-      background: linear-gradient(
-        135deg,
-        rgba(22, 163, 74, 0.06),
-        rgba(185, 28, 28, 0.04)
-      );
+      background:
+        linear-gradient(
+          135deg,
+          rgba(22, 163, 74, 0.06),
+          rgba(185, 28, 28, 0.04)
+        );
       display: flex;
       flex-direction: column;
       gap: 6px;
+    }
+
+    body.dark .question-block {
+      background:
+        radial-gradient(circle at top, rgba(22, 163, 74, 0.28), transparent 65%),
+        radial-gradient(circle at bottom, rgba(185, 28, 28, 0.2), transparent 65%);
+      border-color: rgba(55, 65, 81, 0.9);
     }
 
     .question-text {
@@ -231,18 +264,33 @@
     .btn-primary {
       background: linear-gradient(135deg, var(--accent), #be123c);
       color: white;
-      box-shadow: 0 10px 25px rgba(185, 28, 28, 0.45);
+      box-shadow: 0 10px 25px rgba(185, 28, 28, 0.55);
+    }
+
+    body.dark .btn-primary {
+      background: linear-gradient(135deg, var(--accent-green), #16a34a);
+      box-shadow: 0 10px 28px rgba(16, 185, 129, 0.65);
     }
 
     .btn-primary:active {
       transform: translateY(1px) scale(0.99);
-      box-shadow: 0 4px 12px rgba(185, 28, 28, 0.5);
+      box-shadow: 0 4px 12px rgba(185, 28, 28, 0.6);
+    }
+
+    body.dark .btn-primary:active {
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.7);
     }
 
     .btn-outline {
-      background: rgba(248, 250, 252, 0.5);
+      background: rgba(248, 250, 252, 0.8);
       border: 1px solid var(--border);
       color: var(--fg);
+    }
+
+    body.dark .btn-outline {
+      background: rgba(15, 23, 42, 0.95);
+      border-color: rgba(55, 65, 81, 0.9);
+      color: #e5e7eb;
     }
 
     .btn-outline:active {
@@ -274,9 +322,16 @@
       border-radius: 18px;
       border: 1px dashed rgba(250, 204, 21, 0.7);
       background:
-        radial-gradient(circle at top, rgba(250, 204, 21, 0.2), transparent 55%),
-        radial-gradient(circle at bottom, rgba(22, 163, 74, 0.16), transparent 55%);
+        radial-gradient(circle at top, rgba(250, 204, 21, 0.25), transparent 60%),
+        radial-gradient(circle at bottom, rgba(22, 163, 74, 0.22), transparent 60%);
       min-height: 260px;
+    }
+
+    body.dark .qr-box {
+      background:
+        radial-gradient(circle at top, rgba(250, 204, 21, 0.18), transparent 60%),
+        radial-gradient(circle at bottom, rgba(34, 197, 94, 0.3), transparent 65%);
+      border-color: rgba(250, 250, 250, 0.6);
     }
 
     .qr-box img {
@@ -296,13 +351,18 @@
 
     .chip {
       font-size: 0.75rem;
-      padding: 4px 8px;
+      padding: 4px 10px;
       border-radius: 999px;
-      background: rgba(248, 250, 252, 0.8);
-      border: 1px solid rgba(209, 213, 219, 0.8);
+      background: rgba(248, 250, 252, 0.9);
+      border: 1px solid rgba(209, 213, 219, 0.9);
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
+    }
+
+    body.dark .chip {
+      background: rgba(15, 23, 42, 0.95);
+      border-color: rgba(55, 65, 81, 0.9);
     }
 
     .chip span.label { opacity: 0.7; }
@@ -326,12 +386,17 @@
       border-radius: 14px;
       padding: 10px 12px;
       border: 1px solid var(--border);
-      background: rgba(248, 250, 252, 0.82);
+      background: rgba(248, 250, 252, 0.9);
       display: flex;
       flex-direction: column;
       gap: 2px;
       flex: 1;
       cursor: pointer;
+    }
+
+    body.dark .link-tile {
+      background: rgba(15, 23, 42, 0.96);
+      border-color: rgba(55, 65, 81, 0.9);
     }
 
     .link-tile-title {
@@ -395,7 +460,12 @@
       overflow-y: auto;
       border-radius: 12px;
       border: 1px solid var(--border);
-      background: rgba(248, 250, 252, 0.88);
+      background: rgba(248, 250, 252, 0.92);
+    }
+
+    body.dark #scan-list {
+      background: rgba(15, 23, 42, 0.96);
+      border-color: rgba(55, 65, 81, 0.9);
     }
 
     .scan-row {
@@ -431,10 +501,16 @@
       font-size: 0.7rem;
       border-radius: 999px;
       padding: 2px 6px;
-      background: rgba(22, 163, 74, 0.16);
-      border: 1px solid rgba(22, 163, 74, 0.9);
+      background: rgba(22, 163, 74, 0.18);
+      border: 1px solid rgba(22, 163, 74, 0.95);
       color: #166534;
       font-weight: 600;
+    }
+
+    body.dark .match-badge-full {
+      background: rgba(34, 197, 94, 0.18);
+      border-color: rgba(34, 197, 94, 0.95);
+      color: #bbf7d0;
     }
 
     /* Partial match: gold/yellow */
@@ -442,22 +518,27 @@
       font-size: 0.7rem;
       border-radius: 999px;
       padding: 2px 6px;
-      background: rgba(250, 204, 21, 0.16);
-      border: 1px solid rgba(250, 204, 21, 0.9);
+      background: rgba(250, 204, 21, 0.2);
+      border: 1px solid rgba(250, 204, 21, 0.95);
       color: #92400e;
       font-weight: 500;
+    }
+
+    body.dark .match-badge-partial {
+      background: rgba(250, 204, 21, 0.22);
+      color: #fef9c3;
     }
 
     .empty-state {
       text-align: center;
       padding: 16px;
       font-size: 0.85rem;
-      opacity: 0.7;
+      opacity: 0.8;
     }
 
     .subtle {
       font-size: 0.75rem;
-      opacity: 0.85;
+      opacity: 0.9;
     }
 
     .detail-list {
@@ -477,9 +558,14 @@
       padding: 4px 8px;
       border-radius: 999px;
       border: 1px solid var(--border);
-      background: rgba(248, 250, 252, 0.8);
+      background: rgba(248, 250, 252, 0.9);
       font-size: 0.8rem;
       margin-top: 2px;
+    }
+
+    body.dark .detail-answer-pill {
+      background: rgba(15, 23, 42, 0.95);
+      border-color: rgba(55, 65, 81, 0.9);
     }
 
     .detail-answer-same {
@@ -487,6 +573,10 @@
       border-color: rgba(250, 204, 21, 0.95);
       color: #78350f;
       font-weight: 600;
+    }
+
+    body.dark .detail-answer-same {
+      color: #fef3c7;
     }
 
     .detail-name {
@@ -672,7 +762,7 @@
           text: "Q2. 오늘 내가 가장 기대하는 건?",
           options: [
             "음식! 음식! 그리고 음식!",
-            "사람들과의 수다",
+          "사람들과의 수다",
             "예상 못한 웃긴 이벤트"
           ]
         },
@@ -737,6 +827,19 @@
 
     function getQuestions() {
       return QUESTIONS[currentLang];
+    }
+
+    // Helper: extract a short title from Q4 option string
+    function getQ4ShortTitle(optionText) {
+      if (!optionText) return "";
+      // Try Korean quotes ‘ ’ or " "
+      const quoteMatch = optionText.match(/[‘'"](.*?)[’'"]/);
+      if (quoteMatch && quoteMatch[1]) {
+        return quoteMatch[1].trim();
+      }
+      // Fallback: last word
+      const parts = optionText.split(/[\s]/).filter(Boolean);
+      return parts.length ? parts[parts.length - 1] : optionText;
     }
 
     // ---------- Strings ----------
@@ -1130,11 +1233,13 @@
       chipName.appendChild(strongName);
       profileSummary.appendChild(chipName);
 
-      // Chip 2: 캐릭터 제목만 (샬롬 전도사)
+      // Chip 2: only title from Q4, e.g. "샬롬 전도사"
+      const q4Full = qs[3].options[profile.a4 ?? 0];
+      const shortTitle = getQ4ShortTitle(q4Full);
       const chipChar = document.createElement("div");
       chipChar.className = "chip";
       const strongChar = document.createElement("strong");
-      strongChar.textContent = qs[3].options[profile.a4 ?? 0];
+      strongChar.textContent = shortTitle;
       chipChar.appendChild(strongChar);
       profileSummary.appendChild(chipChar);
     }
@@ -1207,7 +1312,7 @@
         const meta = document.createElement("div");
         meta.className = "scan-row-meta";
 
-        // Q4 character
+        // Q4 character (full text is okay here)
         const q4Span = document.createElement("span");
         q4Span.textContent = qs[3].options[item.a4 ?? 0] || "";
         meta.appendChild(q4Span);
@@ -1453,8 +1558,7 @@
         renderMetList();
       }
 
-      // Stop scanner but do NOT navigate back to QR;
-      // instead go straight to detail screen (#5).
+      // Stop scanner and go directly to detail screen
       stopScannerWithoutNavigation();
       showPersonDetail(existing);
     }
