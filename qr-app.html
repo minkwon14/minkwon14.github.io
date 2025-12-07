@@ -913,13 +913,29 @@
     // ---------- QR (using local qrcode.min.js) ----------
     function updateQR() {
       if (!profile) return;
+
       const qrContainer = document.getElementById("qrcode");
       if (!qrContainer) return;
+
+      // Debug: see if library is present
+      console.log("QRCode typeof:", typeof QRCode);
 
       const { fullName, group, mbti, location, hobby } = profile;
       const data = `${fullName || ""}|${group || ""}|${mbti || ""}|${location || ""}|${hobby || ""}`;
 
       qrContainer.innerHTML = "";
+
+      if (typeof QRCode === "undefined") {
+        const msg = document.createElement("div");
+        msg.style.textAlign = "center";
+        msg.style.fontSize = "0.8rem";
+        msg.style.opacity = "0.8";
+        msg.textContent = currentLang === "ko"
+          ? "QRCode 라이브러리를 찾을 수 없습니다. qrcode.min.js 경로를 확인해 주세요."
+          : "QRCode library not found. Please check qrcode.min.js path.";
+        qrContainer.appendChild(msg);
+        return;
+      }
 
       try {
         new QRCode(qrContainer, {
@@ -928,7 +944,7 @@
           height: 300,
           colorDark: "#000000",
           colorLight: "#ffffff",
-          correctLevel: QRCode.CorrectLevel.L
+          correctLevel: QRCode.CorrectLevel.L,
         });
       } catch (e) {
         console.error("QR generation error:", e);
