@@ -5,10 +5,8 @@
   <title>샤인 링크</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- QR code reader -->
+  <!-- QR code reader (for scanning) -->
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
-  <!-- LOCAL QR code generator (must be in same folder) -->
-  <script src="qrcode.min.js"></script>
 
   <style>
     :root {
@@ -251,7 +249,6 @@
       min-height: 260px;
     }
 
-    .qr-box canvas,
     .qr-box img {
       max-width: 360px;
       width: 85%;
@@ -553,7 +550,7 @@
 
         <div class="meta-row">
           <span class="subtle" id="qr-description">
-            QR에는 이름과 4개의 질문에 대한 선택지가 들어갑니다.
+            QR에는 이름과 네 가지 질문에 대한 답이 담겨 있어요.
           </span>
           <button id="edit-profile" class="btn btn-outline" type="button">내 답변 수정</button>
         </div>
@@ -695,7 +692,7 @@
           options: [
             "The one who greets first – ‘Shalom Ambassador’",
             "Quietly guarding the peace – ‘Guardian of Calm’",
-            "Capturing everything in photos – ‘Memory Keeper’"
+            "Capturing everything – ‘Memory Keeper’"
           ]
         }
       ]
@@ -836,7 +833,7 @@
     const themeCookieKey = "shine_theme";
     const langCookieKey = "shine_lang";
 
-    // profile: { name, a1, a2, a3, a4 } each answer index 0-2
+    // profile: { name, a1, a2, a3, a4 }
     let profile = null;
     // metList: { name, a1, a2, a3, a4, timestamp }
     let metList = [];
@@ -1078,38 +1075,13 @@
 
       qrContainer.innerHTML = "";
 
-      if (typeof QRCode === "undefined") {
-        const msg = document.createElement("div");
-        msg.style.textAlign = "center";
-        msg.style.fontSize = "0.8rem";
-        msg.style.opacity = "0.8";
-        msg.textContent = currentLang === "ko"
-          ? "QRCode 라이브러리를 찾을 수 없습니다. qrcode.min.js 경로를 확인해 주세요."
-          : "QRCode library not found. Please check qrcode.min.js path.";
-        qrContainer.appendChild(msg);
-        return;
-      }
+      const img = document.createElement("img");
+      img.alt = "QR Code";
+      img.src = "https://api.qrserver.com/v1/create-qr-code/?" +
+        "size=360x360&data=" + encodeURIComponent(data) +
+        "&ecc=M"; // medium error correction
 
-      try {
-        new QRCode(qrContainer, {
-          text: data,
-          width: 360,
-          height: 360,
-          colorDark: "#000000",
-          colorLight: "#ffffff",
-          correctLevel: QRCode.CorrectLevel.L // simpler / easier to scan
-        });
-      } catch (e) {
-        console.error("QR generation error:", e, "len:", data.length);
-        const fallback = document.createElement("div");
-        fallback.style.textAlign = "center";
-        fallback.style.fontSize = "0.8rem";
-        fallback.style.opacity = "0.8";
-        fallback.textContent = currentLang === "ko"
-          ? "QR 코드를 생성하는 중 오류가 발생했습니다."
-          : "Error while generating QR code.";
-        qrContainer.appendChild(fallback);
-      }
+      qrContainer.appendChild(img);
     }
 
     // ---------- UI helpers ----------
@@ -1407,7 +1379,6 @@
       editProfileBtn.addEventListener("click", () => {
         if (profile) {
           fullNameInput.value = profile.name || "";
-          // re-check radios based on profile; renderQuestions will handle
         }
         showScreen("s1");
       });
@@ -1518,13 +1489,12 @@
 
     function initUI() {
       loadCookies();
-      applyLanguage(); // also renders questions
+      applyLanguage();
       wireEvents();
 
       if (profile) {
         fullNameInput.value = profile.name || "";
 
-        // restore radios
         renderQuestions();
         if (profile.a1 != null) {
           const el = document.querySelector(`input[name="q1"][value="${profile.a1}"]`);
