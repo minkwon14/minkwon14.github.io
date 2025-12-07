@@ -17,7 +17,8 @@
       --fg: #111827;
       --card-bg: #ffffff;
       --accent: #2563eb;
-      --accent-soft: rgba(37, 99, 235, 0.1);
+      --accent-soft: rgba(37, 99, 235, 0.12);
+      --accent-strong: #16a34a;
       --border: #e5e7eb;
     }
 
@@ -26,7 +27,8 @@
       --fg: #e5e7eb;
       --card-bg: #020617;
       --accent: #60a5fa;
-      --accent-soft: rgba(96, 165, 250, 0.15);
+      --accent-soft: rgba(96, 165, 250, 0.2);
+      --accent-strong: #22c55e;
       --border: #1f2937;
     }
 
@@ -36,7 +38,8 @@
         --fg: #e5e7eb;
         --card-bg: #020617;
         --accent: #60a5fa;
-        --accent-soft: rgba(96, 165, 250, 0.15);
+        --accent-soft: rgba(96, 165, 250, 0.2);
+        --accent-strong: #22c55e;
         --border: #1f2937;
       }
     }
@@ -135,8 +138,7 @@
       font-weight: 500;
     }
 
-    .field input,
-    .field select {
+    .field input {
       padding: 8px 10px;
       border-radius: 10px;
       border: 1px solid var(--border);
@@ -145,10 +147,43 @@
       font-size: 0.9rem;
     }
 
-    .field input:focus,
-    .field select:focus {
+    .field input:focus {
       outline: 2px solid var(--accent-soft);
       border-color: var(--accent);
+    }
+
+    .question-block {
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      background: rgba(15, 23, 42, 0.02);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .question-text {
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: 2px;
+    }
+
+    .option-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .option-item input {
+      margin-top: 2px;
     }
 
     .btn {
@@ -244,8 +279,14 @@
     }
 
     .chip span.label { opacity: 0.7; }
-
     .chip strong { font-weight: 600; }
+
+    .chip-match {
+      background: rgba(22, 163, 74, 0.1);
+      border-color: rgba(22, 163, 74, 0.6);
+      color: var(--accent-strong);
+      font-weight: 600;
+    }
 
     .top-controls {
       display: flex;
@@ -361,6 +402,16 @@
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .match-badge {
+      font-size: 0.7rem;
+      border-radius: 999px;
+      padding: 2px 6px;
+      background: rgba(22, 163, 74, 0.12);
+      border: 1px solid rgba(22, 163, 74, 0.7);
+      color: var(--accent-strong);
     }
 
     .empty-state {
@@ -378,25 +429,41 @@
     .detail-list {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      font-size: 0.9rem;
+      gap: 10px;
+      font-size: 0.85rem;
     }
 
-    .detail-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .detail-label {
+    .detail-question {
       font-weight: 500;
-      opacity: 0.8;
+      margin-bottom: 2px;
     }
 
-    .detail-value {
-      text-align: right;
-      word-break: break-word;
-      max-width: 65%;
+    .detail-answer-pill {
+      display: inline-flex;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.02);
+      font-size: 0.8rem;
+      margin-top: 2px;
+    }
+
+    .detail-answer-same {
+      background: rgba(22, 163, 74, 0.12);
+      border-color: rgba(22, 163, 74, 0.7);
+      color: var(--accent-strong);
+      font-weight: 600;
+    }
+
+    .detail-name {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .detail-mettime {
+      font-size: 0.75rem;
+      opacity: 0.8;
     }
   </style>
 </head>
@@ -418,10 +485,10 @@
         <button id="theme-toggle" class="btn btn-outline" type="button">자동</button>
       </div>
 
-      <!-- Screen 1 -->
+      <!-- Screen 1: My profile & answers -->
       <section id="screen-1" class="screen active">
         <p class="subtle" id="intro-text">
-          만나서 서로 스캔할 수 있는 나만의 QR 카드를 만들어 보세요.
+          오늘 파티에서 나와 비슷한 사람을 찾아볼까요? 질문에 답하고 나만의 QR을 만들어 보세요.
         </p>
 
         <div class="field">
@@ -429,38 +496,40 @@
           <input id="fullName" placeholder="예: 김예수" />
         </div>
 
-        <div class="field">
-          <label for="group" id="label-group">소속 순</label>
-          <select id="group">
-            <option value="" disabled selected>선택하세요</option>
-            <!-- options filled by JS -->
-          </select>
+        <div class="question-block" id="q1-block">
+          <div class="question-text" id="q1-text">
+            Q1. 지금 내 마음속 캐롤은?
+          </div>
+          <div class="options" id="q1-options"></div>
         </div>
 
-        <div class="field">
-          <label for="mbti" id="label-mbti">MBTI</label>
-          <select id="mbti">
-            <option value="" disabled selected>선택하세요</option>
-            <!-- options filled by JS -->
-          </select>
+        <div class="question-block" id="q2-block">
+          <div class="question-text" id="q2-text">
+            Q2. 오늘 내가 가장 기대하는 건?
+          </div>
+          <div class="options" id="q2-options"></div>
         </div>
 
-        <div class="field">
-          <label for="location" id="label-location">사는 곳</label>
-          <input id="location" placeholder="예: 어바인" />
+        <div class="question-block" id="q3-block">
+          <div class="question-text" id="q3-text">
+            Q3. 오늘의 TMI는?
+          </div>
+          <div class="options" id="q3-options"></div>
         </div>
 
-        <div class="field">
-          <label for="hobby" id="label-hobby">취미</label>
-          <input id="hobby" placeholder="예: 등산, 커피, 게임" />
+        <div class="question-block" id="q4-block">
+          <div class="question-text" id="q4-text">
+            Q4. 오늘 파티에서 나의 캐릭터는?
+          </div>
+          <div class="options" id="q4-options"></div>
         </div>
 
         <button id="save-profile" class="btn btn-primary" type="button">
-          내 정보 저장하고 QR 보기
+          내 답변 저장하고 QR 보기
         </button>
       </section>
 
-      <!-- Screen 2 -->
+      <!-- Screen 2: My QR -->
       <section id="screen-2" class="screen">
         <div class="chip-list" id="profile-summary"></div>
 
@@ -484,13 +553,13 @@
 
         <div class="meta-row">
           <span class="subtle" id="qr-description">
-            QR에는 이름, 순, MBTI, 사는 곳, 취미 정보가 들어갑니다.
+            QR에는 이름과 4개의 질문에 대한 선택지가 들어갑니다.
           </span>
-          <button id="edit-profile" class="btn btn-outline" type="button">내 정보 수정</button>
+          <button id="edit-profile" class="btn btn-outline" type="button">내 답변 수정</button>
         </div>
       </section>
 
-      <!-- Screen 3 -->
+      <!-- Screen 3: Scanner -->
       <section id="screen-3" class="screen">
         <div id="scanner-container">
           <video id="video" playsinline></video>
@@ -513,7 +582,7 @@
         </div>
       </section>
 
-      <!-- Screen 4 -->
+      <!-- Screen 4: Met list -->
       <section id="screen-4" class="screen">
         <div class="meta-row">
           <span class="subtle" id="met-list-title">지금까지 만난 사람</span>
@@ -530,7 +599,7 @@
         </div>
       </section>
 
-      <!-- Screen 5 -->
+      <!-- Screen 5: Person detail -->
       <section id="screen-5" class="screen">
         <div class="meta-row">
           <span class="subtle" id="detail-title">상세 정보</span>
@@ -539,32 +608,10 @@
           </button>
         </div>
 
-        <div class="detail-list">
-          <div class="detail-row">
-            <span class="detail-label" id="detail-label-name">이름</span>
-            <span class="detail-value" id="detail-name"></span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label" id="detail-label-group">소속 순</span>
-            <span class="detail-value" id="detail-group"></span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label" id="detail-label-mbti">MBTI</span>
-            <span class="detail-value" id="detail-mbti"></span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label" id="detail-label-location">사는 곳</span>
-            <span class="detail-value" id="detail-location"></span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label" id="detail-label-hobby">취미</span>
-            <span class="detail-value" id="detail-hobby"></span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label" id="detail-label-mettime">만난 시간</span>
-            <span class="detail-value" id="detail-mettime"></span>
-          </div>
-        </div>
+        <div class="detail-name" id="detail-name"></div>
+        <div class="detail-mettime" id="detail-mettime"></div>
+
+        <div class="detail-list" id="detail-qa"></div>
       </section>
     </div>
 
@@ -574,25 +621,89 @@
   </div>
 
   <script>
-    // ---------- Enums ----------
-    const GROUPS = [
-      { id: 0, nameKo: "무소속", nameEn: "No group" },
-      { id: 1, nameKo: "새가족", nameEn: "Newcomer" },
-      { id: 2, nameKo: "김수진", nameEn: "Kim Sujin" },
-      { id: 3, nameKo: "앨리스", nameEn: "Alice" },
-      { id: 4, nameKo: "류다현", nameEn: "Ryu Dahyun" },
-      { id: 5, nameKo: "아이린", nameEn: "Irene" },
-      { id: 6, nameKo: "장준용", nameEn: "Jang Junyong" },
-      { id: 7, nameKo: "조연수", nameEn: "Cho Yeonsu" },
-      { id: 8, nameKo: "최우석", nameEn: "Choi Wooseok" }
-    ];
+    // ---------- Question model ----------
+    const QUESTIONS = {
+      ko: [
+        {
+          id: "q1",
+          text: "Q1. 지금 내 마음속 캐롤은?",
+          options: [
+            "징글벨—하이텐션 모드",
+            "고요한 밤—평온 모드",
+            "루돌프—약간 들떠있음"
+          ]
+        },
+        {
+          id: "q2",
+          text: "Q2. 오늘 내가 가장 기대하는 건?",
+          options: [
+            "음식! 음식! 그리고 음식!",
+            "사람들과의 수다",
+            "예상 못한 웃긴 이벤트"
+          ]
+        },
+        {
+          id: "q3",
+          text: "Q3. 오늘의 TMI는?",
+          options: [
+            "사실 오늘 패션은 5분 컷이다",
+            "올 때부터 배고팠다",
+            "왜인지 설렌다"
+          ]
+        },
+        {
+          id: "q4",
+          text: "Q4. 오늘 파티에서 나의 캐릭터는?",
+          options: [
+            "먼저 다가가 반갑게 인사하는 ‘샬롬 전도사’",
+            "조용히 주변을 따뜻하게 지켜보는 ‘평안 수호자’",
+            "오늘 파티를 사진으로 남기려는 ‘추억 기록자’"
+          ]
+        }
+      ],
+      en: [
+        {
+          id: "q1",
+          text: "Q1. What’s your inner carol right now?",
+          options: [
+            "Jingle Bells – high-tension mode",
+            "Silent Night – peaceful mode",
+            "Rudolph – a bit excited"
+          ]
+        },
+        {
+          id: "q2",
+          text: "Q2. What are you most excited about today?",
+          options: [
+            "Food! Food! And more food!",
+            "Chatting with people",
+            "Unexpected funny moments"
+          ]
+        },
+        {
+          id: "q3",
+          text: "Q3. Today’s TMI is…",
+          options: [
+            "My outfit took exactly 5 minutes",
+            "I was hungry on the way here",
+            "I feel weirdly fluttery"
+          ]
+        },
+        {
+          id: "q4",
+          text: "Q4. My party character today is…",
+          options: [
+            "The one who greets first – ‘Shalom Ambassador’",
+            "Quietly guarding the peace – ‘Guardian of Calm’",
+            "Capturing everything in photos – ‘Memory Keeper’"
+          ]
+        }
+      ]
+    };
 
-    const MBTI_TYPES = [
-      "ISTJ","ISFJ","INFJ","INTJ",
-      "ISTP","ISFP","INFP","INTP",
-      "ESTP","ESFP","ENFP","ENTP",
-      "ESTJ","ESFJ","ENFJ","ENTJ"
-    ];
+    function getQuestions() {
+      return QUESTIONS[currentLang];
+    }
 
     // ---------- Strings ----------
     const STRINGS = {
@@ -601,30 +712,22 @@
         pillReady: "준비 완료",
         pillSaved: "프로필이 저장되었습니다",
         pillLoaded: "쿠키에서 불러왔습니다",
-        pillSetup: "프로필을 먼저 설정해 주세요",
+        pillSetup: "이름과 질문에 먼저 답해 주세요",
 
         langButton: "한국어",
         themeAuto: "자동",
         themeDark: "다크",
         themeLight: "라이트",
 
-        intro: "만나서 서로 스캔할 수 있는 나만의 QR 카드를 만들어 보세요.",
+        intro: "오늘 파티에서 나와 비슷한 사람을 찾아볼까요? 질문에 답하고 나만의 QR을 만들어 보세요.",
         fullNameLabel: "이름",
         fullNamePlaceholder: "예: 김예수",
-        groupLabel: "소속 순",
-        groupPlaceholder: "선택하세요",
-        hobbyLabel: "취미",
-        hobbyPlaceholder: "예: 등산, 커피, 게임",
-        mbtiLabel: "MBTI",
-        mbtiPlaceholder: "선택하세요",
-        locationLabel: "사는 곳",
-        locationPlaceholder: "예: 어바인",
-        saveProfile: "내 정보 저장하고 QR 보기",
-        editProfile: "내 정보 수정",
+        saveProfile: "내 답변 저장하고 QR 보기",
+        editProfile: "내 답변 수정",
 
         metTitle: "만난 사람",
         metSubtitle: "지금까지 만난 사람 목록 보기",
-        qrDescription: "QR에는 이름, 순, MBTI, 사는 곳, 취미 정보가 들어갑니다.",
+        qrDescription: "QR에는 이름과 네 가지 질문에 대한 답이 담겨 있어요.",
         scanButton: "QR 스캔하기",
 
         scanStatusIntro: "QR를 가운데 네모 안에 맞추고, 너무 가까이 말고 살짝 떨어져 보세요.",
@@ -645,14 +748,10 @@
         footer: "데이터는 이 브라우저 안에만 저장됩니다 (쿠키 사용).",
 
         detailTitle: "상세 정보",
-        detailLabelName: "이름",
-        detailLabelGroup: "소속 순",
-        detailLabelMbti: "MBTI",
-        detailLabelLocation: "사는 곳",
-        detailLabelHobby: "취미",
-        detailLabelMetTime: "만난 시간",
+        matchBadge: "나와 네 문제 모두 같아요!",
+        matchPartial: "같은 답이 있는 친구예요!",
 
-        alertEnterRequired: "모든 항목을 입력해 주세요.",
+        alertEnterRequired: "이름과 모든 질문에 답해 주세요.",
         alertClearConfirm: "정말로 만난 사람 목록을 모두 삭제할까요?",
         alertScanned: name => `스캔 완료: ${name} 님 정보를 저장했습니다.`,
         alertCameraUnsupported: "이 브라우저에서는 카메라를 사용할 수 없습니다.",
@@ -663,36 +762,28 @@
         pillReady: "Ready",
         pillSaved: "Profile saved",
         pillLoaded: "Loaded from cookie",
-        pillSetup: "Please set up your profile first",
+        pillSetup: "Please enter your name and answer the questions first.",
 
         langButton: "English",
         themeAuto: "Auto",
         themeDark: "Dark",
         themeLight: "Light",
 
-        intro: "Create your own QR card so you can scan each other when you meet.",
-        fullNameLabel: "Full name",
+        intro: "Want to find people like you at the party? Answer a few questions and create your own QR.",
+        fullNameLabel: "Name",
         fullNamePlaceholder: "e.g. Jesus Kim",
-        groupLabel: "Group",
-        groupPlaceholder: "Select",
-        hobbyLabel: "Hobby",
-        hobbyPlaceholder: "e.g. hiking, coffee, games",
-        mbtiLabel: "MBTI",
-        mbtiPlaceholder: "Select",
-        locationLabel: "Where do you live?",
-        locationPlaceholder: "e.g. Irvine",
-        saveProfile: "Save my info & show QR",
-        editProfile: "Edit my info",
+        saveProfile: "Save my answers & show QR",
+        editProfile: "Edit my answers",
 
-        metTitle: "People you’ve met",
-        metSubtitle: "See the people you’ve met so far",
-        qrDescription: "Your QR includes your name, group, MBTI, city and hobbies.",
+        metTitle: "People I’ve met",
+        metSubtitle: "See everyone you’ve met so far",
+        qrDescription: "Your QR includes your name and answers to four questions.",
         scanButton: "Scan QR",
 
         scanStatusIntro: "Align the QR inside the square, not too close, and hold still…",
         scanStatusTrying: "Trying to read the QR… adjust distance slightly and hold still.",
         scanStatusStopped: "Scanner stopped.",
-        scanStatusFormatUnsupported: "QR detected, but format is not supported by this app.",
+        scanStatusFormatUnsupported: "QR detected, but format is not supported.",
         scanStatusMissingName: "QR detected, but name is missing.",
 
         flipCamera: "Flip camera",
@@ -706,16 +797,12 @@
         emptyState: "No one yet. Go meet someone and scan their QR!",
         footer: "Data stays in this browser only (stored in cookies).",
 
-        detailTitle: "Person details",
-        detailLabelName: "Name",
-        detailLabelGroup: "Group",
-        detailLabelMbti: "MBTI",
-        detailLabelLocation: "Location",
-        detailLabelHobby: "Hobby",
-        detailLabelMetTime: "Met at",
+        detailTitle: "Details",
+        matchBadge: "All 4 answers match you!",
+        matchPartial: "You share some answers!",
 
-        alertEnterRequired: "Please fill in all fields.",
-        alertClearConfirm: "Clear all entries in 'People you’ve met'?",
+        alertEnterRequired: "Please fill in your name and answer all questions.",
+        alertClearConfirm: "Clear everyone in your met list?",
         alertScanned: name => `Scanned and saved: ${name}`,
         alertCameraUnsupported: "Camera access is not supported in this browser.",
         alertCameraError: msg => `Unable to access camera: ${msg}`
@@ -744,12 +831,14 @@
     }
 
     // ---------- State ----------
-    const profileCookieKey = "meet_profile";
-    const metCookieKey = "meet_met_list";
-    const themeCookieKey = "meet_theme";
-    const langCookieKey = "meet_lang";
+    const profileCookieKey = "shine_profile_v2";
+    const metCookieKey = "shine_met_list_v2";
+    const themeCookieKey = "shine_theme";
+    const langCookieKey = "shine_lang";
 
+    // profile: { name, a1, a2, a3, a4 } each answer index 0-2
     let profile = null;
+    // metList: { name, a1, a2, a3, a4, timestamp }
     let metList = [];
     let themeMode = "auto";
     let currentLang = "ko";
@@ -781,18 +870,18 @@
     const introText = document.getElementById("intro-text");
 
     const fullNameLabel = document.getElementById("label-fullname");
-    const groupLabel = document.getElementById("label-group");
-    const mbtiLabel = document.getElementById("label-mbti");
-    const locationLabel = document.getElementById("label-location");
-    const hobbyLabel = document.getElementById("label-hobby");
-
     const fullNameInput = document.getElementById("fullName");
-    const groupSelect = document.getElementById("group");
-    const mbtiSelect = document.getElementById("mbti");
-    const locationInput = document.getElementById("location");
-    const hobbyInput = document.getElementById("hobby");
     const saveProfileBtn = document.getElementById("save-profile");
     const editProfileBtn = document.getElementById("edit-profile");
+
+    const q1Options = document.getElementById("q1-options");
+    const q2Options = document.getElementById("q2-options");
+    const q3Options = document.getElementById("q3-options");
+    const q4Options = document.getElementById("q4-options");
+    const q1Text = document.getElementById("q1-text");
+    const q2Text = document.getElementById("q2-text");
+    const q3Text = document.getElementById("q3-text");
+    const q4Text = document.getElementById("q4-text");
 
     const profileSummary = document.getElementById("profile-summary");
     const metTitleEl = document.getElementById("met-title");
@@ -814,18 +903,9 @@
 
     const detailTitleEl = document.getElementById("detail-title");
     const backFromDetailBtn = document.getElementById("back-from-detail");
-    const detailName = document.getElementById("detail-name");
-    const detailGroup = document.getElementById("detail-group");
-    const detailMbti = document.getElementById("detail-mbti");
-    const detailLocation = document.getElementById("detail-location");
-    const detailHobby = document.getElementById("detail-hobby");
-    const detailMetTime = document.getElementById("detail-mettime");
-    const detailLabelName = document.getElementById("detail-label-name");
-    const detailLabelGroup = document.getElementById("detail-label-group");
-    const detailLabelMbti = document.getElementById("detail-label-mbti");
-    const detailLabelLocation = document.getElementById("detail-label-location");
-    const detailLabelHobby = document.getElementById("detail-label-hobby");
-    const detailLabelMetTime = document.getElementById("detail-label-mettime");
+    const detailNameEl = document.getElementById("detail-name");
+    const detailMetTimeEl = document.getElementById("detail-mettime");
+    const detailQaEl = document.getElementById("detail-qa");
 
     const videoEl = document.getElementById("video");
     const scanCanvas = document.getElementById("scan-canvas");
@@ -845,6 +925,61 @@
         t("themeLight");
     }
 
+    function renderQuestions() {
+      const qs = getQuestions();
+
+      q1Text.textContent = qs[0].text;
+      q2Text.textContent = qs[1].text;
+      q3Text.textContent = qs[2].text;
+      q4Text.textContent = qs[3].text;
+
+      function renderOptions(container, qId, options) {
+        container.innerHTML = "";
+        options.forEach((opt, idx) => {
+          const label = document.createElement("label");
+          label.className = "option-item";
+
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = qId;
+          input.value = String(idx);
+
+          const span = document.createElement("span");
+          span.textContent = `${idx + 1}. ${opt}`;
+
+          label.appendChild(input);
+          label.appendChild(span);
+          container.appendChild(label);
+        });
+      }
+
+      renderOptions(q1Options, "q1", qs[0].options);
+      renderOptions(q2Options, "q2", qs[1].options);
+      renderOptions(q3Options, "q3", qs[2].options);
+      renderOptions(q4Options, "q4", qs[3].options);
+
+      // restore selected values if profile already set
+      if (profile) {
+        const { a1, a2, a3, a4 } = profile;
+        if (a1 != null) {
+          const el = document.querySelector(`input[name="q1"][value="${a1}"]`);
+          if (el) el.checked = true;
+        }
+        if (a2 != null) {
+          const el = document.querySelector(`input[name="q2"][value="${a2}"]`);
+          if (el) el.checked = true;
+        }
+        if (a3 != null) {
+          const el = document.querySelector(`input[name="q3"][value="${a3}"]`);
+          if (el) el.checked = true;
+        }
+        if (a4 != null) {
+          const el = document.querySelector(`input[name="q4"][value="${a4}"]`);
+          if (el) el.checked = true;
+        }
+      }
+    }
+
     function applyLanguage() {
       document.documentElement.lang = currentLang === "ko" ? "ko" : "en";
       document.title = t("appTitle");
@@ -854,16 +989,7 @@
 
       introText.textContent = t("intro");
       fullNameLabel.textContent = t("fullNameLabel");
-      groupLabel.textContent = t("groupLabel");
-      mbtiLabel.textContent = t("mbtiLabel");
-      locationLabel.textContent = t("locationLabel");
-      hobbyLabel.textContent = t("hobbyLabel");
-
       fullNameInput.placeholder = t("fullNamePlaceholder");
-      groupSelect.options[0].textContent = t("groupPlaceholder");
-      mbtiSelect.options[0].textContent = t("mbtiPlaceholder");
-      locationInput.placeholder = t("locationPlaceholder");
-      hobbyInput.placeholder = t("hobbyPlaceholder");
 
       saveProfileBtn.textContent = t("saveProfile");
       editProfileBtn.textContent = t("editProfile");
@@ -885,16 +1011,8 @@
       footerTextEl.textContent = t("footer");
 
       detailTitleEl.textContent = t("detailTitle");
-      detailLabelName.textContent = t("detailLabelName");
-      detailLabelGroup.textContent = t("detailLabelGroup");
-      detailLabelMbti.textContent = t("detailLabelMbti");
-      detailLabelLocation.textContent = t("detailLabelLocation");
-      detailLabelHobby.textContent = t("detailLabelHobby");
-      detailLabelMetTime.textContent = t("detailLabelMetTime");
 
-      populateGroupOptions(true);
-      populateMbtiOptions(true);
-
+      renderQuestions();
       applyTheme();
     }
 
@@ -914,102 +1032,33 @@
       applyTheme();
     }
 
-    // ---------- Dropdowns ----------
-    function populateGroupOptions(keepValue) {
-      const oldValue = keepValue ? groupSelect.value : "";
-      while (groupSelect.options.length > 1) groupSelect.remove(1);
-      GROUPS.forEach(g => {
-        const opt = document.createElement("option");
-        opt.value = String(g.id);
-        opt.textContent = currentLang === "ko" ? g.nameKo : g.nameEn;
-        groupSelect.appendChild(opt);
-      });
-      if (keepValue && oldValue) groupSelect.value = oldValue;
-    }
-
-    function populateMbtiOptions(keepValue) {
-      const oldValue = keepValue ? mbtiSelect.value : "";
-      while (mbtiSelect.options.length > 1) mbtiSelect.remove(1);
-      MBTI_TYPES.forEach((mbti, idx) => {
-        const opt = document.createElement("option");
-        opt.value = String(idx);
-        opt.textContent = mbti;
-        mbtiSelect.appendChild(opt);
-      });
-      if (keepValue && oldValue) mbtiSelect.value = oldValue;
-    }
-
-    function groupIndexToLabel(index) {
-      const i = Number(index);
-      const g = GROUPS.find(g => g.id === i);
-      if (!g) return "";
-      return currentLang === "ko" ? g.nameKo : g.nameEn;
-    }
-
-    function groupIndexToKo(index) {
-      const i = Number(index);
-      const g = GROUPS.find(g => g.id === i);
-      return g ? g.nameKo : "";
-    }
-
-    function mbtiIndexToLabel(index) {
-      const i = Number(index);
-      if (i < 0 || i >= MBTI_TYPES.length) return "";
-      return MBTI_TYPES[i];
-    }
-
-    function mbtiLabelToIndex(label) {
-      const upper = String(label || "").toUpperCase().trim();
-      return MBTI_TYPES.indexOf(upper);
-    }
-
-    function groupLabelToIndex(labelKo) {
-      const s = String(labelKo || "").trim();
-      const found = GROUPS.find(g => g.nameKo === s || g.nameEn === s);
-      return found ? found.id : -1;
-    }
-
     // ---------- QR encoding ----------
-    // Format: 이름|groupIndex|mbtiIndex|사는곳|취미
+    // Format: name|a1|a2|a3|a4  (each answer index 0-2)
     function safeField(str) {
       if (!str) return "";
-      return String(str).replace(/\|/g, "¦").slice(0, 120);
+      return String(str).replace(/\|/g, "¦").slice(0, 80);
     }
 
     function encodeProfileForQR(p) {
-      const fullName = safeField(p.fullName);
-      const location = safeField(p.location);
-      const hobby = safeField(p.hobby);
-
-      let gIdx = groupLabelToIndex(p.group);
-      let mIdx = mbtiLabelToIndex(p.mbti);
-
-      if (gIdx < 0) gIdx = 0;
-      if (mIdx < 0) mIdx = 0;
-
-      return `${fullName}|${gIdx}|${mIdx}|${location}|${hobby}`;
+      const name = safeField(p.name);
+      const a1 = p.a1 ?? 0;
+      const a2 = p.a2 ?? 0;
+      const a3 = p.a3 ?? 0;
+      const a4 = p.a4 ?? 0;
+      return `${name}|${a1}|${a2}|${a3}|${a4}`;
     }
 
     function decodeProfileFromQR(str) {
       const parts = str.split("|");
-      // 최소 5개 파츠 필요
-      if (parts.length < 5) throw new Error("Invalid QR format");
-      const fullName = (parts[0] || "").trim();
-      const gIdx = parseInt(parts[1] || "0", 10);
-      const mIdx = parseInt(parts[2] || "0", 10);
-      const location = (parts[3] || "").trim();
-      const hobby = (parts[4] || "").trim();
-
-      return {
-        fullName,
-        group: groupIndexToKo(gIdx),
-        mbti: mbtiIndexToLabel(mIdx),
-        location,
-        hobby
-      };
+      if (parts.length < 5) throw new Error("invalid format");
+      const name = (parts[0] || "").trim();
+      const a1 = parseInt(parts[1] || "0", 10);
+      const a2 = parseInt(parts[2] || "0", 10);
+      const a3 = parseInt(parts[3] || "0", 10);
+      const a4 = parseInt(parts[4] || "0", 10);
+      return { name, a1, a2, a3, a4 };
     }
 
-    // ---------- QR generation ----------
     function updateQR() {
       if (!profile) return;
 
@@ -1017,11 +1066,11 @@
       if (!qrContainer) return;
 
       profile = {
-        fullName: profile.fullName || "",
-        group: profile.group || "",
-        mbti: profile.mbti || "",
-        location: profile.location || "",
-        hobby: profile.hobby || ""
+        name: profile.name || "",
+        a1: profile.a1 ?? 0,
+        a2: profile.a2 ?? 0,
+        a3: profile.a3 ?? 0,
+        a4: profile.a4 ?? 0
       };
       setCookie(profileCookieKey, JSON.stringify(profile), 365);
 
@@ -1048,7 +1097,7 @@
           height: 360,
           colorDark: "#000000",
           colorLight: "#ffffff",
-          correctLevel: QRCode.CorrectLevel.M
+          correctLevel: QRCode.CorrectLevel.L // simpler / easier to scan
         });
       } catch (e) {
         console.error("QR generation error:", e, "len:", data.length);
@@ -1068,37 +1117,43 @@
       profileSummary.innerHTML = "";
       if (!profile) return;
 
-      const labelName = currentLang === "ko" ? "이름" : "Name";
-      const labelGroup = currentLang === "ko" ? "소속 순" : "Group";
-      const labelMbti = "MBTI";
-      const labelCity = currentLang === "ko" ? "사는 곳" : "Location";
-      const labelHobby = currentLang === "ko" ? "취미" : "Hobby";
+      const qs = getQuestions();
+      const chipName = document.createElement("div");
+      chipName.className = "chip";
+      const labelSpan = document.createElement("span");
+      labelSpan.className = "label";
+      labelSpan.textContent = currentLang === "ko" ? "이름" : "Name";
+      const strongVal = document.createElement("strong");
+      strongVal.textContent = profile.name;
+      chipName.appendChild(labelSpan);
+      chipName.appendChild(strongVal);
+      profileSummary.appendChild(chipName);
 
-      const items = [
-        { label: labelName, value: profile.fullName },
-        { label: labelGroup, value: profile.group },
-        { label: labelMbti, value: profile.mbti },
-        { label: labelCity, value: profile.location },
-        { label: labelHobby, value: profile.hobby },
-      ];
-
-      items.forEach(i => {
-        if (!i.value) return;
-        const chip = document.createElement("div");
-        chip.className = "chip";
-        const spanLabel = document.createElement("span");
-        spanLabel.className = "label";
-        spanLabel.textContent = i.label;
-        const strongVal = document.createElement("strong");
-        strongVal.textContent = i.value;
-        chip.appendChild(spanLabel);
-        chip.appendChild(strongVal);
-        profileSummary.appendChild(chip);
-      });
+      // Show Q4 "character" as a chip
+      const chipChar = document.createElement("div");
+      chipChar.className = "chip";
+      const labelChar = document.createElement("span");
+      labelChar.className = "label";
+      labelChar.textContent = "Q4";
+      const strongChar = document.createElement("strong");
+      strongChar.textContent = qs[3].options[profile.a4 ?? 0];
+      chipChar.appendChild(labelChar);
+      chipChar.appendChild(strongChar);
+      profileSummary.appendChild(chipChar);
     }
 
     function updateMetCount() {
       metCount.textContent = String(metList.length);
+    }
+
+    function answersAllSame(a, b) {
+      if (!a || !b) return false;
+      return a.a1 === b.a1 && a.a2 === b.a2 && a.a3 === b.a3 && a.a4 === b.a4;
+    }
+
+    function answersShareAny(a, b) {
+      if (!a || !b) return false;
+      return (a.a1 === b.a1) || (a.a2 === b.a2) || (a.a3 === b.a3) || (a.a4 === b.a4);
     }
 
     function renderMetList() {
@@ -1111,7 +1166,7 @@
         return;
       }
 
-      const labelGroup = currentLang === "ko" ? "소속 순" : "Group";
+      const qs = getQuestions();
 
       const sorted = metList
         .map((item, idx) => ({ item, idx }))
@@ -1138,9 +1193,24 @@
 
         const meta = document.createElement("div");
         meta.className = "scan-row-meta";
-        const groupSpan = document.createElement("span");
-        groupSpan.textContent = `${labelGroup}: ${item.group || "-"}`;
-        meta.appendChild(groupSpan);
+
+        // Q4 character
+        const q4Span = document.createElement("span");
+        q4Span.textContent = qs[3].options[item.a4 ?? 0] || "";
+        meta.appendChild(q4Span);
+
+        // Match badge (all answers same)
+        if (profile && answersAllSame(profile, item)) {
+          const badge = document.createElement("span");
+          badge.className = "match-badge";
+          badge.textContent = t("matchBadge");
+          meta.appendChild(badge);
+        } else if (profile && answersShareAny(profile, item)) {
+          const badge = document.createElement("span");
+          badge.className = "match-badge";
+          badge.textContent = t("matchPartial");
+          meta.appendChild(badge);
+        }
 
         row.appendChild(header);
         row.appendChild(meta);
@@ -1149,26 +1219,23 @@
     }
 
     function saveProfileFromInputs() {
-      const fullName = fullNameInput.value.trim();
-      const groupIndexStr = groupSelect.value;
-      const mbtiIndexStr = mbtiSelect.value;
-      const location = locationInput.value.trim();
-      const hobby = hobbyInput.value.trim();
+      const name = fullNameInput.value.trim();
+      const a1El = document.querySelector('input[name="q1"]:checked');
+      const a2El = document.querySelector('input[name="q2"]:checked');
+      const a3El = document.querySelector('input[name="q3"]:checked');
+      const a4El = document.querySelector('input[name="q4"]:checked');
 
-      if (!fullName || !groupIndexStr || !mbtiIndexStr || !location || !hobby) {
+      if (!name || !a1El || !a2El || !a3El || !a4El) {
         alert(t("alertEnterRequired"));
         return false;
       }
 
-      const groupLabelKo = groupIndexToKo(groupIndexStr);
-      const mbtiLabel = mbtiIndexToLabel(mbtiIndexStr);
-
       profile = {
-        fullName,
-        group: groupLabelKo,
-        mbti: mbtiLabel,
-        location,
-        hobby
+        name,
+        a1: parseInt(a1El.value, 10),
+        a2: parseInt(a2El.value, 10),
+        a3: parseInt(a3El.value, 10),
+        a4: parseInt(a4El.value, 10)
       };
       setCookie(profileCookieKey, JSON.stringify(profile), 365);
       return true;
@@ -1276,43 +1343,43 @@
     }
 
     function handleScannedData(dataStr) {
-      let decodedProfile;
+      let decoded;
       try {
-        decodedProfile = decodeProfileFromQR(dataStr);
+        decoded = decodeProfileFromQR(dataStr);
       } catch (e) {
         console.error("Failed to decode profile from QR:", e);
         scanStatus.textContent = t("scanStatusFormatUnsupported");
         return;
       }
 
-      const name = (decodedProfile.fullName || "").trim();
+      const name = (decoded.name || "").trim();
       if (!name) {
         scanStatus.textContent = t("scanStatusMissingName");
         return;
       }
 
-      const group = decodedProfile.group || "";
-      const mbti = decodedProfile.mbti || "";
-      const location = decodedProfile.location || "";
-      const hobby = decodedProfile.hobby || "";
+      const a1 = decoded.a1 ?? 0;
+      const a2 = decoded.a2 ?? 0;
+      const a3 = decoded.a3 ?? 0;
+      const a4 = decoded.a4 ?? 0;
 
       const existing = metList.find(
         m =>
           m.name === name &&
-          (m.group || "") === group &&
-          (m.mbti || "") === mbti &&
-          (m.location || "") === location &&
-          (m.hobby || "") === hobby
+          m.a1 === a1 &&
+          m.a2 === a2 &&
+          m.a3 === a3 &&
+          m.a4 === a4
       );
 
       if (!existing) {
         metList.push({
           name,
-          group,
-          mbti,
-          location,
-          hobby,
-          timestamp: Date.now(),
+          a1,
+          a2,
+          a3,
+          a4,
+          timestamp: Date.now()
         });
         saveMetList();
         updateMetCount();
@@ -1339,16 +1406,8 @@
 
       editProfileBtn.addEventListener("click", () => {
         if (profile) {
-          fullNameInput.value = profile.fullName || "";
-
-          const gIdx = groupLabelToIndex(profile.group);
-          groupSelect.value = gIdx >= 0 ? String(gIdx) : "";
-
-          const mIdx = mbtiLabelToIndex(profile.mbti);
-          mbtiSelect.value = mIdx >= 0 ? String(mIdx) : "";
-
-          locationInput.value = profile.location || "";
-          hobbyInput.value = profile.hobby || "";
+          fullNameInput.value = profile.name || "";
+          // re-check radios based on profile; renderQuestions will handle
         }
         showScreen("s1");
       });
@@ -1386,14 +1445,39 @@
         const person = metList[idx];
         if (!person) return;
 
-        detailName.textContent = person.name || "";
-        detailGroup.textContent = person.group || "";
-        detailMbti.textContent = person.mbti || "";
-        detailLocation.textContent = person.location || "";
-        detailHobby.textContent = person.hobby || "";
-        detailMetTime.textContent = person.timestamp
+        detailNameEl.textContent = person.name || "";
+        detailMetTimeEl.textContent = person.timestamp
           ? new Date(person.timestamp).toLocaleString()
           : "";
+
+        const qs = getQuestions();
+        detailQaEl.innerHTML = "";
+
+        const my = profile;
+
+        [
+          { q: qs[0], key: "a1", idx: person.a1 },
+          { q: qs[1], key: "a2", idx: person.a2 },
+          { q: qs[2], key: "a3", idx: person.a3 },
+          { q: qs[3], key: "a4", idx: person.a4 }
+        ].forEach(entry => {
+          const wrap = document.createElement("div");
+          const qDiv = document.createElement("div");
+          qDiv.className = "detail-question";
+          qDiv.textContent = entry.q.text;
+
+          const ansDiv = document.createElement("div");
+          ansDiv.className = "detail-answer-pill";
+          if (my && my[entry.key] === entry.idx) {
+            ansDiv.classList.add("detail-answer-same");
+          }
+          const text = entry.q.options[entry.idx ?? 0] || "";
+          ansDiv.textContent = text;
+
+          wrap.appendChild(qDiv);
+          wrap.appendChild(ansDiv);
+          detailQaEl.appendChild(wrap);
+        });
 
         showScreen("s5");
       });
@@ -1410,7 +1494,20 @@
 
       const storedProfile = getCookie(profileCookieKey);
       if (storedProfile) {
-        try { profile = JSON.parse(storedProfile); } catch { profile = null; }
+        try {
+          const p = JSON.parse(storedProfile);
+          if (p && typeof p.name === "string") {
+            profile = {
+              name: p.name || "",
+              a1: p.a1 ?? 0,
+              a2: p.a2 ?? 0,
+              a3: p.a3 ?? 0,
+              a4: p.a4 ?? 0
+            };
+          }
+        } catch {
+          profile = null;
+        }
       }
 
       const storedMet = getCookie(metCookieKey);
@@ -1421,19 +1518,31 @@
 
     function initUI() {
       loadCookies();
-      populateGroupOptions(false);
-      populateMbtiOptions(false);
-      applyLanguage();
+      applyLanguage(); // also renders questions
       wireEvents();
 
       if (profile) {
-        fullNameInput.value = profile.fullName || "";
-        const gIdx = groupLabelToIndex(profile.group);
-        groupSelect.value = gIdx >= 0 ? String(gIdx) : "";
-        const mIdx = mbtiLabelToIndex(profile.mbti);
-        mbtiSelect.value = mIdx >= 0 ? String(mIdx) : "";
-        locationInput.value = profile.location || "";
-        hobbyInput.value = profile.hobby || "";
+        fullNameInput.value = profile.name || "";
+
+        // restore radios
+        renderQuestions();
+        if (profile.a1 != null) {
+          const el = document.querySelector(`input[name="q1"][value="${profile.a1}"]`);
+          if (el) el.checked = true;
+        }
+        if (profile.a2 != null) {
+          const el = document.querySelector(`input[name="q2"][value="${profile.a2}"]`);
+          if (el) el.checked = true;
+        }
+        if (profile.a3 != null) {
+          const el = document.querySelector(`input[name="q3"][value="${profile.a3}"]`);
+          if (el) el.checked = true;
+        }
+        if (profile.a4 != null) {
+          const el = document.querySelector(`input[name="q4"][value="${profile.a4}"]`);
+          if (el) el.checked = true;
+        }
+
         updateProfileSummary();
         updateQR();
         showScreen("s2");
