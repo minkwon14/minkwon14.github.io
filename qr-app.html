@@ -5,9 +5,9 @@
   <title>밋 트래커</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- QR Code generator (CDN) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <!-- jsQR (QR code reader) -->
+  <!-- Local QR Code generator (must be in same folder) -->
+  <script src="qrcode.min.js"></script>
+  <!-- jsQR (QR code reader) from CDN - this one is already working for you -->
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 
   <style>
@@ -581,7 +581,7 @@
             <span class="detail-value" id="detail-hobby"></span>
           </div>
           <div class="detail-row">
-            <span class="detail-label" id="detail-label-mettime">Box만난 시간</span>
+            <span class="detail-label" id="detail-label-mettime">만난 시간</span>
             <span class="detail-value" id="detail-mettime"></span>
           </div>
         </div>
@@ -695,7 +695,7 @@
         alertScanned: name => `스캔 완료: ${name} 님 정보를 저장했습니다.`,
         alertCameraUnsupported: "이 브라우저에서는 카메라를 사용할 수 없습니다.",
         alertCameraError: msg => `카메라에 접근할 수 없습니다: ${msg}`,
-        qrLibMissing: "QR 라이브러리를 불러오지 못했습니다."
+        qrLibMissing: "qrcode.min.js 파일이 같은 폴더에 있는지 확인해 주세요."
       },
       en: {
         appTitle: "Meet Tracker",
@@ -758,7 +758,7 @@
         alertScanned: name => `Scanned and saved: ${name}`,
         alertCameraUnsupported: "Camera access is not supported in this browser.",
         alertCameraError: msg => `Unable to access camera: ${msg}`,
-        qrLibMissing: "QR library failed to load."
+        qrLibMissing: "Please make sure qrcode.min.js is in the same folder as this HTML file."
       }
     };
 
@@ -937,7 +937,6 @@
       }
 
       try {
-        // Simple pattern: QRCode(element, text)
         new QRCode(qrContainer, data);
       } catch (e) {
         console.error("QR generation error:", e);
@@ -1222,7 +1221,6 @@
         updateProfileSummary();
         showScreen("s2");
 
-        // Try QR generation but don't break navigation if it fails
         try {
           updateQR();
         } catch (e) {
