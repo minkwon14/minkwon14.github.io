@@ -2,358 +2,198 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Welcome</title>
+  <title>Minseo Kwon – Software Engineer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <style>
-    /* Reset-ish */
+    /* Basic reset */
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
 
+    :root {
+      --bg: #f4f5f7;
+      --bg-accent: #ffffff;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --border-soft: rgba(148, 163, 184, 0.5);
+      --shadow-soft: 0 18px 45px rgba(148, 163, 184, 0.4);
+      --accent: #111827;
+      --accent-text: #f9fafb;
+      --accent-soft: rgba(17, 24, 39, 0.04);
+    }
+
+    /* Dark mode (automatic) */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #020617;
+        --bg-accent: #020617;
+        --text-main: #e5e7eb;
+        --text-muted: #9ca3af;
+        --border-soft: rgba(75, 85, 99, 0.7);
+        --shadow-soft: 0 20px 60px rgba(15, 23, 42, 0.8);
+        --accent: #e5e7eb;
+        --accent-text: #020617;
+        --accent-soft: rgba(148, 163, 184, 0.1);
+      }
+    }
+
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
         sans-serif;
-      background: radial-gradient(circle at top, #f5f7fb, #e6eaee);
-      color: #111827;
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    a {
-      text-decoration: none;
-      color: inherit;
-    }
-
-    /* Layout */
-    header {
-      width: 100%;
-      padding: 1rem 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      backdrop-filter: blur(8px);
-      background: rgba(255, 255, 255, 0.8);
-      border-bottom: 1px solid rgba(148, 163, 184, 0.3);
-      z-index: 10;
-    }
-
-    .logo {
-      font-weight: 700;
-      letter-spacing: 0.03em;
-      font-size: 1.1rem;
-    }
-
-    /* Desktop nav */
-    nav {
-      display: flex;
-      gap: 1.5rem;
-      align-items: center;
-    }
-
-    nav a {
-      font-size: 0.95rem;
-      opacity: 0.8;
-      transition: opacity 0.15s ease, transform 0.15s ease;
-    }
-
-    nav a:hover {
-      opacity: 1;
-      transform: translateY(-1px);
-    }
-
-    /* Mobile menu button */
-    .menu-toggle {
-      display: none;
-      border: none;
-      background: none;
-      cursor: pointer;
-      padding: 0.25rem;
-    }
-
-    .menu-toggle span {
-      display: block;
-      width: 22px;
-      height: 2px;
-      margin: 4px 0;
-      background: #111827;
-      transition: transform 0.2s ease, opacity 0.2s ease;
-    }
-
-    /* Hero section */
-    main {
-      flex: 1;
+      background:
+        radial-gradient(circle at top, var(--accent-soft), transparent 60%),
+        var(--bg);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 2.5rem 1.5rem 3rem;
+      padding: 1.5rem;
+      color: var(--text-main);
     }
 
-    .hero {
-      max-width: 960px;
+    .card {
+      max-width: 420px;
       width: 100%;
-      display: grid;
-      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-      gap: 2.5rem;
-      align-items: center;
+      background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.08),
+          rgba(255, 255, 255, 0)
+        ),
+        var(--bg-accent);
+      border-radius: 1.5rem;
+      padding: 2.2rem 2rem 2rem;
+      border: 1px solid var(--border-soft);
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.4rem;
+      backdrop-filter: blur(16px);
     }
 
-    .hero-text h1 {
-      font-size: clamp(2.1rem, 3vw + 1.5rem, 3rem);
+    .eyebrow {
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    h1 {
+      font-size: clamp(1.9rem, 2.2vw + 1.2rem, 2.4rem);
       line-height: 1.1;
-      margin-bottom: 1rem;
     }
 
-    .hero-text p {
+    .title {
       font-size: 1rem;
-      line-height: 1.6;
-      color: #4b5563;
-      margin-bottom: 1.75rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
     }
 
-    .hero-actions {
+    .description {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--text-muted);
+      max-width: 32rem;
+    }
+
+    .actions {
       display: flex;
       flex-wrap: wrap;
       gap: 0.75rem;
+      margin-top: 0.4rem;
     }
 
-    .btn-primary,
-    .btn-ghost {
-      padding: 0.75rem 1.4rem;
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.7rem 1.3rem;
       border-radius: 999px;
-      font-size: 0.95rem;
       border: 1px solid transparent;
+      background: var(--accent);
+      color: var(--accent-text);
+      font-size: 0.95rem;
+      font-weight: 500;
       cursor: pointer;
-      transition: transform 0.15s ease, box-shadow 0.15s ease,
-        background 0.15s ease, border-color 0.15s ease;
+      text-decoration: none;
+      transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        background 0.15s ease,
+        border-color 0.15s ease;
+      box-shadow: 0 18px 35px rgba(15, 23, 42, 0.35);
       white-space: nowrap;
     }
 
-    .btn-primary {
-      background: #111827;
-      color: #f9fafb;
-      box-shadow: 0 18px 30px rgba(15, 23, 42, 0.28);
-    }
-
-    .btn-primary:hover {
+    .btn:hover {
       transform: translateY(-1px);
-      box-shadow: 0 22px 40px rgba(15, 23, 42, 0.32);
+      box-shadow: 0 22px 45px rgba(15, 23, 42, 0.45);
     }
 
-    .btn-ghost {
-      background: rgba(255, 255, 255, 0.8);
-      border-color: rgba(148, 163, 184, 0.6);
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.3);
     }
 
-    .btn-ghost:hover {
-      background: #ffffff;
-      transform: translateY(-1px);
-      box-shadow: 0 10px 20px rgba(148, 163, 184, 0.35);
-    }
-
-    .hero-meta {
-      margin-top: 1rem;
-      font-size: 0.85rem;
-      color: #6b7280;
-    }
-
-    /* Right card / illustration */
-    .hero-card {
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 1.5rem;
-      padding: 1.5rem 1.3rem;
-      border: 1px solid rgba(148, 163, 184, 0.35);
-      box-shadow: 0 18px 40px rgba(148, 163, 184, 0.45);
-    }
-
-    .hero-card h2 {
+    .btn-icon {
       font-size: 1rem;
-      margin-bottom: 0.75rem;
+      line-height: 1;
     }
 
-    .hero-card p {
-      font-size: 0.9rem;
-      color: #4b5563;
-      margin-bottom: 1.2rem;
-    }
-
-    .pill-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-      margin-bottom: 1rem;
-    }
-
-    .pill {
-      font-size: 0.75rem;
-      padding: 0.35rem 0.7rem;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: rgba(248, 250, 252, 0.9);
-    }
-
-    footer {
-      padding: 1rem 1.5rem 1.25rem;
+    .meta {
+      margin-top: 0.3rem;
       font-size: 0.8rem;
-      text-align: center;
-      color: #6b7280;
+      color: var(--text-muted);
     }
 
-    /* RESPONSIVE STYLES */
-
-    @media (max-width: 768px) {
-      header {
-        padding-inline: 1rem;
-      }
-
-      nav {
-        position: absolute;
-        top: 60px;
-        right: 1rem;
-        flex-direction: column;
-        background: rgba(255, 255, 255, 0.96);
-        border-radius: 0.75rem;
-        padding: 0.75rem 1rem;
-        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.18);
-        min-width: 160px;
-        transform-origin: top right;
-        transform: scale(0.9);
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.18s ease, transform 0.18s ease;
-      }
-
-      nav.open {
-        opacity: 1;
-        pointer-events: auto;
-        transform: scale(1);
-      }
-
-      .menu-toggle {
-        display: block;
-      }
-
-      /* Animate hamburger icon to X when open */
-      .menu-toggle.open span:nth-child(1) {
-        transform: translateY(6px) rotate(45deg);
-      }
-      .menu-toggle.open span:nth-child(2) {
-        opacity: 0;
-      }
-      .menu-toggle.open span:nth-child(3) {
-        transform: translateY(-6px) rotate(-45deg);
-      }
-
-      main {
-        padding-inline: 1rem;
-      }
-
-      .hero {
-        grid-template-columns: minmax(0, 1fr);
-      }
-
-      .hero-card {
-        order: -1; /* move the card above text on mobile */
-      }
+    .meta strong {
+      font-weight: 500;
+      color: var(--text-main);
     }
 
     @media (max-width: 480px) {
-      .hero-text p {
-        font-size: 0.95rem;
+      .card {
+        padding: 1.8rem 1.5rem 1.6rem;
+        border-radius: 1.25rem;
       }
 
-      .hero-card {
-        padding: 1.25rem 1rem;
+      .description {
+        font-size: 0.92rem;
       }
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="logo">MyWelcome</div>
+  <main class="card">
+    <div class="eyebrow">Welcome</div>
+    <div>
+      <h1>Minseo Kwon</h1>
+      <div class="title">Software Engineer</div>
+    </div>
 
-    <button class="menu-toggle" aria-label="Toggle navigation">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
+    <p class="description">
+      I build reliable, user-focused software and enjoy working across the stack
+      to turn ideas into real, maintainable products.
+    </p>
 
-    <nav>
-      <a href="#welcome">Home</a>
-      <a href="#about">About</a>
-      <a href="#get-started">Get Started</a>
-    </nav>
-  </header>
+    <div class="actions">
+      <a
+        class="btn"
+        href="mailto:min.kwon14@gmail.com?subject=Contact%20from%20your%20site"
+      >
+        <span class="btn-icon">✉️</span>
+        <span>Contact me</span>
+      </a>
+    </div>
 
-  <main>
-    <section class="hero" id="welcome">
-      <div class="hero-text">
-        <h1>Welcome! You&rsquo;re in the right place.</h1>
-        <p>
-          This is a clean, responsive welcome page that looks great on phones,
-          tablets, and desktops. Resize your screen to see how it adapts.
-        </p>
-
-        <div class="hero-actions" id="get-started">
-          <button class="btn-primary">Get Started</button>
-          <button class="btn-ghost">Learn More</button>
-        </div>
-
-        <div class="hero-meta">
-          No frameworks, just HTML, CSS, and a tiny bit of JavaScript.
-        </div>
-      </div>
-
-      <aside class="hero-card" id="about">
-        <h2>Ready out of the box</h2>
-        <p>
-          This layout includes a mobile-friendly navigation menu and a responsive
-          two-column hero section that collapses gracefully on small screens.
-        </p>
-
-        <div class="pill-list">
-          <span class="pill">Responsive</span>
-          <span class="pill">Mobile-first</span>
-          <span class="pill">Accessible</span>
-          <span class="pill">Lightweight</span>
-        </div>
-
-        <p style="font-size: 0.8rem; color: #9ca3af;">
-          Tip: replace the text, logo, and buttons with your app&rsquo;s content.
-        </p>
-      </aside>
-    </section>
+    <div class="meta">
+      Email: <strong>min.kwon14@gmail.com</strong>
+    </div>
   </main>
-
-  <footer>
-    &copy; <span id="year"></span> MyWelcome. All rights reserved.
-  </footer>
-
-  <script>
-    // Mobile nav toggle
-    const toggle = document.querySelector(".menu-toggle");
-    const nav = document.querySelector("header nav");
-
-    toggle.addEventListener("click", () => {
-      toggle.classList.toggle("open");
-      nav.classList.toggle("open");
-    });
-
-    // Close nav when clicking a link on mobile
-    nav.addEventListener("click", (e) => {
-      if (e.target.tagName === "A" && nav.classList.contains("open")) {
-        nav.classList.remove("open");
-        toggle.classList.remove("open");
-      }
-    });
-
-    // Dynamic year in footer
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
 </body>
 </html>
