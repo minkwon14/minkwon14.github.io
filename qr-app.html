@@ -433,22 +433,16 @@
           <label for="group" id="label-group">소속 순</label>
           <select id="group">
             <option value="" disabled selected>선택하세요</option>
-            <!-- 가나다 순 -->
-            <option value="김수진">김수진</option>
-            <option value="랠리스">랠리스</option>
-            <option value="류다현">류다현</option>
-            <option value="무소속">무소속</option>
-            <option value="새가족">새가족</option>
-            <option value="아이린">아이린</option>
-            <option value="장준용">장준용</option>
-            <option value="조연수">조연수</option>
-            <option value="최우석">최우석</option>
+            <!-- options will be filled by JS from GROUPS -->
           </select>
         </div>
 
         <div class="field">
           <label for="mbti" id="label-mbti">MBTI</label>
-          <input id="mbti" placeholder="예: INFP" />
+          <select id="mbti">
+            <option value="" disabled selected>선택하세요</option>
+            <!-- options will be filled by JS from MBTI_TYPES -->
+          </select>
         </div>
 
         <div class="field">
@@ -580,6 +574,26 @@
   </div>
 
   <script>
+    // ---------- Enums ----------
+    const GROUPS = [
+      { id: 0, nameKo: "무소속", nameEn: "No group" },
+      { id: 1, nameKo: "새가족", nameEn: "Newcomer" },
+      { id: 2, nameKo: "김수진", nameEn: "Kim Sujin" },
+      { id: 3, nameKo: "앨리스", nameEn: "Alice" }, // 랠리스 -> 앨리스
+      { id: 4, nameKo: "류다현", nameEn: "Ryu Dahyun" },
+      { id: 5, nameKo: "아이린", nameEn: "Irene" },
+      { id: 6, nameKo: "장준용", nameEn: "Jang Junyong" },
+      { id: 7, nameKo: "조연수", nameEn: "Cho Yeonsu" },
+      { id: 8, nameKo: "최우석", nameEn: "Choi Wooseok" }
+    ];
+
+    const MBTI_TYPES = [
+      "ISTJ","ISFJ","INFJ","INTJ",
+      "ISTP","ISFP","INFP","INTP",
+      "ESTP","ESFP","ENFP","ENTP",
+      "ESTJ","ESFJ","ENFJ","ENTJ"
+    ];
+
     // ---------- Strings (샤인 링크) ----------
     const STRINGS = {
       ko: {
@@ -602,7 +616,7 @@
         hobbyLabel: "취미",
         hobbyPlaceholder: "예: 등산, 커피, 게임",
         mbtiLabel: "MBTI",
-        mbtiPlaceholder: "예: INFP",
+        mbtiPlaceholder: "선택하세요",
         locationLabel: "사는 곳",
         locationPlaceholder: "예: 어바인",
         saveProfile: "내 정보 저장하고 QR 보기",
@@ -664,7 +678,7 @@
         hobbyLabel: "Hobby",
         hobbyPlaceholder: "e.g. hiking, coffee, games",
         mbtiLabel: "MBTI",
-        mbtiPlaceholder: "e.g. INFP",
+        mbtiPlaceholder: "Select",
         locationLabel: "Where do you live?",
         locationPlaceholder: "e.g. Irvine",
         saveProfile: "Save my info & show QR",
@@ -735,7 +749,7 @@
     const themeCookieKey = "meet_theme";
     const langCookieKey = "meet_lang";
 
-    let profile = null;
+    let profile = null; // { fullName, group, mbti, location, hobby }
     let metList = [];
     let themeMode = "auto";
     let currentLang = "ko";
@@ -774,7 +788,7 @@
 
     const fullNameInput = document.getElementById("fullName");
     const groupSelect = document.getElementById("group");
-    const mbtiInput = document.getElementById("mbti");
+    const mbtiSelect = document.getElementById("mbti");
     const locationInput = document.getElementById("location");
     const hobbyInput = document.getElementById("hobby");
     const saveProfileBtn = document.getElementById("save-profile");
@@ -847,7 +861,7 @@
 
       fullNameInput.placeholder = t("fullNamePlaceholder");
       groupSelect.options[0].textContent = t("groupPlaceholder");
-      mbtiInput.placeholder = t("mbtiPlaceholder");
+      mbtiSelect.options[0].textContent = t("mbtiPlaceholder");
       locationInput.placeholder = t("locationPlaceholder");
       hobbyInput.placeholder = t("hobbyPlaceholder");
 
@@ -878,6 +892,10 @@
       detailLabelHobby.textContent = t("detailLabelHobby");
       detailLabelMetTime.textContent = t("detailLabelMetTime");
 
+      // Re-render group & MBTI dropdown display labels
+      populateGroupOptions(true);
+      populateMbtiOptions(true);
+
       applyTheme();
     }
 
@@ -897,25 +915,115 @@
       applyTheme();
     }
 
+    // ---------- Dropdown population ----------
+    function populateGroupOptions(keepValue) {
+      const oldValue = keepValue ? groupSelect.value : "";
+      // Remove existing options except [0]
+      while (groupSelect.options.length > 1) {
+        groupSelect.remove(1);
+      }
+      GROUPS.forEach(g => {
+        const opt = document.createElement("option");
+        opt.value = String(g.id);
+        opt.textContent = currentLang === "ko" ? g.nameKo : g.nameEn;
+        groupSelect.appendChild(opt);
+      });
+      if (keepValue && oldValue) {
+        groupSelect.value = oldValue;
+      }
+    }
+
+    function populateMbtiOptions(keepValue) {
+      const oldValue = keepValue ? mbtiSelect.value : "";
+      while (mbtiSelect.options.length > 1) {
+        mbtiSelect.remove(1);
+      }
+      MBTI_TYPES.forEach((mbti, idx) => {
+        const opt = document.createElement("option");
+        opt.value = String(idx);
+        opt.textContent = mbti;
+        mbtiSelect.appendChild(opt);
+      });
+      if (keepValue && oldValue) {
+        mbtiSelect.value = oldValue;
+      }
+    }
+
+    function groupIndexToLabel(index) {
+      const i = Number(index);
+      const g = GROUPS.find(g => g.id === i);
+      if (!g) return "";
+      return currentLang === "ko" ? g.nameKo : g.nameEn;
+    }
+
+    function groupIndexToKo(index) {
+      const i = Number(index);
+      const g = GROUPS.find(g => g.id === i);
+      return g ? g.nameKo : "";
+    }
+
+    function mbtiIndexToLabel(index) {
+      const i = Number(index);
+      if (i < 0 || i >= MBTI_TYPES.length) return "";
+      return MBTI_TYPES[i];
+    }
+
+    function mbtiLabelToIndex(label) {
+      const upper = String(label || "").toUpperCase().trim();
+      return MBTI_TYPES.indexOf(upper);
+    }
+
+    function groupLabelToIndex(labelKo) {
+      const s = String(labelKo || "").trim();
+      const found = GROUPS.find(g => g.nameKo === s || g.nameEn === s);
+      return found ? found.id : -1;
+    }
+
     // ---------- QR payload encoding ----------
-    // Simple format: v1|fullName|group|mbti|location|hobby
+    // v2: v2|fullName|groupIndex|mbtiIndex|location|hobby
+    // v1: v1|fullName|groupLabel|mbtiLabel|location|hobby  (legacy)
     function safeField(str) {
       if (!str) return "";
-      // avoid breaking format: replace our separator with a similar char
       return String(str).replace(/\|/g, "¦").slice(0, 120);
     }
 
     function encodeProfileForQR(p) {
       const fullName = safeField(p.fullName);
-      const group = safeField(p.group);
-      const mbti = safeField(p.mbti);
       const location = safeField(p.location);
       const hobby = safeField(p.hobby);
-      return `v1|${fullName}|${group}|${mbti}|${location}|${hobby}`;
+
+      // Enum indexes
+      const gIdx = groupLabelToIndex(p.group);
+      const mIdx = mbtiLabelToIndex(p.mbti);
+
+      if (gIdx >= 0 && mIdx >= 0) {
+        // v2 with indexes
+        return `v2|${fullName}|${gIdx}|${mIdx}|${location}|${hobby}`;
+      } else {
+        // fallback v1 with labels
+        const groupLabel = safeField(p.group);
+        const mbtiLabel = safeField(p.mbti);
+        return `v1|${fullName}|${groupLabel}|${mbtiLabel}|${location}|${hobby}`;
+      }
     }
 
     function decodeProfileFromQR(str) {
-      if (str.startsWith("v1|")) {
+      if (str.startsWith("v2|")) {
+        const parts = str.split("|");
+        const fullName = (parts[1] || "").trim();
+        const gIdx = parseInt(parts[2] || "-1", 10);
+        const mIdx = parseInt(parts[3] || "-1", 10);
+        const location = (parts[4] || "").trim();
+        const hobby = (parts[5] || "").trim();
+
+        return {
+          fullName,
+          group: groupIndexToKo(gIdx),   // store KO label internally
+          mbti: mbtiIndexToLabel(mIdx),
+          location,
+          hobby
+        };
+      } else if (str.startsWith("v1|")) {
         const parts = str.split("|");
         return {
           fullName: (parts[1] || "").trim(),
@@ -925,7 +1033,7 @@
           hobby: (parts[5] || "").trim()
         };
       } else {
-        // very old format fallback (name|group|mbti|location|hobby)
+        // very old / plain: name|group|mbti|location|hobby
         const parts = str.split("|");
         return {
           fullName: (parts[0] || "").trim(),
@@ -976,7 +1084,7 @@
           height: 360,
           colorDark: "#000000",
           colorLight: "#ffffff",
-          correctLevel: QRCode.CorrectLevel.M // a bit more error tolerance
+          correctLevel: QRCode.CorrectLevel.M
         });
       } catch (e) {
         console.error("QR generation error:", e, "len:", data.length);
@@ -1076,18 +1184,27 @@
     }
 
     function saveProfileFromInputs() {
-      let fullName = fullNameInput.value.trim();
-      let group = groupSelect.value.trim();
-      let mbti = mbtiInput.value.trim();
-      let location = locationInput.value.trim();
-      let hobby = hobbyInput.value.trim();
+      const fullName = fullNameInput.value.trim();
+      const groupIndexStr = groupSelect.value;
+      const mbtiIndexStr = mbtiSelect.value;
+      const location = locationInput.value.trim();
+      const hobby = hobbyInput.value.trim();
 
-      if (!fullName || !group || !mbti || !location || !hobby) {
+      if (!fullName || !groupIndexStr || !mbtiIndexStr || !location || !hobby) {
         alert(t("alertEnterRequired"));
         return false;
       }
 
-      profile = { fullName, group, mbti, location, hobby };
+      const groupLabelKo = groupIndexToKo(groupIndexStr);
+      const mbtiLabel = mbtiIndexToLabel(mbtiIndexStr);
+
+      profile = {
+        fullName,
+        group: groupLabelKo,
+        mbti: mbtiLabel,
+        location,
+        hobby
+      };
       setCookie(profileCookieKey, JSON.stringify(profile), 365);
       return true;
     }
@@ -1154,7 +1271,7 @@
         if (!videoStream) return;
 
         const now = performance.now();
-        if (now - lastDecodeTime < 250) { // ~4 fps decoding
+        if (now - lastDecodeTime < 250) { // ~4 fps
           scanLoopId = requestAnimationFrame(loop);
           return;
         }
@@ -1257,8 +1374,14 @@
       editProfileBtn.addEventListener("click", () => {
         if (profile) {
           fullNameInput.value = profile.fullName || "";
-          groupSelect.value = profile.group || "";
-          mbtiInput.value = profile.mbti || "";
+
+          // Map stored KO group label back to index
+          const gIdx = groupLabelToIndex(profile.group);
+          groupSelect.value = gIdx >= 0 ? String(gIdx) : "";
+
+          const mIdx = mbtiLabelToIndex(profile.mbti);
+          mbtiSelect.value = mIdx >= 0 ? String(mIdx) : "";
+
           locationInput.value = profile.location || "";
           hobbyInput.value = profile.hobby || "";
         }
@@ -1333,13 +1456,20 @@
 
     function initUI() {
       loadCookies();
+      populateGroupOptions(false);
+      populateMbtiOptions(false);
       applyLanguage();
       wireEvents();
 
       if (profile) {
         fullNameInput.value = profile.fullName || "";
-        groupSelect.value = profile.group || "";
-        mbtiInput.value = profile.mbti || "";
+
+        const gIdx = groupLabelToIndex(profile.group);
+        groupSelect.value = gIdx >= 0 ? String(gIdx) : "";
+
+        const mIdx = mbtiLabelToIndex(profile.mbti);
+        mbtiSelect.value = mIdx >= 0 ? String(mIdx) : "";
+
         locationInput.value = profile.location || "";
         hobbyInput.value = profile.hobby || "";
         updateProfileSummary();
